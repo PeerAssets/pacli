@@ -1,3 +1,4 @@
+from datetime import datetime
 from terminaltables import AsciiTable
 from cli import cli
 import pypeerassets as pa
@@ -12,6 +13,11 @@ def set_up():
         pa.pautils.load_p2th_privkeys_into_node(provider)
 
     # load config
+
+def tstamp_to_iso(tstamp):
+    '''make iso timestamp from unix timestamp'''
+
+    return datetime.fromtimestamp(tstamp).isoformat()
 
 class ListDecks:
 
@@ -55,6 +61,38 @@ class ListDecks:
                 cls.dtl(i.__dict__)
             )
 
+class DeckInfo:
+
+    @classmethod
+    def __init__(cls, deck):
+        assert isinstance(deck, pa.Deck)
+        cls.deck = deck
+
+        ## Deck table header
+        cls.deck_table = [
+            ## add subscribed column
+            ("asset name", "issuer", "issue mode", "decimals", "issue time")
+        ]
+
+        cls.table = AsciiTable(cls.deck_table, title="Deck id: " + cls.deck.asset_id)
+
+    @staticmethod
+    def dtl(deck, subscribed=False):
+        '''deck-to-list deck to table-printable list'''
+
+        l = []
+        l.append(deck["name"])
+        l.append(deck["issuer"])
+        l.append(deck["issue_mode"])
+        l.append(deck["number_of_decimals"])
+        l.append(tstamp_to_iso(deck["issue_time"]))
+
+        return l
+
+    @classmethod
+    def pack_decks_for_printing(cls):
+
+        cls.deck_table.append(cls.dtl(cls.deck.__dict__))
 
 def deck_list(l):
     '''list command'''
@@ -83,6 +121,14 @@ def deck_search(key):
     d.pack_decks_for_printing()
     print(d.table.table)
 
+def deck_info(deck_id):
+    '''info commands, show full deck details'''
+
+    deck = pa.find_deck(provider, deck_id)[0]
+    info = DeckInfo(deck)
+    info.pack_decks_for_printing()
+    print(info.table.table)
+
 if __name__ == "__main__":
 
     provider = pa.RpcNode(testnet=True)
@@ -96,4 +142,6 @@ if __name__ == "__main__":
             deck_subscribe(args.subscribe)
         if args.search:
             deck_search(args.search)
+        if args.info:
+            deck_info(args.info)
 
