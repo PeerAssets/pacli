@@ -57,6 +57,7 @@ class ListDecks:
 
 
 def deck_list(l):
+    '''list command'''
 
     if l == "all":
         d = ListDecks(pa.find_all_valid_decks(provider))
@@ -69,12 +70,13 @@ def deck_list(l):
         print(d.table.table)
 
 def deck_subscribe(deck_id):
-    '''subscribe to deck, pass <deck_id>'''
+    '''subscribe command, load deck p2th into local node, pass <deck_id>'''
+
     deck = pa.find_deck(provider, deck_id)[0]
     pa.load_deck_p2th_into_local_node(provider, deck)
 
 def deck_search(key):
-    '''search decks by key'''
+    '''search commands, query decks by <key>'''
 
     decks = pa.find_deck(provider, key)
     d = ListDecks(decks)
