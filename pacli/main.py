@@ -11,16 +11,20 @@ class Settings:
 def set_up():
     '''setup'''
 
-    # check if provider is working as expected
-    assert provider.getinfo()["connections"] > 0, {"error": "Not connected to network."}
-    # check if PAPROD P2TH is loaded in local node
-    if not provider.listtransactions("PAPROD"):
-        pa.pautils.load_p2th_privkeys_into_node(provider)
-
     # load config // this should be loaded from the file some day
     Settings.change_addr = "mwkFUPUrh6LsXyMvBY2mz6btiJjuTxGgT8"
     Settings.network = "tppc"
     Settings.prod = True
+
+    # check if provider is working as expected
+    assert provider.getinfo()["connections"] > 0, {"error": "Not connected to network."}
+    # check if PA P2TH is loaded in local node
+    if Settings.prod:
+        if not provider.listtransactions("PAPROD"):
+            pa.pautils.load_p2th_privkeys_into_node(provider)
+    if not Settings.prod:
+        if not provider.listtransactions("PATEST"):
+            pa.pautils.load_p2th_privkeys_into_node(provider, prod=False)
 
 def tstamp_to_iso(tstamp):
     '''make iso timestamp from unix timestamp'''
