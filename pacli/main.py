@@ -1,7 +1,12 @@
 from datetime import datetime
 from terminaltables import AsciiTable
+from binascii import hexlify
 from cli import cli
 import pypeerassets as pa
+import json
+
+class Settings:
+    pass
 
 def set_up():
     '''setup'''
@@ -12,7 +17,10 @@ def set_up():
     if not provider.listtransactions("PAPROD"):
         pa.pautils.load_p2th_privkeys_into_node(provider)
 
-    # load config
+    # load config // this should be loaded from the file some day
+    Settings.change_addr = "mwkFUPUrh6LsXyMvBY2mz6btiJjuTxGgT8"
+    Settings.network = "tppc"
+    Settings.prod = True
 
 def tstamp_to_iso(tstamp):
     '''make iso timestamp from unix timestamp'''
@@ -129,6 +137,29 @@ def deck_info(deck_id):
     info.pack_decks_for_printing()
     print(info.table.table)
 
+def new_deck(deck):
+    '''
+    Spawn a new PeerAssets deck.
+
+    pacli deck -new '{"name": "test", "number_of_decimals": 1, "issue_mode": "ONCE"}'
+
+    Will return deck span txid.
+    '''
+
+    deck = json.loads(deck)
+    utxo = provider.select_inputs(0.02) ## we need 0.02 PPC
+    raw_deck_spawn = hexlify(pa.deck_spawn(pa.Deck(**deck),
+                                           Settings.network,
+                                           utxo,
+                                           Settings.change_addr,
+                                           Settings.prod
+                                           )).decode()
+
+    signed = provider.signrawtransaction(raw_deck_spawn)
+    print(provider.sendrawtransaction(signed["hex"])) # send the tx
+
+    pa.load_deck_p2th_into_local_node(provider, deck) # subscribe to deck
+
 if __name__ == "__main__":
 
     provider = pa.RpcNode(testnet=True)
@@ -144,4 +175,6 @@ if __name__ == "__main__":
             deck_search(args.search)
         if args.info:
             deck_info(args.info)
+        if args.new:
+            new_deck(args.new)
 
