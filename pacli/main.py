@@ -160,9 +160,8 @@ def new_deck(deck):
                              Settings.prod
                             )
     raw_deck_spawn = hexlify(raw_deck).decode()
-
     signed = provider.signrawtransaction(raw_deck_spawn)
-    print(provider.sendrawtransaction(signed["hex"])) # send the tx
+    print("\n", provider.sendrawtransaction(signed["hex"]), "\n")
 
     pa.load_deck_p2th_into_local_node(provider, deck) # subscribe to deck
 
