@@ -164,6 +164,28 @@ def new_deck(deck):
 
     pa.load_deck_p2th_into_local_node(provider, deck) # subscribe to deck
 
+def card_issue(args):
+    '''
+    Issue new cards of this deck.
+
+    pacli card -issue '{"deck": "deck_id",
+                        "receivers": [list of receiver addresses], "amounts": [list of amounts]
+                        }
+    '''
+
+    issue = json.loads(args)
+    deck = pa.find_deck(provider, issue["deck"])[0]
+    utxo = provider.select_inputs(0.02, deck.issuer)
+    ct = pa.CardTransfer(deck, issue["receivers"], issue["amounts"])
+    raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
+                                   utxo["utxos"][0]["address"],
+                                   provider.is_testnet,
+                                   Settings.prod)
+                    ).decode()
+
+    signed = provider.signrawtransaction(raw_ct)
+    print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
+
 if __name__ == "__main__":
 
     provider = pa.RpcNode(testnet=True)
@@ -181,4 +203,8 @@ if __name__ == "__main__":
             deck_info(args.info)
         if args.new:
             new_deck(args.new)
+
+    if args.command == "card":
+        if args.issue:
+            card_issue(args.issue)
 
