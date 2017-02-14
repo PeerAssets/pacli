@@ -86,7 +86,7 @@ class DeckInfo:
             ("asset name", "issuer", "issue mode", "decimals", "issue time")
         ]
 
-        cls.table = AsciiTable(cls.deck_table, title="Deck id: " + cls.deck.asset_id)
+        cls.table = AsciiTable(cls.deck_table, title="Deck id: " + cls.deck.asset_id + " ")
 
     @staticmethod
     def dtl(deck, subscribed=False):
