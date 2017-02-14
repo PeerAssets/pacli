@@ -196,6 +196,30 @@ def card_issue(args):
     signed = provider.signrawtransaction(raw_ct)
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
 
+def card_burn(args):
+    '''
+    Burn cards of this deck.
+
+    pacli card -burn '{"deck": "deck_id", "amount": ["amount"]}'
+    '''
+
+    args = json.loads(args)
+    deck = pa.find_deck(provider, args["deck"])[0]
+    if not provider.getaddressesbyaccount(deck.name):
+        print({"error": "You are not even subscribed to this deck, how can you burn cards?"})
+
+    utxo = provider.select_inputs(0.02)
+    cb = pa.CardTransfer(deck, [deck.issuer], args["amounts"])
+    raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
+                                   Settings.change_addr,
+                                   provider.is_testnet,
+                                   Settings.prod)
+                    ).decode()
+
+    signed = provider.signrawtransaction(raw_cb)
+    print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
+
+
 if __name__ == "__main__":
 
     provider = pa.RpcNode(testnet=True)
@@ -217,4 +241,6 @@ if __name__ == "__main__":
     if args.command == "card":
         if args.issue:
             card_issue(args.issue)
+        if args.burn:
+            card_burn(args.burn)
 
