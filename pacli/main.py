@@ -236,7 +236,7 @@ def card_issue(args):
     if not provider.getaddressesbyaccount(deck.name):
         return {"error": "You are not even subscribed to this deck, how can you issue cards?"}
     try:
-        utxo = provider.select_inputs(0.02, deck.issuer):
+        utxo = provider.select_inputs(0.02, deck.issuer)
     except ValueError:
         return {"error": "You are not owner of this deck, you can not issue cards."}
 
