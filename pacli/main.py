@@ -153,12 +153,13 @@ def new_deck(deck):
 
     deck = json.loads(deck)
     utxo = provider.select_inputs(0.02) ## we need 0.02 PPC
-    raw_deck_spawn = hexlify(pa.deck_spawn(pa.Deck(**deck),
-                                           Settings.network,
-                                           utxo,
-                                           Settings.change_addr,
-                                           Settings.prod
-                                           )).decode()
+    raw_deck = pa.deck_spawn(pa.Deck(**deck),
+                             Settings.network,
+                             utxo,
+                             Settings.change_addr,
+                             Settings.prod
+                            )
+    raw_deck_spawn = hexlify(raw_deck).decode()
 
     signed = provider.signrawtransaction(raw_deck_spawn)
     print(provider.sendrawtransaction(signed["hex"])) # send the tx
