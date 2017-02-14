@@ -219,6 +219,28 @@ def card_burn(args):
     signed = provider.signrawtransaction(raw_cb)
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
 
+def card_transfer(args):
+    '''
+    Transfer cards to <receivers>
+
+    pacli card -transfer '{"deck": "deck_id",
+                        "receivers": [list of receiver addresses], "amounts": [list of amounts]
+                        }
+    '''
+
+    args = json.loads(args)
+    deck = pa.find_deck(provider, args["deck"])[0]
+    utxo = provider.select_inputs(0.02)
+    ct = pa.CardTransfer(deck, args["receivers"], args["amounts"])
+    raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
+                                   Settings.change_addr,
+                                   provider.is_testnet,
+                                   Settings.prod)
+                    ).decode()
+
+    signed = provider.signrawtransaction(raw_ct)
+    print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
+
 
 if __name__ == "__main__":
 
@@ -243,4 +265,6 @@ if __name__ == "__main__":
             card_issue(args.issue)
         if args.burn:
             card_burn(args.burn)
+        if args.transfer:
+            card_transfer(args.transfer)
 
