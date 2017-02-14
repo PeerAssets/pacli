@@ -233,7 +233,13 @@ def card_issue(args):
 
     issue = json.loads(args)
     deck = pa.find_deck(provider, issue["deck"])[0]
-    utxo = provider.select_inputs(0.02, deck.issuer)
+    if not provider.getaddressesbyaccount(deck.name):
+        return {"error": "You are not even subscribed to this deck, how can you issue cards?"}
+    try:
+        utxo = provider.select_inputs(0.02, deck.issuer):
+    except ValueError:
+        return {"error": "You are not owner of this deck, you can not issue cards."}
+
     ct = pa.CardTransfer(deck, issue["receivers"], issue["amounts"])
     raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
                                    utxo["utxos"][0]["address"],
