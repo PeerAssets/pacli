@@ -173,7 +173,7 @@ def list_cards(deck):
     '''
 
     if not provider.getaddressesbyaccount(deck["name"]):
-        print({"error": "You must subscribe to deck to be able to list transactions."})
+        return({"error": "You must subscribe to deck to be able to list transactions."})
 
 def card_issue(args):
     '''
@@ -207,7 +207,7 @@ def card_burn(args):
     args = json.loads(args)
     deck = pa.find_deck(provider, args["deck"])[0]
     if not provider.getaddressesbyaccount(deck.name):
-        print({"error": "You are not even subscribed to this deck, how can you burn cards?"})
+        return({"error": "You are not even subscribed to this deck, how can you burn cards?"})
 
     utxo = provider.select_inputs(0.02)
     cb = pa.CardTransfer(deck, [deck.issuer], args["amounts"])
@@ -232,7 +232,8 @@ def card_transfer(args):
     args = json.loads(args)
     deck = pa.find_deck(provider, args["deck"])[0]
     if not provider.getaddressesbyaccount(deck.name):
-        print({"error": "You are not even subscribed to this deck, how can you transfer cards?"})
+        return({"error": "You are not even subscribed to this deck, how can you transfer cards?"})
+
     utxo = provider.select_inputs(0.02)
     ct = pa.CardTransfer(deck, args["receivers"], args["amounts"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
