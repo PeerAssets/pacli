@@ -16,4 +16,10 @@ def cli():
                        issue mode, issuer or number of decimals.''')
     deck.add_argument("-new", action="store", help="spawn new deck")
 
+    card = subparsers.add_parser('card', help='Cards manipulation.')
+    card.add_argument("-list", action="store", help="list all card transactions of this deck.")
+    card.add_argument("-issue", action="store", help="issue cards for this deck.")
+    card.add_argument("-transfer", action="store", help="send cards to receivers.")
+    card.add_argument("-burn", action="store", help="burn cards.")
+
     return parser.parse_args()
