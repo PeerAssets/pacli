@@ -164,6 +164,15 @@ def new_deck(deck):
 
     pa.load_deck_p2th_into_local_node(provider, deck) # subscribe to deck
 
+def list_cards(args):
+    '''
+    List cards of this <deck>.abs
+
+    pacli card -list <deck>
+    '''
+
+    pass
+
 def card_issue(args):
     '''
     Issue new cards of this deck.
