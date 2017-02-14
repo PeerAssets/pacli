@@ -164,14 +164,15 @@ def new_deck(deck):
 
     pa.load_deck_p2th_into_local_node(provider, deck) # subscribe to deck
 
-def list_cards(args):
+def list_cards(deck):
     '''
     List cards of this <deck>.abs
 
     pacli card -list <deck>
     '''
 
-    pass
+    if not provider.getaddressesbyaccount(deck["name"]):
+        print({"error": "You must subscribe to deck to be able to list transactions."})
 
 def card_issue(args):
     '''
