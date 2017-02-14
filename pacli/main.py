@@ -74,6 +74,48 @@ class ListDecks:
                 cls.dtl(i.__dict__)
             )
 
+class ListCards:
+
+    @classmethod
+    def __init__(cls, cards):
+        cls.cards = cards
+
+        ## Deck table header
+        cls.card_table = [
+            ## add subscribed column
+            ("txid", "sender", "receiver", "amount", "type", "confirms")
+        ]
+
+        cls.table = AsciiTable(cls.card_table, title="Card transfers of deck:")
+
+    @staticmethod
+    def dtl(card, subscribed=False):
+        '''cards-to-list cards to table-printable list'''
+
+        l = []
+        l.append(card["txid"])
+        l.append(card["sender"])
+        l.append(card["receivers"])
+        l.append(card["amount"])
+        l.append(card["type"])
+        if card["blockhash"] != "Unconfirmed.":
+            l.append(provider.gettransaction(card["txid"])["confirmations"])
+        else:
+            l.append(0)
+
+        return l
+
+    @classmethod
+    def pack_cards_for_printing(cls):
+
+        assert len(cls.cards) > 0, {"error": "No cards found!"}
+
+        for i in cls.cards:
+            cls.card_table.append(
+                cls.dtl(i.__dict__)
+            )
+
+
 class DeckInfo:
 
     @classmethod
@@ -165,15 +207,20 @@ def new_deck(deck):
 
     pa.load_deck_p2th_into_local_node(provider, deck) # subscribe to deck
 
-def list_cards(deck):
+def list_cards(args):
     '''
     List cards of this <deck>.abs
 
     pacli card -list <deck>
     '''
 
-    if not provider.getaddressesbyaccount(deck["name"]):
+    deck = pa.find_deck(provider, args)[0]
+    if not provider.getaddressesbyaccount(deck.name):
         return({"error": "You must subscribe to deck to be able to list transactions."})
+
+    c = ListCards(pa.find_all_card_transfers(provider, deck))
+    c.pack_cards_for_printing()
+    print(c.table.table)
 
 def card_issue(args):
     '''
@@ -271,4 +318,6 @@ if __name__ == "__main__":
             card_burn(args.burn)
         if args.transfer:
             card_transfer(args.transfer)
+        if args.list:
+            list_cards(args.list)
 
