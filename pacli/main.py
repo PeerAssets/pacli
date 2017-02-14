@@ -15,6 +15,7 @@ def set_up():
     Settings.change_addr = "mwkFUPUrh6LsXyMvBY2mz6btiJjuTxGgT8"
     Settings.network = "tppc"
     Settings.prod = True
+    Settings.testnet = provider.is_testnet
 
     # check if provider is working as expected
     assert provider.getinfo()["connections"] > 0, {"error": "Not connected to network."}
@@ -230,12 +231,14 @@ def card_transfer(args):
 
     args = json.loads(args)
     deck = pa.find_deck(provider, args["deck"])[0]
+    if not provider.getaddressesbyaccount(deck.name):
+        print({"error": "You are not even subscribed to this deck, how can you transfer cards?"})
     utxo = provider.select_inputs(0.02)
     ct = pa.CardTransfer(deck, args["receivers"], args["amounts"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
-                                   Settings.change_addr,
-                                   provider.is_testnet,
-                                   Settings.prod)
+                                      Settings.change_addr,
+                                      Settings.testnet,
+                                      Settings.prod)
                     ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
