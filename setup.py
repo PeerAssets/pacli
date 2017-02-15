@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pacli',
-      version='0.1',
+      version='0.2',
       description='Simple CLI PeerAssets client.',
       url='https://github.com/peerassets/pacli',
       author='Peerchemist',
