@@ -86,7 +86,7 @@ class ListCards:
             ("txid", "sender", "receiver", "amount", "type", "confirms")
         ]
 
-        cls.table = AsciiTable(cls.card_table, title="Card transfers of deck:")
+        cls.table = AsciiTable(cls.card_table, title="Card transfers of this deck:")
 
     @staticmethod
     def dtl(card, subscribed=False):
@@ -95,8 +95,8 @@ class ListCards:
         l = []
         l.append(card["txid"])
         l.append(card["sender"])
-        l.append(card["receivers"])
-        l.append(card["amount"])
+        l.append(card["receivers"][0])
+        l.append(card["amount"][0])
         l.append(card["type"])
         if card["blockhash"] != "Unconfirmed.":
             l.append(provider.gettransaction(card["txid"])["confirmations"])
