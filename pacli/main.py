@@ -12,7 +12,7 @@ def set_up():
     '''setup'''
 
     # load config // this should be loaded from the file some day
-    Settings.change_addr = "mwkFUPUrh6LsXyMvBY2mz6btiJjuTxGgT8"
+    Settings.change = "default" # change address behaviour
     Settings.network = provider.network
     Settings.testnet = provider.is_testnet
     Settings.prod = True
@@ -26,6 +26,19 @@ def set_up():
     if not Settings.prod:
         if not provider.listtransactions("PATEST"):
             pa.pautils.load_p2th_privkeys_into_node(provider, prod=False)
+
+def change(utxo):
+    '''decide what will be change address
+    * default - pay back to largest utxo
+    * standard - behave as wallet does - pay to new address
+    '''
+
+    if Settings.change == "default":
+        m = max([i["amount"] for i in utxo["utxos"]])
+        return [i["address"] for i in utxo["utxos"] if i["amount"] == m][0]
+
+    if Settings.change == "standard":
+        return provider.getnewaddress()
 
 def tstamp_to_iso(tstamp):
     '''make iso timestamp from unix timestamp'''
@@ -196,9 +209,10 @@ def new_deck(deck):
     deck = json.loads(deck)
     deck["network"] = Settings.network
     utxo = provider.select_inputs(0.02) ## we need 0.02 PPC
+    change_address = change(utxo)
     raw_deck = pa.deck_spawn(pa.Deck(**deck),
                              inputs=utxo,
-                             change_address=Settings.change_addr,
+                             change_address=change_address,
                              prod=Settings.prod
                             )
     raw_deck_spawn = hexlify(raw_deck).decode()
@@ -243,9 +257,10 @@ def card_issue(args):
     except ValueError:
         return {"error": "You are not owner of this deck, you can not issue cards."}
 
+    change_address = change(utxo)
     ct = pa.CardTransfer(deck, issue["receivers"], issue["amounts"])
     raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
-                                   utxo["utxos"][0]["address"],
+                                   change_address,
                                    Settings.testnet,
                                    Settings.prod)
                     ).decode()
@@ -266,11 +281,12 @@ def card_burn(args):
         return({"error": "You are not even subscribed to this deck, how can you burn cards?"})
 
     utxo = provider.select_inputs(0.02)
+    change_address = change(utxo)
     cb = pa.CardTransfer(deck, [deck.issuer], args["amounts"])
     raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
-                                   Settings.change_addr,
-                                   Settings.testnet,
-                                   Settings.prod)
+                                  change_address,
+                                  Settings.testnet,
+                                  Settings.prod)
                     ).decode()
 
     signed = provider.signrawtransaction(raw_cb)
@@ -291,9 +307,10 @@ def card_transfer(args):
         return({"error": "You are not even subscribed to this deck, how can you transfer cards?"})
 
     utxo = provider.select_inputs(0.02)
+    change_address = change(utxo)
     ct = pa.CardTransfer(deck, args["receivers"], args["amounts"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
-                                      Settings.change_addr,
+                                      change_address,
                                       Settings.testnet,
                                       Settings.prod)
                     ).decode()
