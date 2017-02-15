@@ -13,9 +13,9 @@ def set_up():
 
     # load config // this should be loaded from the file some day
     Settings.change_addr = "mwkFUPUrh6LsXyMvBY2mz6btiJjuTxGgT8"
-    Settings.network = "tppc"
-    Settings.prod = True
+    Settings.network = provider.network
     Settings.testnet = provider.is_testnet
+    Settings.prod = True
 
     # check if provider is working as expected
     assert provider.getinfo()["connections"] > 0, {"error": "Not connected to network."}
@@ -194,12 +194,12 @@ def new_deck(deck):
     '''
 
     deck = json.loads(deck)
+    deck["network"] = Settings.network
     utxo = provider.select_inputs(0.02) ## we need 0.02 PPC
     raw_deck = pa.deck_spawn(pa.Deck(**deck),
-                             Settings.network,
-                             utxo,
-                             Settings.change_addr,
-                             Settings.prod
+                             inputs=utxo,
+                             change_address=Settings.change_addr,
+                             prod=Settings.prod
                             )
     raw_deck_spawn = hexlify(raw_deck).decode()
     signed = provider.signrawtransaction(raw_deck_spawn)
