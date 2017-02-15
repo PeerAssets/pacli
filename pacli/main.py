@@ -203,9 +203,12 @@ def new_deck(deck):
                             )
     raw_deck_spawn = hexlify(raw_deck).decode()
     signed = provider.signrawtransaction(raw_deck_spawn)
-    print("\n", provider.sendrawtransaction(signed["hex"]), "\n")
+    txid = provider.sendrawtransaction(signed["hex"])
+    print("\n", txid, "\n")
 
-    pa.load_deck_p2th_into_local_node(provider, deck) # subscribe to deck
+    deck["asset_id"] = txid
+    d = pa.Deck(**deck)
+    pa.load_deck_p2th_into_local_node(provider, d) # subscribe to deck
 
 def list_cards(args):
     '''
