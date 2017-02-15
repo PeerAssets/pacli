@@ -266,7 +266,8 @@ def card_issue(args):
                     ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
-    print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
+    txid = provider.sendrawtransaction(signed["hex"]) # send the tx
+    print("\n", txid, "\n")
 
 def card_burn(args):
     '''
