@@ -327,7 +327,7 @@ def card_transfer(provider, args):
     args = json.loads(args)
     try:
         deck = pa.find_deck(provider, args["deck"])[0]
-    except:
+    except IndexError:
         print({"error": "Deck not found!"})
         return
     if not provider.getaddressesbyaccount(deck.name):
