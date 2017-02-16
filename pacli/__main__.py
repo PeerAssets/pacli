@@ -180,7 +180,11 @@ def deck_list(provider, l):
 def deck_subscribe(provider, deck_id):
     '''subscribe command, load deck p2th into local node, pass <deck_id>'''
 
-    deck = pa.find_deck(provider, deck_id)[0]
+    try:
+        deck = pa.find_deck(provider, deck_id)[0]
+    except IndexError:
+        print({"error": "Deck not found!"})
+        return
     pa.load_deck_p2th_into_local_node(provider, deck)
 
 def deck_search(provider, key):
@@ -194,7 +198,11 @@ def deck_search(provider, key):
 def deck_info(provider, deck_id):
     '''info commands, show full deck details'''
 
-    deck = pa.find_deck(provider, deck_id)[0]
+    try:
+        deck = pa.find_deck(provider, deck_id)[0]
+    except IndexError:
+        print({"error": "Deck not found!"})
+        return
     info = DeckInfo(deck)
     info.pack_decks_for_printing()
     print(info.table.table)
@@ -233,7 +241,11 @@ def list_cards(provider, args):
     pacli card -list <deck>
     '''
 
-    deck = pa.find_deck(provider, args)[0]
+    try:
+        deck = pa.find_deck(provider, args)[0]
+    except IndexError:
+        print({"error": "Deck not found!"})
+        return
     if not provider.getaddressesbyaccount(deck.name):
         return({"error": "You must subscribe to deck to be able to list transactions."})
 
@@ -251,7 +263,11 @@ def card_issue(provider, args):
     '''
 
     issue = json.loads(args)
-    deck = pa.find_deck(provider, issue["deck"])[0]
+    try:
+        deck = pa.find_deck(provider, issue["deck"])[0]
+    except IndexError:
+        print({"error": "Deck not found."})
+        return
     if not provider.getaddressesbyaccount(deck.name):
         return {"error": "You are not even subscribed to this deck, how can you issue cards?"}
     try:
@@ -279,7 +295,11 @@ def card_burn(provider, args):
     '''
 
     args = json.loads(args)
-    deck = pa.find_deck(provider, args["deck"])[0]
+    try:
+        deck = pa.find_deck(provider, args["deck"])[0]
+    except IndexError:
+        print({"error": "Deck not found!"})
+        return
     if not provider.getaddressesbyaccount(deck.name):
         return({"error": "You are not even subscribed to this deck, how can you burn cards?"})
 
@@ -305,7 +325,11 @@ def card_transfer(provider, args):
     '''
 
     args = json.loads(args)
-    deck = pa.find_deck(provider, args["deck"])[0]
+    try:
+        deck = pa.find_deck(provider, args["deck"])[0]
+    except:
+        print({"error": "Deck not found!"})
+        return
     if not provider.getaddressesbyaccount(deck.name):
         return({"error": "You are not even subscribed to this deck, how can you transfer cards?"})
 
