@@ -9,4 +9,8 @@ setup(name='pacli',
       license='GPL',
       packages=['pacli'],
       install_requires=['pypeerassets', 'terminaltables'],
-      zip_safe=True)
+      entry_points={
+          'console_scripts': [
+              'pacli = pacli.__main__:main'
+          ]}
+     )

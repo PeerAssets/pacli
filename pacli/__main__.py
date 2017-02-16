@@ -1,14 +1,14 @@
 from datetime import datetime
 from terminaltables import AsciiTable
 from binascii import hexlify
-from cli import cli
+import argparse
 import pypeerassets as pa
 import json
 
 class Settings:
     pass
 
-def set_up():
+def set_up(provider):
     '''setup'''
 
     # load config // this should be loaded from the file some day
@@ -48,7 +48,8 @@ def tstamp_to_iso(tstamp):
 class ListDecks:
 
     @classmethod
-    def __init__(cls, decks):
+    def __init__(cls, provider, decks):
+        cls.provider = provider
         cls.decks = decks
 
     ## Deck table header
@@ -59,8 +60,8 @@ class ListDecks:
 
     table = AsciiTable(deck_table, title="Decks")
 
-    @staticmethod
-    def dtl(deck, subscribed=False):
+    @classmethod
+    def dtl(cls, deck, subscribed=False):
         '''deck-to-list deck to table-printable list'''
 
         l = []
@@ -68,7 +69,7 @@ class ListDecks:
         l.append(deck["name"])
         l.append(deck["issuer"])
         l.append(deck["issue_mode"])
-        if provider.getaddressesbyaccount(deck["name"]):
+        if cls.provider.getaddressesbyaccount(deck["name"]):
             l.append(True)
         else:
             l.append(False)
@@ -90,7 +91,8 @@ class ListDecks:
 class ListCards:
 
     @classmethod
-    def __init__(cls, cards):
+    def __init__(cls, provider, cards):
+        cls.provider = provider
         cls.cards = cards
 
         ## Deck table header
@@ -101,8 +103,8 @@ class ListCards:
 
         cls.table = AsciiTable(cls.card_table, title="Card transfers of this deck:")
 
-    @staticmethod
-    def dtl(card, subscribed=False):
+    @classmethod
+    def dtl(cls, card, subscribed=False):
         '''cards-to-list cards to table-printable list'''
 
         l = []
@@ -111,8 +113,8 @@ class ListCards:
         l.append(card["receivers"][0])
         l.append(card["amount"][0])
         l.append(card["type"])
-        if card["blockhash"] != "Unconfirmed.":
-            l.append(provider.gettransaction(card["txid"])["confirmations"])
+        if card["blockhash"] != 0:
+            l.append(cls.provider.gettransaction(card["txid"])["confirmations"])
         else:
             l.append(0)
 
@@ -162,26 +164,26 @@ class DeckInfo:
 
         cls.deck_table.append(cls.dtl(cls.deck.__dict__))
 
-def deck_list(l):
+def deck_list(provider, l):
     '''list command'''
 
     if l == "all":
-        d = ListDecks(pa.find_all_valid_decks(provider))
+        d = ListDecks(provider, pa.find_all_valid_decks(provider))
         d.pack_decks_for_printing()
         print(d.table.table)
 
     if l == "subscribed":
-        d = ListDecks(pa.find_all_valid_decks(provider))
+        d = ListDecks(provider, pa.find_all_valid_decks(provider))
         d.pack_decks_for_printing()
         print(d.table.table)
 
-def deck_subscribe(deck_id):
+def deck_subscribe(provider, deck_id):
     '''subscribe command, load deck p2th into local node, pass <deck_id>'''
 
     deck = pa.find_deck(provider, deck_id)[0]
     pa.load_deck_p2th_into_local_node(provider, deck)
 
-def deck_search(key):
+def deck_search(provider, key):
     '''search commands, query decks by <key>'''
 
     decks = pa.find_deck(provider, key)
@@ -189,7 +191,7 @@ def deck_search(key):
     d.pack_decks_for_printing()
     print(d.table.table)
 
-def deck_info(deck_id):
+def deck_info(provider, deck_id):
     '''info commands, show full deck details'''
 
     deck = pa.find_deck(provider, deck_id)[0]
@@ -197,7 +199,7 @@ def deck_info(deck_id):
     info.pack_decks_for_printing()
     print(info.table.table)
 
-def new_deck(deck):
+def new_deck(provider, deck):
     '''
     Spawn a new PeerAssets deck.
 
@@ -224,7 +226,7 @@ def new_deck(deck):
     d = pa.Deck(**deck)
     pa.load_deck_p2th_into_local_node(provider, d) # subscribe to deck
 
-def list_cards(args):
+def list_cards(provider, args):
     '''
     List cards of this <deck>.abs
 
@@ -235,11 +237,11 @@ def list_cards(args):
     if not provider.getaddressesbyaccount(deck.name):
         return({"error": "You must subscribe to deck to be able to list transactions."})
 
-    c = ListCards(pa.find_all_card_transfers(provider, deck))
+    c = ListCards(provider, pa.find_all_card_transfers(provider, deck))
     c.pack_cards_for_printing()
     print(c.table.table)
 
-def card_issue(args):
+def card_issue(provider, args):
     '''
     Issue new cards of this deck.
 
@@ -269,7 +271,7 @@ def card_issue(args):
     txid = provider.sendrawtransaction(signed["hex"]) # send the tx
     print("\n", txid, "\n")
 
-def card_burn(args):
+def card_burn(provider, args):
     '''
     Burn cards of this deck.
 
@@ -293,7 +295,7 @@ def card_burn(args):
     signed = provider.signrawtransaction(raw_cb)
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
 
-def card_transfer(args):
+def card_transfer(provider, args):
     '''
     Transfer cards to <receivers>
 
@@ -319,32 +321,58 @@ def card_transfer(args):
     signed = provider.signrawtransaction(raw_ct)
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
 
+def cli():
+    '''CLI arguments parser'''
 
-if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Simple CLI PeerAssets client.')
+    subparsers = parser.add_subparsers(title="Commands",
+                                       dest="command",
+                                       description='valid subcommands')
+
+    deck = subparsers.add_parser('deck', help='Deck manipulation.')
+    deck.add_argument("-list", choices=['all', 'subscribed'],
+                      help="list decks")
+    deck.add_argument("-info", action="store", help="show details of <asset_id>")
+    deck.add_argument("-subscribe", action="store", help="subscribe to <deck id>")
+    deck.add_argument("-search", action="store", help='''search for decks by name, id,
+                       issue mode, issuer or number of decimals.''')
+    deck.add_argument("-new", action="store", help="spawn new deck")
+
+    card = subparsers.add_parser('card', help='Cards manipulation.')
+    card.add_argument("-list", action="store", help="list all card transactions of this deck.")
+    card.add_argument("-issue", action="store", help="issue cards for this deck.")
+    card.add_argument("-transfer", action="store", help="send cards to receivers.")
+    card.add_argument("-burn", action="store", help="burn cards.")
+
+    return parser.parse_args()
+
+def main():
 
     provider = pa.RpcNode(testnet=True)
-    set_up()
+    set_up(provider)
     args = cli()
 
     if args.command == "deck":
         if args.list:
-            deck_list(args.list)
+            deck_list(provider, args.list)
         if args.subscribe:
-            deck_subscribe(args.subscribe)
+            deck_subscribe(provider, args.subscribe)
         if args.search:
-            deck_search(args.search)
+            deck_search(provider, args.search)
         if args.info:
-            deck_info(args.info)
+            deck_info(provider, args.info)
         if args.new:
-            new_deck(args.new)
+            new_deck(provider, args.new)
 
     if args.command == "card":
         if args.issue:
-            card_issue(args.issue)
+            card_issue(provider, args.issue)
         if args.burn:
-            card_burn(args.burn)
+            card_burn(provider, args.burn)
         if args.transfer:
-            card_transfer(args.transfer)
+            card_transfer(provider, args.transfer)
         if args.list:
-            list_cards(args.list)
+            list_cards(provider, args.list)
 
+if __name__ == "__main__":
+    main()
