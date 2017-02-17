@@ -201,7 +201,7 @@ def deck_info(provider, deck_id):
     try:
         deck = pa.find_deck(provider, deck_id)[0]
     except IndexError:
-        print({"error": "Deck not found!"})
+        print("\n", {"error": "Deck not found!"})
         return
     info = DeckInfo(deck)
     info.pack_decks_for_printing()
@@ -244,10 +244,11 @@ def list_cards(provider, args):
     try:
         deck = pa.find_deck(provider, args)[0]
     except IndexError:
-        print({"error": "Deck not found!"})
+        print("\n", {"error": "Deck not found!"})
         return
     if not provider.getaddressesbyaccount(deck.name):
-        return({"error": "You must subscribe to deck to be able to list transactions."})
+        print("\n", {"error": "You must subscribe to deck to be able to list transactions."})
+        return
 
     c = ListCards(provider, pa.find_all_card_transfers(provider, deck))
     c.pack_cards_for_printing()
@@ -266,14 +267,16 @@ def card_issue(provider, args):
     try:
         deck = pa.find_deck(provider, issue["deck"])[0]
     except IndexError:
-        print({"error": "Deck not found."})
+        print("\n", {"error": "Deck not found."})
         return
     if not provider.getaddressesbyaccount(deck.name):
-        return {"error": "You are not even subscribed to this deck, how can you issue cards?"}
+        print("\n", {"error": "You are not even subscribed to this deck, how can you issue cards?"})
+        return
     try:
         utxo = provider.select_inputs(0.02, deck.issuer)
     except ValueError:
-        return {"error": "You are not owner of this deck, you can not issue cards."}
+        print("\n", {"error": "You are not owner of this deck, you can not issue cards."})
+        return
 
     change_address = change(utxo)
     ct = pa.CardTransfer(deck, issue["receivers"], issue["amounts"])
@@ -298,10 +301,11 @@ def card_burn(provider, args):
     try:
         deck = pa.find_deck(provider, args["deck"])[0]
     except IndexError:
-        print({"error": "Deck not found!"})
+        print("\n", {"error": "Deck not found!"})
         return
     if not provider.getaddressesbyaccount(deck.name):
-        return({"error": "You are not even subscribed to this deck, how can you burn cards?"})
+        print("\n", {"error": "You are not even subscribed to this deck, how can you burn cards?"})
+        return
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
@@ -331,7 +335,7 @@ def card_transfer(provider, args):
         print({"error": "Deck not found!"})
         return
     if not provider.getaddressesbyaccount(deck.name):
-        return({"error": "You are not even subscribed to this deck, how can you transfer cards?"})
+        print("\n", {"error": "You are not even subscribed to this deck, how can you transfer cards?"})
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
