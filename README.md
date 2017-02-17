@@ -26,7 +26,7 @@ subscribe to this deck to enable building a proof-of-timeline for the deck
 
 issue a new asset named "My own asset".
 
-> pacli card -list <deck_id_hash> [d460651e1d9147770ec9d4c254bcc68ff5d203a86b97c09d00955fb3f714cab3]
+> pacli card -list <deck_id_hash>
 
 list all card transfers related to this deck
 
