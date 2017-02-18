@@ -191,7 +191,7 @@ def deck_search(provider, key):
     '''search commands, query decks by <key>'''
 
     decks = pa.find_deck(provider, key)
-    d = ListDecks(decks)
+    d = ListDecks(provider, decks)
     d.pack_decks_for_printing()
     print(d.table.table)
 
