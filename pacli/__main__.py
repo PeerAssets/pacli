@@ -111,7 +111,7 @@ class ListCards:
         l.append(card["txid"])
         l.append(card["sender"])
         l.append(card["receivers"][0])
-        l.append(card["amount"][0])
+        l.append(card["amounts"][0])
         l.append(card["type"])
         if card["blockhash"] != 0:
             l.append(cls.provider.gettransaction(card["txid"])["confirmations"])
