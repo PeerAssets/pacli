@@ -283,7 +283,6 @@ def card_issue(provider, args):
     ct = pa.CardTransfer(deck, issue["receivers"], issue["amounts"])
     raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
                                    change_address,
-                                   Settings.testnet,
                                    Settings.prod)
                     ).decode()
 
@@ -314,7 +313,6 @@ def card_burn(provider, args):
     cb = pa.CardTransfer(deck, [deck.issuer], args["amounts"])
     raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
                                   change_address,
-                                  Settings.testnet,
                                   Settings.prod)
                     ).decode()
 
@@ -345,7 +343,6 @@ def card_transfer(provider, args):
     ct = pa.CardTransfer(deck, args["receivers"], args["amounts"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
                                       change_address,
-                                      Settings.testnet,
                                       Settings.prod)
                     ).decode()
 
