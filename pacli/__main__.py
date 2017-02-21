@@ -1,29 +1,42 @@
 from datetime import datetime
 from terminaltables import AsciiTable
 from binascii import hexlify
-import argparse
+from appdirs import user_config_dir
+from pacli.config import write_default_config, read_conf
+import os, argparse
 import pypeerassets as pa
 import json
+
+conf_dir = user_config_dir("pacli")
+conf_file = conf_dir + '/pacli.conf'
 
 class Settings:
     pass
 
+def first_run():
+    '''if first run, setup local configuration directory.'''
+
+    if not os.path.exists(conf_dir):
+        os.mkdir(conf_dir)
+    if not os.path.exists(conf_file):
+        write_default_config(conf_file)
+
 def set_up(provider):
     '''setup'''
 
-    # load config // this should be loaded from the file some day
-    Settings.change = "default" # change address behaviour
-    Settings.network = provider.network
-    Settings.testnet = provider.is_testnet
-    Settings.prod = True
+    first_run() # check if this is first run first
+    # load config
+    user_config = read_conf(conf_file)
+    for key in user_config:
+        setattr(Settings, key, user_config[key])
 
     # check if provider is working as expected
     assert provider.getinfo()["connections"] > 0, {"error": "Not connected to network."}
     # check if PA P2TH is loaded in local node
-    if Settings.prod:
+    if Settings.production:
         if not provider.listtransactions("PAPROD"):
             pa.pautils.load_p2th_privkeys_into_node(provider)
-    if not Settings.prod:
+    if not Settings.production:
         if not provider.listtransactions("PATEST"):
             pa.pautils.load_p2th_privkeys_into_node(provider, prod=False)
 
@@ -223,7 +236,7 @@ def new_deck(provider, deck):
     raw_deck = pa.deck_spawn(pa.Deck(**deck),
                              inputs=utxo,
                              change_address=change_address,
-                             prod=Settings.prod
+                             prod=Settings.production
                             )
     raw_deck_spawn = hexlify(raw_deck).decode()
     signed = provider.signrawtransaction(raw_deck_spawn)
@@ -283,7 +296,7 @@ def card_issue(provider, args):
     ct = pa.CardTransfer(deck, issue["receivers"], issue["amounts"])
     raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
                                    change_address,
-                                   Settings.prod)
+                                   Settings.production)
                     ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
@@ -313,7 +326,7 @@ def card_burn(provider, args):
     cb = pa.CardTransfer(deck, [deck.issuer], args["amounts"])
     raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
                                   change_address,
-                                  Settings.prod)
+                                  Settings.production)
                     ).decode()
 
     signed = provider.signrawtransaction(raw_cb)
@@ -343,7 +356,7 @@ def card_transfer(provider, args):
     ct = pa.CardTransfer(deck, args["receivers"], args["amounts"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
                                       change_address,
-                                      Settings.prod)
+                                      Settings.production)
                     ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
