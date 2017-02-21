@@ -285,10 +285,14 @@ def card_issue(provider, args):
     if not provider.getaddressesbyaccount(deck.name):
         print("\n", {"error": "You are not even subscribed to this deck, how can you issue cards?"})
         return
-    try:
-        utxo = provider.select_inputs(0.02, deck.issuer)
-    except ValueError:
-        print("\n", {"error": "You are not owner of this deck, you can not issue cards."})
+    if provider.validateaddress(deck.issuer)["ismine"]:
+            try:
+                utxo = provider.select_inputs(0.02, deck.issuer)
+            except ValueError:
+                print("\n", {"error": "Insufficient funds in issuing address."})
+                return
+    else:
+        print("\n", {"error": "You are not the owner of this deck."})
         return
 
     change_address = change(utxo)
