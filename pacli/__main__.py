@@ -8,7 +8,7 @@ import pypeerassets as pa
 import json
 
 conf_dir = user_config_dir("pacli")
-conf_file = conf_dir + '/pacli.conf'
+conf_file = os.path.join(conf_dir, "pacli.conf")
 
 class Settings:
     pass
