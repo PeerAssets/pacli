@@ -296,8 +296,8 @@ def card_issue(provider, args):
     issue["amounts"] = [float(i) for i in issue["amounts"]]
     ct = pa.CardTransfer(deck, issue["receivers"], issue["amounts"])
     raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
-                                   change_address,
-                                   Settings.production)
+                                   change_address
+                                   )
                     ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
@@ -326,8 +326,8 @@ def card_burn(provider, args):
     args["amounts"] = [float(i) for i in args["amounts"]]
     cb = pa.CardTransfer(deck, [deck.issuer], args["amounts"])
     raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
-                                  change_address,
-                                  Settings.production)
+                                  change_address
+                                  )
                     ).decode()
 
     signed = provider.signrawtransaction(raw_cb)
@@ -356,8 +356,8 @@ def card_transfer(provider, args):
     args["amounts"] = [float(i) for i in args["amounts"]]
     ct = pa.CardTransfer(deck, args["receivers"], args["amounts"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
-                                      change_address,
-                                      Settings.production)
+                                      change_address
+                                      )
                     ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
