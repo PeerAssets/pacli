@@ -263,7 +263,7 @@ def list_cards(provider, args):
         print("\n", {"error": "You must subscribe to deck to be able to list transactions."})
         return
 
-    c = ListCards(provider, pa.find_all_card_transfers(provider, deck))
+    c = ListCards(provider, pa.find_card_transfers(provider, deck))
     c.pack_cards_for_printing()
     print(c.table.table)
 
