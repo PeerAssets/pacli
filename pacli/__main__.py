@@ -123,8 +123,8 @@ class ListCards:
         l = []
         l.append(card["txid"])
         l.append(card["sender"])
-        l.append(card["receivers"][0])
-        l.append(card["amounts"][0])
+        l.append(card["receiver"][0])
+        l.append(card["amount"][0])
         l.append(card["type"])
         if card["blockhash"] != 0:
             l.append(cls.provider.gettransaction(card["txid"])["confirmations"])
@@ -293,8 +293,8 @@ def card_issue(provider, args):
         return
 
     change_address = change(utxo)
-    issue["amounts"] = [float(i) for i in issue["amounts"]]
-    ct = pa.CardTransfer(deck, issue["receivers"], issue["amounts"])
+    issue["amount"] = [float(i) for i in issue["amount"]]
+    ct = pa.CardTransfer(deck, issue["receiver"], issue["amount"])
     raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
                                    change_address
                                    )
@@ -323,8 +323,8 @@ def card_burn(provider, args):
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
-    args["amounts"] = [float(i) for i in args["amounts"]]
-    cb = pa.CardTransfer(deck, [deck.issuer], args["amounts"])
+    args["amount"] = [float(i) for i in args["amount"]]
+    cb = pa.CardTransfer(deck, [deck.issuer], args["amount"])
     raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
                                   change_address
                                   )
@@ -353,8 +353,8 @@ def card_transfer(provider, args):
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
-    args["amounts"] = [float(i) for i in args["amounts"]]
-    ct = pa.CardTransfer(deck, args["receivers"], args["amounts"])
+    args["amount"] = [float(i) for i in args["amount"]]
+    ct = pa.CardTransfer(deck, args["receiver"], args["amount"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
                                       change_address
                                       )
