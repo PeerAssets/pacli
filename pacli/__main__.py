@@ -231,12 +231,12 @@ def new_deck(provider, deck):
 
     deck = json.loads(deck)
     deck["network"] = Settings.network
+    deck["production"] = Settings.production
     utxo = provider.select_inputs(0.02) ## we need 0.02 PPC
     change_address = change(utxo)
     raw_deck = pa.deck_spawn(pa.Deck(**deck),
                              inputs=utxo,
-                             change_address=change_address,
-                             production=Settings.production
+                             change_address=change_address
                             )
     raw_deck_spawn = hexlify(raw_deck).decode()
     signed = provider.signrawtransaction(raw_deck_spawn)
