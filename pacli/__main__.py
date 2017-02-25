@@ -236,7 +236,7 @@ def new_deck(provider, deck):
     raw_deck = pa.deck_spawn(pa.Deck(**deck),
                              inputs=utxo,
                              change_address=change_address,
-                             prod=Settings.production
+                             production=Settings.production
                             )
     raw_deck_spawn = hexlify(raw_deck).decode()
     signed = provider.signrawtransaction(raw_deck_spawn)
