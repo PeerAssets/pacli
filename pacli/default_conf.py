@@ -1,8 +1,7 @@
 '''default settings'''
 
 default_conf = {
-    "network": "ppc",
-    "testnet": True,
+    "network": "tppc",
     "production": True,
     "change": "default"
     #"loglevel": "debug"

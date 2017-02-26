@@ -10,9 +10,13 @@ def write_default_config(conf_file):
 def read_conf(conf_file):
     config = configparser.ConfigParser()
     config.read(conf_file)
-    return {
+    settings = {
         "network": config["settings"]["network"],
         "production": config["settings"]["production"],
-        "testnet": config["settings"]["testnet"],
         "change": config["settings"]["change"]
         }
+
+    if settings["network"].startswith("t"):
+        settings["testnet"] = True
+
+    return settings
