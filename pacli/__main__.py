@@ -13,6 +13,13 @@ conf_file = os.path.join(conf_dir, "pacli.conf")
 class Settings:
     pass
 
+def load_conf():
+    '''load user configuration'''
+
+    user_config = read_conf(conf_file)
+    for key in user_config:
+        setattr(Settings, key, user_config[key])
+
 def first_run():
     '''if first run, setup local configuration directory.'''
 
@@ -25,10 +32,6 @@ def set_up(provider):
     '''setup'''
 
     first_run() # check if this is first run first
-    # load config
-    user_config = read_conf(conf_file)
-    for key in user_config:
-        setattr(Settings, key, user_config[key])
 
     # check if provider is working as expected
     assert provider.getinfo()["connections"] > 0, {"error": "Not connected to network."}
@@ -390,7 +393,8 @@ def cli():
 
 def main():
 
-    provider = pa.RpcNode(testnet=True)
+    load_conf()
+    provider = pa.RpcNode(testnet=Settings.testnet)
     set_up(provider)
     args = cli()
 
