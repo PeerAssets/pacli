@@ -2,6 +2,7 @@ import configparser
 from .default_conf import default_conf
 
 def write_default_config(conf_file):
+    print("writing default config")
     config = configparser.ConfigParser()
     config["settings"] = default_conf
     with open(conf_file, 'w') as configfile:
