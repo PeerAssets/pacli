@@ -36,10 +36,10 @@ def set_up(provider):
     # check if PA P2TH is loaded in local node
     if Settings.production:
         if not provider.listtransactions("PAPROD"):
-            pa.pautils.load_p2th_privkeys_into_node(provider)
+            pa.pautils.load_p2th_privkeys_into_local_node(provider)
     if not Settings.production:
         if not provider.listtransactions("PATEST"):
-            pa.pautils.load_p2th_privkeys_into_node(provider, prod=False)
+            pa.pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
 
 def change(utxo):
     '''decide what will be change address
