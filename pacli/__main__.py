@@ -31,8 +31,6 @@ def first_run():
 def set_up(provider):
     '''setup'''
 
-    first_run() # check if this is first run first
-
     # check if provider is working as expected
     assert provider.getinfo()["connections"] > 0, {"error": "Not connected to network."}
     # check if PA P2TH is loaded in local node
@@ -393,6 +391,7 @@ def cli():
 
 def main():
 
+    first_run()
     load_conf()
     provider = pa.RpcNode(testnet=Settings.testnet)
     set_up(provider)
