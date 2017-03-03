@@ -85,7 +85,7 @@ class ListDecks:
         '''deck-to-list deck to table-printable list'''
 
         l = []
-        l.append(deck["asset_id"])
+        l.append(deck["asset_id"][:20])
         l.append(deck["name"])
         l.append(deck["issuer"])
         l.append(deck["issue_mode"])
@@ -128,7 +128,7 @@ class ListCards:
         '''cards-to-list cards to table-printable list'''
 
         l = []
-        l.append(card["txid"])
+        l.append(card["txid"][:20])
         l.append(card["sender"])
         l.append(card["receiver"][0])
         l.append(card["amount"][0])
