@@ -6,6 +6,7 @@ from pacli.config import write_default_config, read_conf
 import os, argparse
 import pypeerassets as pa
 import json
+import logging
 
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
@@ -19,6 +20,11 @@ def load_conf():
     user_config = read_conf(conf_file)
     for key in user_config:
         setattr(Settings, key, user_config[key])
+
+    logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
+                        format="%(asctime)s %(levelname)s %(message)s")
+
+    logging.debug("logging initialized")
 
 def first_run():
     '''if first run, setup local configuration directory.'''

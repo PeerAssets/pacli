@@ -14,6 +14,7 @@ def read_conf(conf_file):
     settings = {
         "network": config["settings"]["network"],
         "production": config["settings"]["production"],
+        "loglevel": config["settings"]["loglevel"],
         "change": config["settings"]["change"]
         }
 
