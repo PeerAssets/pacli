@@ -67,6 +67,17 @@ def tstamp_to_iso(tstamp):
 
     return datetime.fromtimestamp(tstamp).isoformat()
 
+
+def find_deck(provider, key: str) -> list:
+    '''find deck by <key>'''
+
+    decks = pa.find_all_valid_decks(provider, prod=Settings.production)
+    for i in decks:
+        i.short_id = i.asset_id[:20]
+
+    return [d for d in decks if key in d.__dict__.values()]
+
+
 class ListDecks:
 
     @classmethod
@@ -203,7 +214,7 @@ def deck_subscribe(provider, deck_id):
     '''subscribe command, load deck p2th into local node, pass <deck_id>'''
 
     try:
-        deck = pa.find_deck(provider, deck_id)[0]
+        deck = find_deck(provider, deck_id)[0]
     except IndexError:
         print({"error": "Deck not found!"})
         return
@@ -212,7 +223,7 @@ def deck_subscribe(provider, deck_id):
 def deck_search(provider, key):
     '''search commands, query decks by <key>'''
 
-    decks = pa.find_deck(provider, key)
+    decks = find_deck(provider, key)
     d = ListDecks(provider, decks)
     d.pack_decks_for_printing()
     print(d.table.table)
@@ -221,7 +232,7 @@ def deck_info(provider, deck_id):
     '''info commands, show full deck details'''
 
     try:
-        deck = pa.find_deck(provider, deck_id)[0]
+        deck = find_deck(provider, deck_id)[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
@@ -264,7 +275,7 @@ def list_cards(provider, args):
     '''
 
     try:
-        deck = pa.find_deck(provider, args)[0]
+        deck = find_deck(provider, args)[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
@@ -287,7 +298,7 @@ def card_issue(provider, args):
 
     issue = json.loads(args)
     try:
-        deck = pa.find_deck(provider, issue["deck"])[0]
+        deck = find_deck(provider, issue["deck"])[0]
     except IndexError:
         print("\n", {"error": "Deck not found."})
         return
@@ -322,7 +333,7 @@ def card_burn(provider, args):
 
     args = json.loads(args)
     try:
-        deck = pa.find_deck(provider, args["deck"])[0]
+        deck = find_deck(provider, args["deck"])[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
@@ -353,7 +364,7 @@ def card_transfer(provider, args):
 
     args = json.loads(args)
     try:
-        deck = pa.find_deck(provider, args["deck"])[0]
+        deck = find_deck(provider, args["deck"])[0]
     except IndexError:
         print({"error": "Deck not found!"})
         return
