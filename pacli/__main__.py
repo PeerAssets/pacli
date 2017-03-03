@@ -10,6 +10,7 @@ import logging
 
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
+logfile = os.path.join(conf_dir, "pacli.log")
 
 class Settings:
     pass
@@ -21,6 +22,7 @@ def load_conf():
     for key in user_config:
         setattr(Settings, key, user_config[key])
 
+    logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
     logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
                         format="%(asctime)s %(levelname)s %(message)s")
 
