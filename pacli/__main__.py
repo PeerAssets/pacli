@@ -314,8 +314,8 @@ def card_issue(provider, args):
         print("\n", {"error": "You are not the owner of this deck."})
         return
 
+    issue["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issue["amount"]]
     change_address = change(utxo)
-    issue["amount"] = [float(i) for i in issue["amount"]]
     ct = pa.CardTransfer(deck, issue["receiver"], issue["amount"])
     raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
                                    change_address
