@@ -375,7 +375,7 @@ def card_transfer(provider, args):
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
-    args["amount"] = [float(i) for i in args["amount"]]
+    issue["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issue["amount"]]
     ct = pa.CardTransfer(deck, args["receiver"], args["amount"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
                                       change_address
