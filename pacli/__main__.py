@@ -345,7 +345,7 @@ def card_burn(provider, args):
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
-    args["amount"] = [float(i) for i in args["amount"]]
+    issue["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issue["amount"]]
     cb = pa.CardTransfer(deck, [deck.issuer], args["amount"])
     raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
                                   change_address
