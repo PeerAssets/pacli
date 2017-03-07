@@ -5,6 +5,7 @@ from appdirs import user_config_dir
 from pacli.config import write_default_config, read_conf
 import os, argparse
 import pypeerassets as pa
+from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 import json
 import logging
 
@@ -144,7 +145,8 @@ class ListCards:
         l.append(card["txid"][:20])
         l.append(card["sender"])
         l.append(card["receiver"][0])
-        l.append(card["amount"][0])
+        l.append(exponent_to_amount(card["amount"][0],
+                 card["number_of_decimals"]))
         l.append(card["type"])
         if card["blockhash"] != 0:
             l.append(cls.provider.gettransaction(card["txid"])["confirmations"])
