@@ -467,7 +467,9 @@ def get_my_balance(provider, deck):
     my_addresses = provider.getaddressesbyaccount()
     deck_balances = get_balance(provider, deck)
 
-    return list(set(my_addresses).intersection(deck_balances))
+    matches = list(set(my_addresses).intersection(deck_balances.balances))
+
+    return {i: deck_balances.balances[i] for i in matches if i in deck_balances.balances.keys()}
 
 
 def subscribed_decks(provider):
