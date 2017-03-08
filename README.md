@@ -15,6 +15,10 @@ Examples:
 
 show all commands
 
+> pacli -status
+
+show current network, all subscribed decks and their card balances
+
 > pacli deck -search "My little pony"
 
 search for deck called "My little pony"
