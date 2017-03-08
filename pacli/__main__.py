@@ -461,6 +461,15 @@ def get_balance(provider, deck):
     return pa.DeckState(pa.find_card_transfers(provider, deck))
 
 
+def get_my_balance(provider, deck):
+    '''get balances on the deck owned by me'''
+
+    my_addresses = provider.getaddressesbyaccount()
+    deck_balances = get_balance(provider, deck)
+
+    return list(set(my_addresses).intersection(deck_balances))
+
+
 def subscribed_decks(provider):
     '''find subscribed-to decks'''
 
