@@ -458,7 +458,12 @@ def card_transfer(provider, args):
 def get_balance(provider, deck):
     '''return balances of this deck'''
 
-    return pa.DeckState(pa.find_card_transfers(provider, deck))
+    d = pa.find_deck(provider, deck)[0]
+    cards = pa.find_card_transfers(provider, d)
+    if len(cards) > 0:
+        return pa.DeckState(cards)
+    else:
+        raise ValueError("No cards on this deck.")
 
 
 def get_my_balance(provider, deck):
@@ -466,7 +471,6 @@ def get_my_balance(provider, deck):
 
     my_addresses = provider.getaddressesbyaccount()
     deck_balances = get_balance(provider, deck)
-
     matches = list(set(my_addresses).intersection(deck_balances.balances))
 
     return {i: deck_balances.balances[i] for i in matches if i in deck_balances.balances.keys()}
@@ -490,7 +494,11 @@ def status(provider):
     report = {}
     report["network"] = provider.network
     report["subscribed_decks"] = list(subscribed_decks(provider))
-    report["balances"] = ""
+    for deck in report["subscribed_decks"]:
+        try:
+            deck["balance"] = sum(get_my_balance(provider, deck["deck_id"]).values())
+        except:
+            deck["balance"] = 0
 
     return report
 
