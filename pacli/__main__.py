@@ -454,6 +454,30 @@ def card_transfer(provider, args):
     signed = provider.signrawtransaction(raw_ct)
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
 
+
+def subscribed_decks(provider):
+    '''find subscribed-to decks'''
+
+    decks = pa.find_all_valid_decks(provider)
+    for i in decks:
+        if provider.getaddressesbyaccount(i.name):
+            yield {
+                "deck": i.name,
+                "deck_id": i.asset_id
+            }
+
+
+def status(provider):
+    '''show status of this pacli instance'''
+
+    report = {}
+    report["network"] = provider.network
+    report["subscribed_decks"] = list(subscribed_decks(provider))
+    report["balances"] = ""
+
+    return report
+
+
 def cli():
     '''CLI arguments parser'''
 
@@ -461,6 +485,8 @@ def cli():
     subparsers = parser.add_subparsers(title="Commands",
                                        dest="command",
                                        description='valid subcommands')
+
+    parser.add_argument("-status", action="store_true", help="show pacli status.")
 
     deck = subparsers.add_parser('deck', help='Deck manipulation.')
     deck.add_argument("-list", choices=['all', 'subscribed'],
@@ -488,6 +514,9 @@ def main():
     provider = pa.RpcNode(testnet=Settings.testnet)
     set_up(provider)
     args = cli()
+
+    if args.status:
+        print(json.dumps(status(provider), indent=4))
 
     if args.command == "deck":
         if args.list:
