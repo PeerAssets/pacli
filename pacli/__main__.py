@@ -290,7 +290,7 @@ def deck_balances(provider, deck_id):
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
-    balances = pa.DeckState(pa.find_card_transfers(provider, deck)).balances
+    balances = get_balance(provider, deck).balances
     b = DeckBalances(deck, balances)
     b.pack_for_printing()
     print(b.table.table)
@@ -453,6 +453,12 @@ def card_transfer(provider, args):
 
     signed = provider.signrawtransaction(raw_ct)
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
+
+
+def get_balance(provider, deck):
+    '''return balances of this deck'''
+
+    return pa.DeckState(pa.find_card_transfers(provider, deck))
 
 
 def subscribed_decks(provider):
