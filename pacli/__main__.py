@@ -242,6 +242,22 @@ def deck_info(provider, deck_id):
     info.pack_decks_for_printing()
     print(info.table.table)
 
+
+def deck_checksum(provider, deck_id):
+    '''info commands, show full deck details'''
+
+    try:
+        deck = find_deck(provider, deck_id)[0]
+    except IndexError:
+        print("\n", {"error": "Deck not found!"})
+        return
+    deck_state = pa.DeckState(pa.find_card_transfers(provider, deck))
+    if deck_state.checksum:
+        print("\n", "Deck checksum is correct.")
+    else:
+        print("\n", "Deck checksum is incorrect.")
+
+
 def new_deck(provider, deck):
     '''
     Spawn a new PeerAssets deck.
@@ -401,6 +417,7 @@ def cli():
     deck.add_argument("-search", action="store", help='''search for decks by name, id,
                        issue mode, issuer or number of decimals.''')
     deck.add_argument("-new", action="store", help="spawn new deck")
+    deck.add_argument("-checksum", action="store", help="verify deck card balance checksum.")
 
     card = subparsers.add_parser('card', help='Cards manipulation.')
     card.add_argument("-list", action="store", help="list all card transactions of this deck.")
@@ -429,6 +446,8 @@ def main():
             deck_info(provider, args.info)
         if args.new:
             new_deck(provider, args.new)
+        if args.checksum:
+            deck_checksum(provider, args.checksum)
 
     if args.command == "card":
         if args.issue:
