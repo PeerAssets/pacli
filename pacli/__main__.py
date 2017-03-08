@@ -199,6 +199,45 @@ class DeckInfo:
 
         cls.deck_table.append(cls.dtl(cls.deck.__dict__))
 
+
+class DeckBalances:
+    '''Show balances of address tied with this deck.'''
+
+    @classmethod
+    def __init__(cls, deck, balances):
+        assert isinstance(deck, pa.Deck)
+        cls.balances = dict(balances)
+        cls.deck = deck
+
+        ## Deck table header
+        cls.deck_table = [
+            ## add subscribed column
+            ("address", "balance")
+        ]
+
+        cls.table = AsciiTable(cls.deck_table, title="Deck id: " + cls.deck.asset_id + " ")
+
+    @classmethod
+    def dtl(cls, addr, balance):
+        '''deck-to-list deck to table-printable list'''
+
+        l = []
+        l.append(addr)
+        l.append(exponent_to_amount(balance,
+                 cls.deck.number_of_decimals))
+
+        return l
+
+    @classmethod
+    def pack_for_printing(cls):
+
+        assert len(cls.balances) > 0, {"error": "No balances found!"}
+
+        for k in cls.balances:
+            cls.deck_table.append(
+                cls.dtl(k, cls.balances[k])
+            )
+
 def deck_list(provider, l):
     '''list command'''
 
@@ -241,6 +280,20 @@ def deck_info(provider, deck_id):
     info = DeckInfo(deck)
     info.pack_decks_for_printing()
     print(info.table.table)
+
+
+def deck_balances(provider, deck_id):
+    '''show deck balances'''
+
+    try:
+        deck = find_deck(provider, deck_id)[0]
+    except IndexError:
+        print("\n", {"error": "Deck not found!"})
+        return
+    balances = pa.DeckState(pa.find_card_transfers(provider, deck)).balances
+    b = DeckBalances(deck, balances)
+    b.pack_for_printing()
+    print(b.table.table)
 
 
 def deck_checksum(provider, deck_id):
@@ -418,6 +471,7 @@ def cli():
                        issue mode, issuer or number of decimals.''')
     deck.add_argument("-new", action="store", help="spawn new deck")
     deck.add_argument("-checksum", action="store", help="verify deck card balance checksum.")
+    deck.add_argument("-balances", action="store", help="show balances of this deck.")
 
     card = subparsers.add_parser('card', help='Cards manipulation.')
     card.add_argument("-list", action="store", help="list all card transactions of this deck.")
@@ -448,6 +502,8 @@ def main():
             new_deck(provider, args.new)
         if args.checksum:
             deck_checksum(provider, args.checksum)
+        if args.balances:
+            deck_balances(provider, args.balances)
 
     if args.command == "card":
         if args.issue:
