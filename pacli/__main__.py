@@ -482,10 +482,7 @@ def subscribed_decks(provider):
     decks = pa.find_all_valid_decks(provider)
     for i in decks:
         if provider.getaddressesbyaccount(i.name):
-            yield {
-                "deck": i.name,
-                "deck_id": i.asset_id
-            }
+            yield i
 
 
 def status(provider):
@@ -493,11 +490,21 @@ def status(provider):
 
     report = {}
     report["network"] = provider.network
-    report["subscribed_decks"] = list(subscribed_decks(provider))
+    report["subscribed_decks"] = []
+    for i in list(subscribed_decks(provider)):
+        report["subscribed_decks"].append({
+            "deck_name": i.name,
+            "deck_id": i.asset_id,
+            "number_of_decimals": i.number_of_decimals
+        })
     for deck in report["subscribed_decks"]:
         try:
-            deck["balance"] = sum(get_my_balance(provider, deck["deck_id"]).values())
+            deck["balance"] = exponent_to_amount(sum(get_my_balance(provider,
+                                                 deck["deck_id"]).values()),
+                                                 deck["number_of_decimals"])
+            deck.pop("number_of_decimals")  # this should not go into report
         except:
+            deck.pop("number_of_decimals")  # this should not go into report
             deck["balance"] = 0
 
     return report
