@@ -525,6 +525,14 @@ def status(provider):
     return report
 
 
+def new_address(provider, account_name=""):
+    '''generate new address and import into wallet.'''
+  
+    key = pa.Kutil(network=provider.network)
+    provider.importprivkey(key.wif, account_name)
+    return key.address
+ 
+
 def cli():
     '''CLI arguments parser'''
 
@@ -533,6 +541,8 @@ def cli():
                                        dest="command",
                                        description='valid subcommands')
 
+    parser.add_argument("-newaddress", action="store_true",
+                        help="generate a new address and import to wallet.")
     parser.add_argument("-status", action="store_true", help="show pacli status.")
 
     deck = subparsers.add_parser('deck', help='Deck manipulation.')
@@ -564,6 +574,9 @@ def main():
 
     if args.status:
         print(json.dumps(status(provider), indent=4))
+
+    if args.newaddress:
+        print("\n", new_address(provider))
 
     if args.command == "deck":
         if args.list:
