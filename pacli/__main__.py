@@ -290,7 +290,7 @@ def deck_balances(provider, deck_id):
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
-    balances = get_balance(provider, deck).balances
+    balances = get_state(provider, deck_id).balances
     b = DeckBalances(deck, balances)
     b.pack_for_printing()
     print(b.table.table)
@@ -304,7 +304,7 @@ def deck_checksum(provider, deck_id):
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
-    deck_state = pa.DeckState(pa.find_card_transfers(provider, deck))
+    deck_state = get_state(provider,deck_id)
     if deck_state.checksum:
         print("\n", "Deck checksum is correct.")
     else:
@@ -455,23 +455,23 @@ def card_transfer(provider, args):
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
 
 
-def get_balance(provider, deck):
+def get_state(provider, deck_id):
     '''return balances of this deck'''
 
-    d = pa.find_deck(provider, deck)[0]
-    cards = pa.find_card_transfers(provider, d)
-    if len(cards) > 0:
+    deck = pa.find_deck(provider, deck_id)[0]
+    cards = pa.find_card_transfers(provider, deck)
+    if cards:
         return pa.DeckState(cards)
     else:
         raise ValueError("No cards on this deck.")
 
 
-def get_my_balance(provider, deck):
+def get_my_balance(provider, deck_id):
     '''get balances on the deck owned by me'''
 
     my_addresses = provider.getaddressesbyaccount()
-    deck_balances = get_balance(provider, deck)
-    matches = list(set(my_addresses).intersection(deck_balances.balances))
+    deck_balances = get_state(provider, deck_id).balances
+    matches = list(set(my_addresses).intersection(deck_balances))
 
     return {i: deck_balances.balances[i] for i in matches if i in deck_balances.balances.keys()}
 
