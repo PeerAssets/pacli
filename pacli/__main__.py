@@ -421,12 +421,12 @@ def card_burn(provider, args):
     assert sum(args["amount"]) <= sum(my_balance.values()), {"error": "You don't have enough cards on this deck."}
 
     utxo = provider.select_inputs(0.02)
-    change_address = change(utxo, max(my_balance))
+    change_address = change(utxo)
     cb = pa.CardTransfer(deck, [deck.issuer], args["amount"])
     raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
                                   change_address
                                   )
-                     ).decode()
+                    ).decode()
 
     signed = provider.signrawtransaction(raw_cb)
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
@@ -458,12 +458,12 @@ def card_transfer(provider, args):
     assert sum(args["amount"]) <= sum(my_balance.values()), {"error": "You don't have enough cards on this deck."}
 
     utxo = provider.select_inputs(0.02)
-    change_address = change(utxo, max(my_balance))
+    change_address = change(utxo)
     ct = pa.CardTransfer(deck, args["receiver"], args["amount"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
                                       change_address
                                       )
-                     ).decode()
+                    ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
