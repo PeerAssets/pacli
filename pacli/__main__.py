@@ -445,6 +445,7 @@ def card_transfer(provider, args):
         my_balance = get_my_balance(provider, deck.asset_id)
     except ValueError:
         print("\n", {"error": "You have no cards on this deck."})
+        return
 
     args["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in args["amount"]]
     assert sum(args["amount"]) <= sum(my_balance.values()), {"error": "You don't have enough cards on this deck."}
