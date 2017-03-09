@@ -411,10 +411,17 @@ def card_burn(provider, args):
     if not provider.getaddressesbyaccount(deck.name):
         print("\n", {"error": "You are not even subscribed to this deck, how can you burn cards?"})
         return
+    try:
+        my_balance = get_my_balance(provider, deck.asset_id)
+    except ValueError:
+        print("\n", {"error": "You have no cards on this deck."})
+        return
+
+    args["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in args["amount"]]
+    assert sum(args["amount"]) <= sum(my_balance.values()), {"error": "You don't have enough cards on this deck."}
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
-    issue["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issue["amount"]]
     cb = pa.CardTransfer(deck, [deck.issuer], args["amount"])
     raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
                                   change_address
