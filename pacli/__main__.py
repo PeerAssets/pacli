@@ -441,10 +441,16 @@ def card_transfer(provider, args):
         return
     if not provider.getaddressesbyaccount(deck.name):
         print("\n", {"error": "You are not even subscribed to this deck, how can you transfer cards?"})
+    try:
+        my_balance = get_my_balance(provider, deck.asset_id)
+    except ValueError:
+        print("\n", {"error": "You have no cards on this deck."})
+
+    args["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in args["amount"]]
+    assert sum(args["amount"]) <= sum(my_balance.values()), {"error": "You don't have enough cards on this deck."}
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
-    issue["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issue["amount"]]
     ct = pa.CardTransfer(deck, args["receiver"], args["amount"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
                                       change_address
