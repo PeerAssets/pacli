@@ -512,11 +512,11 @@ def status(provider):
             "number_of_decimals": i.number_of_decimals
         })
     for deck in report["subscribed_decks"]:
-        my_balances = get_my_balance(provider, deck["deck_id"])
         try:
+            my_balances = get_my_balance(provider, deck["deck_id"])
             deck["balance"] = exponent_to_amount(sum(my_balances.values()),
                                                  deck["number_of_decimals"])
-            deck["address_handle"] = my_balances.keys()[0]  # show address which handles this deck, first one only though
+            deck["address_handle"] = list(my_balances.keys())[0]  # show address which handles this deck, first one only though
             deck.pop("number_of_decimals")  # this should not go into report
         except:
             deck.pop("number_of_decimals")  # this should not go into report
