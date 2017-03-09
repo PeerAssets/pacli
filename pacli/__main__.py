@@ -473,7 +473,7 @@ def get_my_balance(provider, deck_id):
     deck_balances = get_state(provider, deck_id).balances
     matches = list(set(my_addresses).intersection(deck_balances))
 
-    return {i: deck_balances[i] for i in matches if i in deck_balances.keys()}
+    return {i: deck_balances.balances[i] for i in matches if i in deck_balances.balances.keys()}
 
 
 def subscribed_decks(provider):
@@ -498,14 +498,14 @@ def status(provider):
             "number_of_decimals": i.number_of_decimals
         })
     for deck in report["subscribed_decks"]:
-        #try:
-        deck["balance"] = exponent_to_amount(sum(get_my_balance(provider,
-                                                deck["deck_id"]).values()),
-                                                deck["number_of_decimals"])
-        deck.pop("number_of_decimals")  # this should not go into report
-        #except:
-        #    deck.pop("number_of_decimals")  # this should not go into report
-        #    deck["balance"] = 0
+        try:
+            deck["balance"] = exponent_to_amount(sum(get_my_balance(provider,
+                                                 deck["deck_id"]).values()),
+                                                 deck["number_of_decimals"])
+            deck.pop("number_of_decimals")  # this should not go into report
+        except:
+            deck.pop("number_of_decimals")  # this should not go into report
+            deck["balance"] = 0
 
     return report
 
