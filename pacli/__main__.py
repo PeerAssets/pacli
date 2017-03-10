@@ -385,11 +385,11 @@ def card_issue(provider, args):
 
     issue["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issue["amount"]]
     change_address = change(utxo)
-    ct = pa.CardTransfer(deck, issue["receiver"], issue["amount"])
+    ct = pa.CardTransfer(deck=deck, receiver=issue["receiver"], amount=issue["amount"])
     raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
                                    change_address
                                    )
-                    ).decode()
+                     ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
     txid = provider.sendrawtransaction(signed["hex"]) # send the tx
@@ -422,11 +422,11 @@ def card_burn(provider, args):
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
-    cb = pa.CardTransfer(deck, [deck.issuer], args["amount"])
+    cb = pa.CardTransfer(deck=deck, receiver=[deck.issuer], amount=args["amount"])
     raw_cb = hexlify(pa.card_burn(deck, cb, utxo,
                                   change_address
                                   )
-                    ).decode()
+                     ).decode()
 
     signed = provider.signrawtransaction(raw_cb)
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
@@ -459,14 +459,14 @@ def card_transfer(provider, args):
 
     utxo = provider.select_inputs(0.02)
     change_address = change(utxo)
-    ct = pa.CardTransfer(deck, args["receiver"], args["amount"])
+    ct = pa.CardTransfer(deck=deck, receiver=args["receiver"], amount=args["amount"])
     raw_ct = hexlify(pa.card_transfer(deck, ct, utxo,
                                       change_address
                                       )
-                    ).decode()
+                     ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
-    print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
+    print("\n", provider.sendrawtransaction(signed["hex"]), "\n")  # send the tx
 
 
 def get_state(provider, deck_id):
