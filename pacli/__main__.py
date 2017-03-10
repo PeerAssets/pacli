@@ -474,7 +474,7 @@ def card_transfer(provider, args):
 def get_state(provider, deck_id):
     '''return balances of this deck'''
 
-    deck = pa.find_deck(provider, deck_id)[0]
+    deck = find_deck(provider, deck_id)[0]
     cards = pa.find_card_transfers(provider, deck)
     if cards:
         return pa.DeckState(cards)
