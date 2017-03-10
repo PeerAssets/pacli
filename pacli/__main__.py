@@ -50,6 +50,26 @@ def set_up(provider):
         if not provider.listtransactions("PATEST"):
             pa.pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
 
+
+def default_account_utxo(provider, amount):
+    '''set default address to be used with pacli'''
+
+    if "PACLI" not in provider.listaccounts().keys():
+        addr = provider.getaddressesbyaccount("PACLI")
+        print("\n", "Please fund this address: {addr}".format(addr=addr))
+        return
+
+    for i in provider.getaddressesbyaccount("PACLI"):
+        try:
+            return provider.select_inputs(amount, i)
+        except ValueError:
+            pass
+
+    print("\n", "Please fund one of the following addresses: {addrs}".format(
+          addrs=provider.getaddressesbyaccount("PACLI")))
+    return
+
+
 def change(utxo):
     '''decide what will be change address
     * default - pay back to largest utxo
@@ -323,12 +343,16 @@ def new_deck(provider, deck):
     deck = json.loads(deck)
     deck["network"] = Settings.network
     deck["production"] = Settings.production
-    utxo = provider.select_inputs(0.02) ## we need 0.02 PPC
-    change_address = change(utxo)
+    #utxo = provider.select_inputs(0.02)  # we need 0.02 PPC
+    utxo = default_account_utxo(provider, 0.02)
+    if utxo:
+        change_address = change(utxo)
+    else:
+        return
     raw_deck = pa.deck_spawn(pa.Deck(**deck),
                              inputs=utxo,
                              change_address=change_address
-                            )
+                             )
     raw_deck_spawn = hexlify(raw_deck).decode()
     signed = provider.signrawtransaction(raw_deck_spawn)
     txid = provider.sendrawtransaction(signed["hex"])
