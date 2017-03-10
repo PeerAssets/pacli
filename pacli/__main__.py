@@ -496,6 +496,24 @@ def get_my_balance(provider, deck_id):
     return {i: deck_balances[i] for i in matches if i in deck_balances.keys()}
 
 
+def address_balance(provider, deck_id, address):
+    '''show deck balances'''
+
+    try:
+        deck = find_deck(provider, deck_id)[0]
+    except IndexError:
+        print("\n", {"error": "Deck not found!"})
+        return
+    balances = get_state(provider, deck).balances
+    try:
+        b = exponent_to_amount(balances[address], deck.number_of_decimals)
+    except:
+        print("\n", {"error": "This address has no card balance."})
+        return
+
+    print("\n", "Card balance: {balance}".format(balance=b), "\n")
+
+
 def subscribed_decks(provider):
     '''find subscribed-to decks'''
 
@@ -550,7 +568,7 @@ def cli():
     parser.add_argument("-newaddress", action="store_true",
                         help="generate a new address and import to wallet.")
     parser.add_argument("-status", action="store_true", help="show pacli status.")
-    parse.add_arugument("-address")
+    parser.add_argument("-addressbalance", action="store", nargs=2, help="check card balance of the address")
 
     deck = subparsers.add_parser('deck', help='Deck manipulation.')
     deck.add_argument("-list", choices=['all', 'subscribed'],
@@ -584,6 +602,9 @@ def main():
 
     if args.newaddress:
         print("\n", new_address(provider))
+
+    if args.addressbalance:
+        address_balance(provider, args.addressbalance[0], args.addressbalance[1])
 
     if args.command == "deck":
         if args.list:
