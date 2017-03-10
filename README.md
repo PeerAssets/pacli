@@ -23,6 +23,10 @@ show current network, all subscribed decks and their card balances
 
 generate a new address and load it into wallet
 
+> pacli -addressbalance <deck> <address>
+
+show card balance of the address
+
 > pacli deck -search "My little pony"
 
 search for deck called "My little pony"
