@@ -290,7 +290,7 @@ def deck_balances(provider, deck_id):
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
-    balances = get_state(provider, deck_id).balances
+    balances = get_state(provider, deck).balances
     b = DeckBalances(deck, balances)
     b.pack_for_printing()
     print(b.table.table)
@@ -304,7 +304,7 @@ def deck_checksum(provider, deck_id):
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
-    deck_state = get_state(provider,deck_id)
+    deck_state = get_state(provider, deck)
     if deck_state.checksum:
         print("\n", "Deck checksum is correct.")
     else:
@@ -471,10 +471,9 @@ def card_transfer(provider, args):
     print("\n", provider.sendrawtransaction(signed["hex"]), "\n")  # send the tx
 
 
-def get_state(provider, deck_id):
+def get_state(provider, deck):
     '''return balances of this deck'''
 
-    deck = find_deck(provider, deck_id)[0]
     cards = pa.find_card_transfers(provider, deck)
     if cards:
         return pa.DeckState(cards)
@@ -485,8 +484,13 @@ def get_state(provider, deck_id):
 def get_my_balance(provider, deck_id):
     '''get balances on the deck owned by me'''
 
+    try:
+        deck = find_deck(provider, deck_id)[0]
+    except IndexError:
+        print("\n", {"error": "Deck not found!"})
+
     my_addresses = provider.getaddressesbyaccount()
-    deck_balances = get_state(provider, deck_id).balances
+    deck_balances = get_state(provider, deck).balances
     matches = list(set(my_addresses).intersection(deck_balances))
 
     return {i: deck_balances[i] for i in matches if i in deck_balances.keys()}
@@ -546,6 +550,7 @@ def cli():
     parser.add_argument("-newaddress", action="store_true",
                         help="generate a new address and import to wallet.")
     parser.add_argument("-status", action="store_true", help="show pacli status.")
+    parse.add_arugument("-address")
 
     deck = subparsers.add_parser('deck', help='Deck manipulation.')
     deck.add_argument("-list", choices=['all', 'subscribed'],
