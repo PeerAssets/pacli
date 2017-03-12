@@ -573,13 +573,13 @@ def status(provider):
     return report
 
 
-def new_address(provider, account_name=""):
+def new_address(provider):
     '''generate new address and import into wallet.'''
-  
+
     key = pa.Kutil(network=provider.network)
-    provider.importprivkey(key.wif, account_name)
+    provider.importprivkey(key.wif, "PACLI")
     return key.address
- 
+
 
 def cli():
     '''CLI arguments parser'''
