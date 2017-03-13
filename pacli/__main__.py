@@ -401,6 +401,10 @@ def card_issue(provider, args):
     except IndexError:
         print("\n", {"error": "Deck not found."})
         return
+
+    if not provider.gettransaction(deck.asset_id)["confirmations"] > 0:
+        print("\n", "You are trying to issue cards on a deck which has not been confirmed yet.")
+
     if provider.validateaddress(deck.issuer)["ismine"]:
             try:
                 utxo = provider.select_inputs(0.02, deck.issuer)
