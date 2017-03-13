@@ -384,12 +384,14 @@ def list_cards(provider, args):
     c.pack_cards_for_printing()
     print(c.table.table)
 
+
 def card_issue(provider, args):
     '''
     Issue new cards of this deck.
 
     pacli card -issue '{"deck": "deck_id",
-                        "receivers": [list of receiver addresses], "amounts": [list of amounts]
+                        "receivers": [list of receiver addresses],
+                        "amounts": [list of amounts]
                         }
     '''
 
@@ -411,15 +413,17 @@ def card_issue(provider, args):
 
     issue["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issue["amount"]]
     change_address = change(utxo)
-    ct = pa.CardTransfer(deck=deck, receiver=issue["receiver"], amount=issue["amount"])
+    ct = pa.CardTransfer(deck=deck, receiver=issue["receiver"],
+                         amount=issue["amount"])
     raw_ct = hexlify(pa.card_issue(deck, ct, utxo,
                                    change_address
                                    )
                      ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
-    txid = provider.sendrawtransaction(signed["hex"]) # send the tx
+    txid = provider.sendrawtransaction(signed["hex"])  # send the tx
     print("\n", txid, "\n")
+
 
 def card_burn(provider, args):
     '''
