@@ -409,7 +409,7 @@ def card_issue(provider, args):
             try:
                 utxo = provider.select_inputs(0.02, deck.issuer)
             except ValueError:
-                print("\n", {"error": "Please send funds to the issuing address."})
+                print("\n", {"error": "Please send funds to the deck issuing address: {0}".format(deck.issuer)})
                 return
     else:
         print("\n", {"error": "You are not the owner of this deck."})
