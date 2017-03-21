@@ -3,6 +3,7 @@ from terminaltables import AsciiTable
 from binascii import hexlify
 from appdirs import user_config_dir
 from pacli.config import write_default_config, read_conf
+from pacli.export import export_to_csv
 import os, argparse
 import pypeerassets as pa
 from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
@@ -385,6 +386,28 @@ def list_cards(provider, args):
     print(c.table.table)
 
 
+def export_cards(provider, args):
+    '''
+    export cards to csv <filename>
+
+    pacli card -export <deck> filename
+    '''
+
+    try:
+        deck = find_deck(provider, args[0])[0]
+    except IndexError:
+        print("\n", {"error": "Deck not found!"})
+        return
+    if not provider.getaddressesbyaccount(deck.name):
+        print("\n", {"error": "You must subscribe to deck to be able to list transactions."})
+        return
+
+    all_cards = pa.find_card_transfers(provider, deck)
+    cards = pa.validate_card_issue_modes(deck, all_cards)
+
+    export_to_csv(cards, args[1])
+
+
 def card_issue(provider, args):
     '''
     Issue new cards of this deck.
@@ -615,6 +638,7 @@ def cli():
 
     card = subparsers.add_parser('card', help='Cards manipulation.')
     card.add_argument("-list", action="store", help="list all card transactions of this deck.")
+    card.add_argument("-export", action="store", nargs=2, help="export all cards of this deck to csv file.")
     card.add_argument("-issue", action="store", help="issue cards for this deck.")
     card.add_argument("-transfer", action="store", help="send cards to receivers.")
     card.add_argument("-burn", action="store", help="burn cards.")
@@ -663,6 +687,8 @@ def main():
             card_transfer(provider, args.transfer)
         if args.list:
             list_cards(provider, args.list)
+        if args.export:
+            export_cards(provider, args.export)
 
 if __name__ == "__main__":
     main()
