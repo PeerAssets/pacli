@@ -636,7 +636,7 @@ def cli():
     deck.add_argument("--checksum", action="store", help="verify deck card balance checksum")
     deck.add_argument("--balances", action="store", help="show balances of this deck")
 
-    card = subparsers.add_parser('card', help='Cards manipulation.')
+    card = subparsers.add_parser('card', help='Card manipulation.')
     card.add_argument("--list", action="store", help="list all card transactions of this deck")
     card.add_argument("--export", action="store", nargs=2, help="export all cards of this deck to csv file")
     card.add_argument("--issue", action="store", help="issue cards for this deck")
