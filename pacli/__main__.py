@@ -620,28 +620,28 @@ def cli():
                                        dest="command",
                                        description='valid subcommands')
 
-    parser.add_argument("-newaddress", action="store_true",
-                        help="generate a new address and import to wallet.")
-    parser.add_argument("-status", action="store_true", help="show pacli status.")
-    parser.add_argument("-addressbalance", action="store", nargs=2, help="check card balance of the address")
+    parser.add_argument("--newaddress", action="store_true",
+                        help="generate a new address and import to wallet")
+    parser.add_argument("--status", action="store_true", help="show pacli status")
+    parser.add_argument("--addressbalance", action="store", nargs=2, help="check card balance of the address")
 
     deck = subparsers.add_parser('deck', help='Deck manipulation.')
-    deck.add_argument("-list", choices=['all', 'subscribed'],
+    deck.add_argument("--list", choices=['all', 'subscribed'],
                       help="list decks")
-    deck.add_argument("-info", action="store", help="show details of <asset_id>")
-    deck.add_argument("-subscribe", action="store", help="subscribe to <deck id>")
-    deck.add_argument("-search", action="store", help='''search for decks by name, id,
-                       issue mode, issuer or number of decimals.''')
-    deck.add_argument("-new", action="store", help="spawn new deck")
-    deck.add_argument("-checksum", action="store", help="verify deck card balance checksum.")
-    deck.add_argument("-balances", action="store", help="show balances of this deck.")
+    deck.add_argument("--info", action="store", help="show details of <asset_id>")
+    deck.add_argument("--subscribe", action="store", help="subscribe to <deck id>")
+    deck.add_argument("--search", action="store", help='''search for decks by name, id,
+                       issue mode, issuer or number of decimals''')
+    deck.add_argument("--new", action="store", help="spawn new deck")
+    deck.add_argument("--checksum", action="store", help="verify deck card balance checksum")
+    deck.add_argument("--balances", action="store", help="show balances of this deck")
 
-    card = subparsers.add_parser('card', help='Cards manipulation.')
-    card.add_argument("-list", action="store", help="list all card transactions of this deck.")
-    card.add_argument("-export", action="store", nargs=2, help="export all cards of this deck to csv file.")
-    card.add_argument("-issue", action="store", help="issue cards for this deck.")
-    card.add_argument("-transfer", action="store", help="send cards to receivers.")
-    card.add_argument("-burn", action="store", help="burn cards.")
+    card = subparsers.add_parser('card', help='Card manipulation.')
+    card.add_argument("--list", action="store", help="list all card transactions of this deck")
+    card.add_argument("--export", action="store", nargs=2, help="export all cards of this deck to csv file")
+    card.add_argument("--issue", action="store", help="issue cards for this deck")
+    card.add_argument("--transfer", action="store", help="send cards to receivers")
+    card.add_argument("--burn", action="store", help="burn cards")
 
     return parser.parse_args()
 
