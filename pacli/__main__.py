@@ -136,7 +136,7 @@ class ListDecks:
     @classmethod
     def pack_decks_for_printing(cls):
 
-        assert len(cls.decks) > 0, {"error": "No decks found!"}
+        assert cls.decks, {"error": "No decks found!"}
 
         for i in cls.decks:
             cls.deck_table.append(
