@@ -116,7 +116,7 @@ class ListDecks:
     table = AsciiTable(deck_table, title="Decks")
 
     @classmethod
-    def dtl(cls, deck, subscribed=False):
+    def dtl(cls, deck):
         '''deck-to-list deck to table-printable list'''
 
         l = []
@@ -128,8 +128,6 @@ class ListDecks:
             l.append(True)
         else:
             l.append(False)
-            if subscribed:
-                l.remove(deck)
 
         return l
 
@@ -259,18 +257,13 @@ class DeckBalances:
                 cls.dtl(k, cls.balances[k])
             )
 
-def deck_list(provider, l):
+def deck_list(provider):
     '''list command'''
 
-    if l == "all":
-        d = ListDecks(provider, pa.find_all_valid_decks(provider))
-        d.pack_decks_for_printing()
-        print(d.table.table)
+    d = ListDecks(provider, pa.find_all_valid_decks(provider))
+    d.pack_decks_for_printing()
+    print(d.table.table)
 
-    if l == "subscribed":
-        d = ListDecks(provider, pa.find_all_valid_decks(provider))
-        d.pack_decks_for_printing()
-        print(d.table.table)
 
 def deck_subscribe(provider, deck_id):
     '''subscribe command, load deck p2th into local node, pass <deck_id>'''
@@ -626,8 +619,7 @@ def cli():
     parser.add_argument("--addressbalance", action="store", nargs=2, help="check card balance of the address")
 
     deck = subparsers.add_parser('deck', help='Deck manipulation.')
-    deck.add_argument("--list", choices=['all', 'subscribed'],
-                      help="list decks")
+    deck.add_argument("--list", action="store_true", help="list decks")
     deck.add_argument("--info", action="store", help="show details of <asset_id>")
     deck.add_argument("--subscribe", action="store", help="subscribe to <deck id>")
     deck.add_argument("--search", action="store", help='''search for decks by name, id,
@@ -664,7 +656,7 @@ def main():
 
     if args.command == "deck":
         if args.list:
-            deck_list(provider, args.list)
+            deck_list(provider)
         if args.subscribe:
             deck_subscribe(provider, args.subscribe)
         if args.search:
