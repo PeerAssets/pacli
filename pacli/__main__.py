@@ -105,7 +105,7 @@ class ListDecks:
     @classmethod
     def __init__(cls, provider, decks):
         cls.provider = provider
-        cls.decks = decks
+        cls.decks = list(decks)
 
     ## Deck table header
     deck_table = [
@@ -148,7 +148,7 @@ class ListCards:
     @classmethod
     def __init__(cls, provider, cards):
         cls.provider = provider
-        cls.cards = cards
+        cls.cards = list(cards)
 
         ## Deck table header
         cls.card_table = [
