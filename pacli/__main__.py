@@ -93,7 +93,7 @@ def tstamp_to_iso(tstamp):
 def find_deck(provider, key: str) -> list:
     '''find deck by <key>'''
 
-    decks = pa.find_all_valid_decks(provider, prod=Settings.production)
+    decks = list(pa.find_all_valid_decks(provider, prod=Settings.production))
     for i in decks:
         i.short_id = i.asset_id[:20]
 
