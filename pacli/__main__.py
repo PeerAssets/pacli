@@ -177,7 +177,7 @@ class ListCards:
     @classmethod
     def pack_cards_for_printing(cls):
 
-        assert len(cls.cards) > 0, {"error": "No cards found!"}
+        #assert len(cls.cards) > 0, {"error": "No cards found!"}
 
         for i in cls.cards:
             cls.card_table.append(
@@ -325,7 +325,7 @@ def deck_checksum(provider, deck_id):
         print("\n", "Deck checksum is incorrect.")
 
 
-def new_deck(provider, deck):
+def new_deck(provider, deck, broadcast):
     '''
     Spawn a new PeerAssets deck.
 
@@ -349,12 +349,16 @@ def new_deck(provider, deck):
                              )
     raw_deck_spawn = hexlify(raw_deck).decode()
     signed = provider.signrawtransaction(raw_deck_spawn)
-    txid = provider.sendrawtransaction(signed["hex"])
-    print("\n", txid, "\n")
 
-    deck["asset_id"] = txid
-    d = pa.Deck(**deck)
-    pa.load_deck_p2th_into_local_node(provider, d) # subscribe to deck
+    if broadcast:
+        txid = provider.sendrawtransaction(signed["hex"])
+        print("\n", txid, "\n")
+
+        deck["asset_id"] = txid
+        d = pa.Deck(**deck)
+        pa.load_deck_p2th_into_local_node(provider, d) # subscribe to deck
+    else:
+        print("\nraw transaction:\n", signed["hex"], "\n")
 
 def list_cards(provider, args):
     '''
@@ -401,7 +405,7 @@ def export_cards(provider, args):
     export_to_csv(cards, args[1])
 
 
-def card_issue(provider, args):
+def card_issue(provider, args, broadcast):
     '''
     Issue new cards of this deck.
 
@@ -441,11 +445,15 @@ def card_issue(provider, args):
                      ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
-    txid = provider.sendrawtransaction(signed["hex"])  # send the tx
-    print("\n", txid, "\n")
+
+    if broadcast:
+        txid = provider.sendrawtransaction(signed["hex"])  # send the tx
+        print("\n", txid, "\n")
+    else:
+        print("\nraw transaction:\n", signed["hex"], "\n")
 
 
-def card_burn(provider, args):
+def card_burn(provider, args, broadcast):
     '''
     Burn cards of this deck.
 
@@ -479,9 +487,15 @@ def card_burn(provider, args):
                      ).decode()
 
     signed = provider.signrawtransaction(raw_cb)
-    print("\n", provider.sendrawtransaction(signed["hex"]), "\n") # send the tx
 
-def card_transfer(provider, args):
+    if broadcast:
+        txid = provider.sendrawtransaction(signed["hex"])  # send the tx
+        print("\n", txid, "\n")
+    else:
+        print("\nraw transaction:\n", signed["hex"], "\n")
+
+
+def card_transfer(provider, args, broadcast):
     '''
     Transfer cards to <receivers>
 
@@ -516,7 +530,12 @@ def card_transfer(provider, args):
                      ).decode()
 
     signed = provider.signrawtransaction(raw_ct)
-    print("\n", provider.sendrawtransaction(signed["hex"]), "\n")  # send the tx
+
+    if broadcast:
+        txid = provider.sendrawtransaction(signed["hex"])  # send the tx
+        print("\n", txid, "\n")
+    else:
+        print("\nraw transaction:\n", signed["hex"], "\n")
 
 
 def get_state(provider, deck):
@@ -613,6 +632,7 @@ def cli():
                                        dest="command",
                                        description='valid subcommands')
 
+    parser.add_argument("--broadcast", action="store_true", help="broadcast resulting transactions")
     parser.add_argument("--newaddress", action="store_true",
                         help="generate a new address and import to wallet")
     parser.add_argument("--status", action="store_true", help="show pacli status")
@@ -664,7 +684,7 @@ def main():
         if args.info:
             deck_info(provider, args.info)
         if args.new:
-            new_deck(provider, args.new)
+            new_deck(provider, args.new, args.broadcast)
         if args.checksum:
             deck_checksum(provider, args.checksum)
         if args.balances:
@@ -672,11 +692,11 @@ def main():
 
     if args.command == "card":
         if args.issue:
-            card_issue(provider, args.issue)
+            card_issue(provider, args.issue, args.broadcast)
         if args.burn:
-            card_burn(provider, args.burn)
+            card_burn(provider, args.burn, args.broadcast)
         if args.transfer:
-            card_transfer(provider, args.transfer)
+            card_transfer(provider, args.transfer, args.broadcast)
         if args.list:
             list_cards(provider, args.list)
         if args.export:
