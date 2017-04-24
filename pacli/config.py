@@ -15,7 +15,8 @@ def read_conf(conf_file):
         "network": config["settings"]["network"],
         "production": config["settings"]["production"],
         "loglevel": config["settings"]["loglevel"],
-        "change": config["settings"]["change"]
+        "change": config["settings"]["change"],
+        "provider": config["settings"]["provider"]
         }
 
     if settings["network"].startswith("t"):

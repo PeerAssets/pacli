@@ -661,7 +661,10 @@ def main():
 
     first_run()
     load_conf()
-    provider = pa.RpcNode(testnet=Settings.testnet)
+    if Settings.provider.lower() == "rpcnode":
+        provider = pa.RpcNode(testnet=Settings.testnet)
+    if Settings.provider.lower() == "holy":
+        provider = pa.Holy(network=Settings.network)
     set_up(provider)
     args = cli()
 
