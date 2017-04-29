@@ -41,8 +41,6 @@ def first_run():
 def set_up(provider):
     '''setup'''
 
-    # check if provider is working as expected
-    assert provider.getinfo()["connections"] > 0, {"error": "Not connected to network."}
     # check if PA P2TH is loaded in local node
     if Settings.production:
         if not provider.listtransactions("PAPROD"):
