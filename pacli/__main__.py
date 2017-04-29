@@ -41,13 +41,15 @@ def first_run():
 def set_up(provider):
     '''setup'''
 
-    # check if PA P2TH is loaded in local node
-    if Settings.production:
-        if not provider.listtransactions("PAPROD"):
-            pa.pautils.load_p2th_privkeys_into_local_node(provider)
-    if not Settings.production:
-        if not provider.listtransactions("PATEST"):
-            pa.pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
+    # if provider is local node, check if PA P2TH is loaded in local node
+    # this handles indexing of transaction
+    if Settings.provider == "rpcnode":
+        if Settings.production:
+            if not provider.listtransactions("PAPROD"):
+                pa.pautils.load_p2th_privkeys_into_local_node(provider)
+        if not Settings.production:
+            if not provider.listtransactions("PATEST"):
+                pa.pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
 
 
 def default_account_utxo(provider, amount):
