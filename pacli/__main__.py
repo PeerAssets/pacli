@@ -257,6 +257,7 @@ class DeckBalances:
                 cls.dtl(k, cls.balances[k])
             )
 
+
 def deck_list(provider):
     '''list command'''
 
@@ -275,6 +276,7 @@ def deck_subscribe(provider, deck_id):
         return
     pa.load_deck_p2th_into_local_node(provider, deck)
 
+
 def deck_search(provider, key):
     '''search commands, query decks by <key>'''
 
@@ -282,6 +284,7 @@ def deck_search(provider, key):
     d = ListDecks(provider, decks)
     d.pack_decks_for_printing()
     print(d.table.table)
+
 
 def deck_info(provider, deck_id):
     '''info commands, show full deck details'''
