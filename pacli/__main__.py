@@ -164,7 +164,7 @@ class ListCards:
                  card["number_of_decimals"]))
         l.append(card["type"])
         if card["blockhash"] != 0:
-            l.append(cls.provider.gettransaction(card["txid"])["confirmations"])
+            l.append(cls.provider.getrawtransaction(card["txid"], 1)["confirmations"])
         else:
             l.append(0)
 
