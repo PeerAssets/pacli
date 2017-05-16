@@ -359,6 +359,7 @@ def new_deck(provider, deck, broadcast):
     else:
         print("\nraw transaction:\n", signed["hex"], "\n")
 
+
 def list_cards(provider, args):
     '''
     List cards of this <deck>.abs
@@ -371,9 +372,10 @@ def list_cards(provider, args):
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
-    if not provider.getaddressesbyaccount(deck.name):
-        print("\n", {"error": "You must subscribe to deck to be able to list transactions."})
-        return
+    if isinstance(provider, pa.RpcNode):
+        if not provider.getaddressesbyaccount(deck.name):
+            print("\n", {"error": "You must subscribe to deck to be able to list transactions."})
+            return
 
     all_cards = pa.find_card_transfers(provider, deck)
     cards = pa.validate_card_issue_modes(deck, all_cards)
