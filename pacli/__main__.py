@@ -110,7 +110,7 @@ class ListDecks:
     ## Deck table header
     deck_table = [
         ## add subscribed column
-        ("asset ID", "asset name", "issuer", "mode", "subscribed")
+        ("asset ID", "asset name", "issuer", "mode")
     ]
 
     table = AsciiTable(deck_table, title="Decks")
@@ -124,10 +124,6 @@ class ListDecks:
         l.append(deck["name"])
         l.append(deck["issuer"])
         l.append(deck["issue_mode"])
-        if cls.provider.getaddressesbyaccount(deck["name"]):
-            l.append(True)
-        else:
-            l.append(False)
 
         return l
 
