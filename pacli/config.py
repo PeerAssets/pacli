@@ -16,7 +16,10 @@ def read_conf(conf_file):
         "production": config["settings"]["production"],
         "loglevel": config["settings"]["loglevel"],
         "change": config["settings"]["change"],
-        "provider": config["settings"]["provider"]
+        "provider": config["settings"]["provider"],
+        "keystore": config["settings"]["keystore"],
+        "gnupgdir": config["settings"]["gnupgdir"],
+        "gnupgkey": config["settings"]["gnupgkey"]
         }
 
     if settings["network"].startswith("t"):
