@@ -8,5 +8,6 @@ default_conf = {
     "loglevel": "WARNING", # WARNING, INFO, DEBUG 
     "keystore": "gnupg",
     "gnupgdir": "~/.gnupg/",
+    "gnupgagent": False,
     "gnupgkey": "any"
     }

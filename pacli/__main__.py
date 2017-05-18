@@ -9,8 +9,8 @@ import pypeerassets as pa
 from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 import json
 import logging
-import gnupg
-import getpass
+
+from pacli.keystore import read_keystore, write_keystore
 
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
@@ -24,6 +24,7 @@ def load_conf():
     '''load user configuration'''
 
     settings = read_conf(conf_file)
+
     for key in settings:
         setattr(Settings, key, settings[key])
 
@@ -809,22 +810,16 @@ def cli():
 def main():
 
     first_run()
-    load_conf()
+
+    try:
+        load_conf()
+    except:
+        raise
+
     mypg = None
     password = None
     mykeys=""
-
-    if Settings.keystore == "gnupg" and Settings.provider != "rpcnode":
-        mypg = gnupg.GPG(binary='/usr/bin/gpg',homedir=Settings.gnupgdir,keyring='pubring.gpg',secring='secring.gpg')
-        password = getpass.getpass("Input gpg key password:")
-        fd = open(keyfile)
-        data = fd.read()
-        if len(data)>0:
-            mykeys = str(mypg.decrypt(data,passphrase=password))
-        #    print(mykeys)
-        fd.close()
-    else:
-        print("using rpcnode")
+    mykeys = read_keystore(Settings,keyfile)
 
     if Settings.provider.lower() == "rpcnode":
         provider = pa.RpcNode(testnet=Settings.testnet)
@@ -880,13 +875,7 @@ def main():
         if args.info:
             vote_info(provider, args.info)
 
-    if mypg:
-        #write keys
-        data = str(mypg.encrypt(str(provider.dumpprivkeys()),Settings.gnupgkey))
-        fd = open(keyfile,"w")
-        fd.write(data)
-        fd.close()
-
+    write_keystore(Settings,keyfile,provider.dumpprivkeys())
  
 if __name__ == "__main__":
     main()
