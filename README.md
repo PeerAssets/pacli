@@ -59,7 +59,7 @@ issue a new asset named "My own asset".
 > pacli card --list *deck_id*
 
 list all card transfers related to this deck
-
+ 
 > pacli deck --checksum *deck_id*
 
 verify deck checksum, checksum is difference between issued cards and balances of all the addresses.
@@ -78,6 +78,27 @@ issue 110 cards to n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x, this transaction will be 
 
 transfer cards of "08c1928ce84d9066f120" deck (queried by short id, it is clementines deck) to three different addresses.
 This transaction will be denied if you have no address which holds cards of this deck or if your balance is not sufficient.
+
+> pacli vote --new '{"deck": "hopium_v2", "choices": ["y", "n"], "count_mode": "SIMPLE", "description": "yes or no?", "start_block": 27306, "end_block": 27310}'
+
+create new vote on the "hopium_v2" deck with choices "y" and "no", starting from block 27306 and lasting until block 27310.
+
+> pacli vote --list "hopium_v2"
+
+Shows all the votes on this deck.
+
+```
++Votes on this deck:-----------------------------------------------+------------------------------------+------------------+-------------+-----------+
+| vote_id                                                          | sender                             | description      | start_block | end_block |
++------------------------------------------------------------------+------------------------------------+------------------+-------------+-----------+
+| 7459c9f4738001e3c50653d6066e3d41a9ffb2a1f3d786721bc472bcb04f17fa | msYThv5bf7KjhHT1Cj5D7Y1tofyhq9vhWM | PPC to the moon? | 268400      | 290000    |
+| 79e940296f26feb3e5ebaaea0d9aced153e796926e8db926050977ae02c00fa6 | msYThv5bf7KjhHT1Cj5D7Y1tofyhq9vhWM | test1            | 27306       | 275000    |
++------------------------------------------------------------------+------------------------------------+------------------+-------------+-----------+
+```
+
+> pacli vote --cast '{"vote": "7459c9f4738001e3c50653d6066e3d41a9ffb2a1f3d786721bc472bcb04f17fa", choice: "yes"}'
+
+cast "yes" vote to vote_id 7459c9f4738001e3c50653d6066e3d41a9ffb2a1f3d786721bc472bcb04f17fa
 
 _____________________________________
 
