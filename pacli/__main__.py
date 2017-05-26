@@ -10,7 +10,7 @@ from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 import json
 import logging
 
-from pacli.keystore import read_keystore, write_keystore
+from pacli.keystore import read_keystore, write_keystore, KeyedProvider
 
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
@@ -818,14 +818,17 @@ def main():
 
     mypg = None
     password = None
-    mykeys=""
+    mykeys = ""
     mykeys = read_keystore(Settings,keyfile)
 
     if Settings.provider.lower() == "rpcnode":
         provider = pa.RpcNode(testnet=Settings.testnet)
     if Settings.provider.lower() == "holy":
-        provider = pa.Holy(network=Settings.network,keysJson=mykeys)
+        provider = pa.Holy(network=Settings.network)
+
+    provider = KeyedProvider(provider,keysJson=mykeys)
     set_up(provider)
+
     args = cli()
 
     if args.status:

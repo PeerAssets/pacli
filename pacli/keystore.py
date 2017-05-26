@@ -1,6 +1,7 @@
 import gnupg
 import getpass
 import sys
+from pypeerassets.kutil import Kutil
 
 mypg = None
 
@@ -28,4 +29,49 @@ def write_keystore(Settings,keyfile,keys):
         fd = open(keyfile,"w")
         fd.write(data)
         fd.close()
-    
+
+class KeyedProvider:
+
+    """
+    Keystore class
+    """
+
+    @classmethod
+    def __init__(self, provider, keysJson: str=""):
+        """
+        : 
+        """
+        self.provider = provider
+
+        if keysJson != "":
+            self.privkeys = eval(keysJson)
+        else:
+            self.privkeys = {}
+
+    @classmethod
+    def __getattr__(self, name):
+        return getattr(self.provider, name)
+
+    @classmethod
+    def importprivkey(self, privkey: str, label: str) -> int:
+        """import <privkey> with <label>"""
+        mykey = Kutil(wif=privkey)
+
+        if label not in self.privkeys.keys():
+            self.privkeys[label] = []
+
+        if mykey._privkey not in [key['privkey'] for key in self.privkeys[label]]:
+            self.privkeys[label].append({"privkey":mykey._privkey,"address":mykey.address})
+
+    @classmethod
+    def getaddressesbyaccount(self, label: str) -> list:
+        if label in self.privkeys.keys():
+            return [key["address"] for key in self.privkeys[label]]
+
+    @classmethod
+    def listaccounts(self) -> dict:
+        return {key:0 for key in self.privkeys.keys()}
+
+    @classmethod
+    def dumpprivkeys(self) -> dict:
+        return self.privkeys
