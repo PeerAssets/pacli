@@ -10,9 +10,12 @@ from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 import json
 import logging
 
+from pacli.keystore import read_keystore, write_keystore, KeyedProvider
+
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
 logfile = os.path.join(conf_dir, "pacli.log")
+keyfile = os.path.join(conf_dir, "pacli.gpg")
 
 class Settings:
     pass
@@ -20,9 +23,10 @@ class Settings:
 def load_conf():
     '''load user configuration'''
 
-    user_config = read_conf(conf_file)
-    for key in user_config:
-        setattr(Settings, key, user_config[key])
+    settings = read_conf(conf_file)
+
+    for key in settings:
+        setattr(Settings, key, settings[key])
 
     logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
     logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
@@ -37,6 +41,8 @@ def first_run():
         os.mkdir(conf_dir)
     if not os.path.exists(conf_file):
         write_default_config(conf_file)
+    if not os.path.exists(keyfile):
+        open(keyfile, 'a').close()
 
 def set_up(provider):
     '''setup'''
@@ -50,7 +56,8 @@ def set_up(provider):
         if not Settings.production:
             if not provider.listtransactions("PATEST"):
                 pa.pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
-
+    else:
+        pa.pautils.load_p2th_privkeys_into_local_node(provider,keyfile)
 
 def default_account_utxo(provider, amount):
     '''set default address to be used with pacli'''
@@ -803,12 +810,25 @@ def cli():
 def main():
 
     first_run()
-    load_conf()
+
+    try:
+        load_conf()
+    except:
+        raise
+
+    mypg = None
+    password = None
+    mykeys = ""
+    mykeys = read_keystore(Settings,keyfile)
+
     if Settings.provider.lower() == "rpcnode":
         provider = pa.RpcNode(testnet=Settings.testnet)
     if Settings.provider.lower() == "holy":
         provider = pa.Holy(network=Settings.network)
+
+    provider = KeyedProvider(provider,keysJson=mykeys)
     set_up(provider)
+
     args = cli()
 
     if args.status:
@@ -858,5 +878,7 @@ def main():
         if args.info:
             vote_info(provider, args.info)
 
+    write_keystore(Settings,keyfile,provider.dumpprivkeys())
+ 
 if __name__ == "__main__":
     main()
