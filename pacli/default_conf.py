@@ -5,5 +5,9 @@ default_conf = {
     "production": True,
     "change": "default",
     "provider": "rpcnode",
-    "loglevel": "WARNING" # WARNING, INFO, DEBUG 
+    "loglevel": "WARNING", # WARNING, INFO, DEBUG 
+    "keystore": "gnupg",
+    "gnupgdir": "~/.gnupg/",
+    "gnupgagent": False,
+    "gnupgkey": "any"
     }
