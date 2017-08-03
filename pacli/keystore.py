@@ -55,13 +55,15 @@ class KeyedProvider:
     @classmethod
     def importprivkey(self, privkey: str, label: str) -> int:
         """import <privkey> with <label>"""
-        mykey = Kutil(wif=privkey)
+        mykey = Kutil(network=self.provider.network, wif=privkey)
 
         if label not in self.privkeys.keys():
             self.privkeys[label] = []
 
-        if mykey._privkey not in [key['privkey'] for key in self.privkeys[label]]:
-            self.privkeys[label].append({"privkey":mykey._privkey,"address":mykey.address})
+        if mykey.privkey not in [key['privkey'] for key in self.privkeys[label]]:
+            self.privkeys[label].append({
+                "privkey": mykey.privkey,
+                "address": mykey.address })
 
     @classmethod
     def getaddressesbyaccount(self, label: str) -> list:

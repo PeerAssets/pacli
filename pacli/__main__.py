@@ -335,7 +335,7 @@ def new_deck(provider, deck, broadcast):
     '''
     Spawn a new PeerAssets deck.
 
-    pacli deck -new '{"name": "test", "number_of_decimals": 1, "issue_mode": "ONCE"}'
+    pacli deck --new '{"name": "test", "number_of_decimals": 1, "issue_mode": "ONCE"}'
 
     Will return deck span txid.
     '''
@@ -780,7 +780,8 @@ def cli():
     parser.add_argument("--newaddress", action="store_true",
                         help="generate a new address and import to wallet")
     parser.add_argument("--status", action="store_true", help="show pacli status")
-    parser.add_argument("--addressbalance", action="store", nargs=2, help="check card balance of the address")
+    parser.add_argument("--addressbalance", action="store",
+            metavar=('DECK_ID', 'ADDRESS'), nargs=2, help="check card balance of the address")
 
     deck = subparsers.add_parser('deck', help='Deck manipulation.')
     deck.add_argument("--list", action="store_true", help="list decks")
@@ -827,7 +828,7 @@ def main():
         provider = pa.Holy(network=Settings.network)
 
     provider = KeyedProvider(provider,keysJson=mykeys)
-    set_up(provider)
+    set_up(provider.provider)
 
     args = cli()
 
