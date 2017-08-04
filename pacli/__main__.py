@@ -10,7 +10,7 @@ from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 import json
 import logging
 
-from pacli.keystore import read_keystore, write_keystore, KeyedProvider
+from pacli.keystore import GpgKeystore, KeyedProvider
 
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
@@ -56,7 +56,7 @@ def set_up(provider):
         if not Settings.production:
             if not provider.listtransactions("PATEST"):
                 pa.pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
-    else:
+    elif Settings.provider != 'holy':
         pa.pautils.load_p2th_privkeys_into_local_node(provider,keyfile)
 
 def default_account_utxo(provider, amount):
@@ -811,24 +811,20 @@ def cli():
 def main():
 
     first_run()
-
-    try:
-        load_conf()
-    except:
-        raise
-
-    mypg = None
-    password = None
-    mykeys = ""
-    mykeys = read_keystore(Settings,keyfile)
+    load_conf()
 
     if Settings.provider.lower() == "rpcnode":
         provider = pa.RpcNode(testnet=Settings.testnet)
     if Settings.provider.lower() == "holy":
         provider = pa.Holy(network=Settings.network)
 
-    provider = KeyedProvider(provider,keysJson=mykeys)
-    set_up(provider.provider)
+    set_up(provider)
+
+    keystore = None
+    if Settings.keystore.lower() == "gnupg":
+        keystore = GpgKeystore(Settings, keyfile)
+    if(keystore):
+        provider = KeyedProvider(provider, keys=keystore.read())
 
     args = cli()
 
@@ -879,7 +875,8 @@ def main():
         if args.info:
             vote_info(provider, args.info)
 
-    write_keystore(Settings,keyfile,provider.dumpprivkeys())
+    if(keystore):
+        keystore.write(provider.dumpprivkeys())
  
 if __name__ == "__main__":
     main()
