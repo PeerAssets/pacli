@@ -43,46 +43,45 @@ class GpgKeystore:
         keyfile.close()
 
 
-class KeyedProvider:
-
+def as_local_key_provider(Provider):
     """
-    Wraps a provider, shadowing it's private key management and deferring other logic.
-    Uses an in-memory store to handle
-        importprivkey, getaddressesbyaccount, listaccounts, and dumpprivkeys
+    factory for subclassing Providers,
+    allowing for local key management and isinstance checks
     """
 
-    @classmethod
-    def __init__(self, provider, keys: dict = {}):
-        self.provider = provider
-        self.privkeys = keys
+    class LocalKeyProvider(Provider):
 
-    @classmethod
-    def __getattr__(self, name):
-        return getattr(self.provider, name)
+        """
+        Wraps a provider, shadowing it's private key management and deferring other logic.
+        Uses an in-memory store to handle
+            importprivkey, getaddressesbyaccount, listaccounts, and dumpprivkeys
+        """
 
-    @classmethod
-    def importprivkey(self, privkey: str, label: str) -> int:
-        """import <privkey> with <label>"""
-        mykey = Kutil(network=self.provider.network, wif=privkey)
+        def __init__(self, keystore: GpgKeystore, **kwargs):
+            super(Provider, self).__init__(**kwargs)
+            self.keystore = keystore
+            self.privkeys = keystore.read()
 
-        if label not in self.privkeys.keys():
-            self.privkeys[label] = []
+        def importprivkey(self, privkey: str, label: str) -> int:
+            """import <privkey> with <label>"""
+            mykey = Kutil(network=self.network, wif=privkey)
 
-        if mykey.privkey not in [key['privkey'] for key in self.privkeys[label]]:
-            self.privkeys[label].append({ "privkey": mykey.privkey,
-                "address": mykey.address })
+            if label not in self.privkeys.keys():
+                self.privkeys[label] = []
 
-    @classmethod
-    def getaddressesbyaccount(self, label: str) -> list:
-        if label in self.privkeys.keys():
-            return [key["address"] for key in self.privkeys[label]]
+            if mykey.privkey not in [key['privkey'] for key in self.privkeys[label]]:
+                self.privkeys[label].append({ "privkey": mykey.privkey,
+                    "address": mykey.address })
 
-    @classmethod
-    def listaccounts(self) -> dict:
-        return {key:0 for key in self.privkeys.keys()}
+        def getaddressesbyaccount(self, label: str) -> list:
+            if label in self.privkeys.keys():
+                return [key["address"] for key in self.privkeys[label]]
 
-    @classmethod
-    def dumpprivkeys(self) -> dict:
-        return self.privkeys
+        def listaccounts(self) -> dict:
+            return {key:0 for key in self.privkeys.keys()}
 
+        def dumpprivkeys(self) -> dict:
+            return self.privkeys
+
+    return LocalKeyProvider
 

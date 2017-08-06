@@ -10,7 +10,7 @@ from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 import json
 import logging
 
-from pacli.keystore import GpgKeystore, KeyedProvider
+from pacli.keystore import GpgKeystore, as_local_key_provider
 
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
@@ -808,23 +808,37 @@ def cli():
 
     return parser.parse_args()
 
+
+def configured_provider(Settings):
+    " resolve settings into configured provider "
+
+    if Settings.provider.lower() == "rpcnode":
+        Provider = pa.RpcNode
+        kwargs = dict(testnet=Settings.testnet)
+
+    elif Settings.provider.lower() == "holy":
+        Provider = pa.Holy
+        kwargs = dict(network=Settings.network)
+
+    else: raise Exception('invalid provider')
+
+    if Settings.keystore.lower() == "gnupg":
+        Provider = as_local_key_provider(Provider)
+        kwargs['keystore'] = keystore = GpgKeystore(Settings, keyfile)
+
+    print(Provider, kwargs)
+    provider = Provider(**kwargs)
+    set_up(provider)
+
+    return provider
+
+
 def main():
 
     first_run()
     load_conf()
 
-    if Settings.provider.lower() == "rpcnode":
-        provider = pa.RpcNode(testnet=Settings.testnet)
-    if Settings.provider.lower() == "holy":
-        provider = pa.Holy(network=Settings.network)
-
-    set_up(provider)
-
-    keystore = None
-    if Settings.keystore.lower() == "gnupg":
-        keystore = GpgKeystore(Settings, keyfile)
-    if(keystore):
-        provider = KeyedProvider(provider, keys=keystore.read())
+    provider = configured_provider(Settings)
 
     args = cli()
 
@@ -875,8 +889,9 @@ def main():
         if args.info:
             vote_info(provider, args.info)
 
-    if(keystore):
-        keystore.write(provider.dumpprivkeys())
+    if (hasattr(provider, 'keystore')):
+        # could possibly make this direct behavior of dumprivkeys
+        provider.keystore.write(provider.dumpprivkeys())
  
 if __name__ == "__main__":
     main()
