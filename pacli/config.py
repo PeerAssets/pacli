@@ -12,21 +12,24 @@ def write_default_config(conf_file=None):
         with open(conf_file, 'w') as configfile:
             config.write(configfile)
 
+optional = {
+    "keystore": "none",
+    "gnupgdir": "",
+    "gnupgagent": "", 
+    "gnupgkey": ""
+    }
+
+required = { "network", "production", "loglevel", "change"  }
+
 def read_conf(conf_file):
     config = configparser.ConfigParser()
     config.read(conf_file)
     try:
-        settings = {
-            "network": config["settings"]["network"],
-            "production": config["settings"]["production"],
-            "loglevel": config["settings"]["loglevel"],
-            "change": config["settings"]["change"],
-            "provider": config["settings"]["provider"],
-            "keystore": config["settings"]["keystore"],
-            "gnupgdir": config["settings"]["gnupgdir"],
-            "gnupgagent": config["settings"]["gnupgagent"],
-            "gnupgkey": config["settings"]["gnupgkey"]
-            }
+        settings = dict(config["settings"])
+        assert set(settings.keys()).issuperset(required)
+        for k, v in optional.items():
+            settings[k] = settings.get(k, v)
+
     except:
         print("config is outdated, saving current default config to",conf_file+".sample")
         write_default_config(conf_file+".sample")

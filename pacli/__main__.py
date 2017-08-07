@@ -826,7 +826,6 @@ def configured_provider(Settings):
         Provider = as_local_key_provider(Provider)
         kwargs['keystore'] = keystore = GpgKeystore(Settings, keyfile)
 
-    print(Provider, kwargs)
     provider = Provider(**kwargs)
     set_up(provider)
 
