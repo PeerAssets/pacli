@@ -10,7 +10,7 @@ from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 import json
 import logging
 
-from pacli.keystore import read_keystore, write_keystore, KeyedProvider
+from pacli.keystore import GpgKeystore, as_local_key_provider
 
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
@@ -56,7 +56,7 @@ def set_up(provider):
         if not Settings.production:
             if not provider.listtransactions("PATEST"):
                 pa.pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
-    else:
+    elif Settings.provider != 'holy':
         pa.pautils.load_p2th_privkeys_into_local_node(provider,keyfile)
 
 def default_account_utxo(provider, amount):
@@ -335,7 +335,7 @@ def new_deck(provider, deck, broadcast):
     '''
     Spawn a new PeerAssets deck.
 
-    pacli deck -new '{"name": "test", "number_of_decimals": 1, "issue_mode": "ONCE"}'
+    pacli deck --new '{"name": "test", "number_of_decimals": 1, "issue_mode": "ONCE"}'
 
     Will return deck span txid.
     '''
@@ -780,7 +780,8 @@ def cli():
     parser.add_argument("--newaddress", action="store_true",
                         help="generate a new address and import to wallet")
     parser.add_argument("--status", action="store_true", help="show pacli status")
-    parser.add_argument("--addressbalance", action="store", nargs=2, help="check card balance of the address")
+    parser.add_argument("--addressbalance", action="store",
+            metavar=('DECK_ID', 'ADDRESS'), nargs=2, help="check card balance of the address")
 
     deck = subparsers.add_parser('deck', help='Deck manipulation.')
     deck.add_argument("--list", action="store_true", help="list decks")
@@ -807,27 +808,36 @@ def cli():
 
     return parser.parse_args()
 
+
+def configured_provider(Settings):
+    " resolve settings into configured provider "
+
+    if Settings.provider.lower() == "rpcnode":
+        Provider = pa.RpcNode
+        kwargs = dict(testnet=Settings.testnet)
+
+    elif Settings.provider.lower() == "holy":
+        Provider = pa.Holy
+        kwargs = dict(network=Settings.network)
+
+    else: raise Exception('invalid provider')
+
+    if Settings.keystore.lower() == "gnupg":
+        Provider = as_local_key_provider(Provider)
+        kwargs['keystore'] = keystore = GpgKeystore(Settings, keyfile)
+
+    provider = Provider(**kwargs)
+    set_up(provider)
+
+    return provider
+
+
 def main():
 
     first_run()
+    load_conf()
 
-    try:
-        load_conf()
-    except:
-        raise
-
-    mypg = None
-    password = None
-    mykeys = ""
-    mykeys = read_keystore(Settings,keyfile)
-
-    if Settings.provider.lower() == "rpcnode":
-        provider = pa.RpcNode(testnet=Settings.testnet)
-    if Settings.provider.lower() == "holy":
-        provider = pa.Holy(network=Settings.network)
-
-    provider = KeyedProvider(provider,keysJson=mykeys)
-    set_up(provider)
+    provider = configured_provider(Settings)
 
     args = cli()
 
@@ -878,7 +888,9 @@ def main():
         if args.info:
             vote_info(provider, args.info)
 
-    write_keystore(Settings,keyfile,provider.dumpprivkeys())
+    if (hasattr(provider, 'keystore')):
+        # could possibly make this direct behavior of dumprivkeys
+        provider.keystore.write(provider.dumpprivkeys())
  
 if __name__ == "__main__":
     main()
