@@ -820,7 +820,12 @@ def configured_provider(Settings):
         Provider = pa.Holy
         kwargs = dict(network=Settings.network)
 
-    else: raise Exception('invalid provider')
+    elif Settings.provider.lower() == "cryptoid":
+        Provider = pa.Cryptoid
+        kwargs = dict(network=Settings.network)
+
+    else:
+        raise Exception('invalid provider')
 
     if Settings.keystore.lower() == "gnupg":
         Provider = as_local_key_provider(Provider)
