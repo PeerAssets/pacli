@@ -1,4 +1,3 @@
-pypeerassets>=0.1.1
+pypeerassets>=0.2.1
 terminaltables>=3.1.0
-gnupg>=2.1
 appdirs
