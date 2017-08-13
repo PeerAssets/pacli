@@ -112,8 +112,7 @@ def find_deck(provider, key: str) -> list:
 class ListDecks:
 
     @classmethod
-    def __init__(cls, provider, decks):
-        cls.provider = provider
+    def __init__(cls, decks):
         cls.decks = list(decks)
 
     ## Deck table header
@@ -266,8 +265,9 @@ class DeckBalances:
 def deck_list(provider):
     '''list command'''
 
-    d = ListDecks(provider, pa.find_all_valid_decks(provider, 
-                  Settings.deck_version, Settings.production))
+    decks = pa.find_all_valid_decks(provider=provider, deck_version=Settings.deck_version,
+                                    prod=Settings.production)
+    d = ListDecks(decks)
     d.pack_decks_for_printing()
     print(d.table.table)
 
