@@ -58,7 +58,11 @@ def as_local_key_provider(Provider):
         """
 
         def __init__(self, keystore: GpgKeystore, **kwargs):
-            super(Provider, self).__init__(**kwargs)
+            try:
+                super(Provider, self).__init__(**kwargs)
+            except TypeError:
+                self.__init__hack__ = Provider.__init__
+                self.__init__hack__(**kwargs)
             self.keystore = keystore
             self.privkeys = keystore.read()
 

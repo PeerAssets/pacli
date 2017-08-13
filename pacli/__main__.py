@@ -56,8 +56,8 @@ def set_up(provider):
         if not Settings.production:
             if not provider.listtransactions("PATEST"):
                 pa.pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
-    elif Settings.provider != 'holy':
-        pa.pautils.load_p2th_privkeys_into_local_node(provider,keyfile)
+   #elif Settings.provider != 'holy':
+   #    pa.pautils.load_p2th_privkeys_into_local_node(provider, keyfile)
 
 def default_account_utxo(provider, amount):
     '''set default address to be used with pacli'''
