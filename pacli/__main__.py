@@ -20,6 +20,7 @@ keyfile = os.path.join(conf_dir, "pacli.gpg")
 class Settings:
     pass
 
+
 def load_conf():
     '''load user configuration'''
 
@@ -33,6 +34,7 @@ def load_conf():
                         format="%(asctime)s %(levelname)s %(message)s")
 
     logging.debug("logging initialized")
+
 
 def first_run():
     '''if first run, setup local configuration directory.'''
@@ -100,7 +102,7 @@ def tstamp_to_iso(tstamp):
 def find_deck(provider, key: str) -> list:
     '''find deck by <key>'''
 
-    decks = list(pa.find_all_valid_decks(provider, prod=Settings.production))
+    decks = list(pa.find_all_valid_decks(provider, deck_version=Settings.deck_version, prod=Settings.production))
     for i in decks:
         i.short_id = i.asset_id[:20]
 
@@ -264,7 +266,8 @@ class DeckBalances:
 def deck_list(provider):
     '''list command'''
 
-    d = ListDecks(provider, pa.find_all_valid_decks(provider))
+    d = ListDecks(provider, pa.find_all_valid_decks(provider, 
+                  Settings.deck_version, Settings.production))
     d.pack_decks_for_printing()
     print(d.table.table)
 
