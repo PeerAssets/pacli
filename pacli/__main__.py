@@ -136,37 +136,7 @@ def cli():
     return parser.parse_args()
 
 
-def configured_provider(Settings):
-    " resolve settings into configured provider "
-
-    if Settings.provider.lower() == "rpcnode":
-        Provider = pa.RpcNode
-        kwargs = dict(testnet=Settings.testnet)
-
-    elif Settings.provider.lower() == "holy":
-        Provider = pa.Holy
-        kwargs = dict(network=Settings.network)
-
-    elif Settings.provider.lower() == "cryptoid":
-        Provider = pa.Cryptoid
-        kwargs = dict(network=Settings.network)
-
-    else:
-        raise Exception('invalid provider')
-
-    if Settings.keystore.lower() == "gnupg":
-        Provider = as_local_key_provider(Provider)
-        kwargs['keystore'] = keystore = GpgKeystore(Settings)
-
-    provider = Provider(**kwargs)
-    set_up(provider)
-
-    return provider
-
-
 def main():
-
-    provider = configured_provider(Settings)
 
     args = cli()
 

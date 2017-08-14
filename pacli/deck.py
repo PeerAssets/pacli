@@ -1,13 +1,12 @@
 import click
 from click_default_group import DefaultGroup
-from terminaltables import AsciiTable
-from datetime import datetime
 from binascii import hexlify
 #from pypeerassets import find_card_transfers, find_all_valid_decks, DeckState, Deck, load_deck_p2th_into_local_node
 import pypeerassets as pa
 import json
 from pacli.config import Settings
-from pacli.provider import provider
+from pacli.provider import provider, change
+from utils import tstamp_to_iso, print_table
 
 
 def default_account_utxo(amount):
@@ -29,7 +28,6 @@ def default_account_utxo(amount):
     return
 
 
-
 def get_state(deck):
     '''return balances of this deck'''
 
@@ -38,18 +36,6 @@ def get_state(deck):
         return pa.DeckState(cards)
     else:
         raise ValueError("No cards on this deck.")
-
-
-def tstamp_to_iso(tstamp):
-    '''make iso timestamp from unix timestamp'''
-
-    return datetime.fromtimestamp(tstamp).isoformat()
-
-
-def print_table(title, heading, data):
-    data.insert(0, heading)
-    table = AsciiTable(data, title=title)
-    print(table.table)
 
 
 def deck_title(deck):
@@ -79,12 +65,12 @@ def print_deck_balances(deck, balances={}):
 
 
 def deck_summary_line_item(deck):
-    deck = deck.__dict__
-    return [
-            deck["asset_id"][:20],
-            deck["name"],
-            deck["issuer"],
-            deck["issue_mode"] ]
+    d = deck.__dict__
+    return [d["asset_id"][:20],
+            d["name"],
+            d["issuer"],
+            d["issue_mode"] ]
+
 
 def print_deck_list(decks):
     '''Show summary of every deck'''
@@ -107,6 +93,14 @@ def search_decks(key: str) -> list:
     return [d for d in decks if key in d.__dict__.values()]
 
 
+def find_deck(key: str):
+    '''find single deck by <key>'''
+    try:
+        return search_decks(key)[0]
+    except IndexError:
+        raise Exception({"error": "Deck not found!"})
+
+
 def list():
     '''list command'''
 
@@ -121,10 +115,6 @@ class SingleDeck:
 
     def __init__(self, deck_id):
         self.deck = find_deck(deck_id)
-        try:
-            self.deck = find_deck(key)[0]
-        except IndexError:
-            raise Exception({"error": "Deck not found!"})
 
     def info(self):
         '''info commands, show full deck details'''
