@@ -1,3 +1,5 @@
+import click
+from click_default_group import DefaultGroup
 from terminaltables import AsciiTable
 from datetime import datetime
 from binascii import hexlify
@@ -5,9 +7,10 @@ from binascii import hexlify
 import pypeerassets as pa
 import json
 from pacli.config import Settings
+from pacli.provider import provider
 
 
-def default_account_utxo(provider, amount):
+def default_account_utxo(amount):
     '''set default address to be used with pacli'''
 
     if "PACLI" not in provider.listaccounts().keys():
@@ -27,7 +30,7 @@ def default_account_utxo(provider, amount):
 
 
 
-def get_state(provider, deck):
+def get_state(deck):
     '''return balances of this deck'''
 
     cards = pa.find_card_transfers(provider, deck)
@@ -43,118 +46,59 @@ def tstamp_to_iso(tstamp):
     return datetime.fromtimestamp(tstamp).isoformat()
 
 
-class DeckInfo:
-
-    @classmethod
-    def __init__(cls, deck):
-        assert isinstance(deck, pa.Deck)
-        cls.deck = deck
-
-        ## Deck table header
-        cls.deck_table = [
-            ## add subscribed column
-            ("asset name", "issuer", "issue mode", "decimals", "issue time")
-        ]
-
-        cls.table = AsciiTable(cls.deck_table, title="Deck id: " + cls.deck.asset_id + " ")
-
-    @staticmethod
-    def dtl(deck, subscribed=False):
-        '''deck-to-list deck to table-printable list'''
-
-        l = []
-        l.append(deck["name"])
-        l.append(deck["issuer"])
-        l.append(deck["issue_mode"])
-        l.append(deck["number_of_decimals"])
-        l.append(tstamp_to_iso(deck["issue_time"]))
-
-        return l
-
-    @classmethod
-    def pack_decks_for_printing(cls):
-
-        cls.deck_table.append(cls.dtl(cls.deck.__dict__))
+def print_table(title, heading, data):
+    data.insert(0, heading)
+    table = AsciiTable(data, title=title)
+    print(table.table)
 
 
-class DeckBalances:
+def deck_title(deck):
+    return "Deck id: " + deck.asset_id + " "
+
+
+def print_deck_info(deck):
+    assert isinstance(deck, pa.Deck)
+    ## TODO add subscribed column
+    heading = ("asset name", "issuer", "issue mode", "decimals", "issue time")
+    data = [[
+        deck[attr] for attr in 
+        ["name", "issuer", "issue_mode", "number_of_decimals", "issue_time"]
+        ]]
+    print_table(title=deck_title(deck), heading, data)
+
+
+def print_deck_balances(deck, balances={}):
     '''Show balances of address tied with this deck.'''
-
-    @classmethod
-    def __init__(cls, deck, balances):
-        assert isinstance(deck, pa.Deck)
-        cls.balances = dict(balances)
-        cls.deck = deck
-
-        ## Deck table header
-        cls.deck_table = [
-            ## add subscribed column
-            ("address", "balance")
-        ]
-
-        cls.table = AsciiTable(cls.deck_table, title="Deck id: " + cls.deck.asset_id + " ")
-
-    @classmethod
-    def dtl(cls, addr, balance):
-        '''deck-to-list deck to table-printable list'''
-
-        l = []
-        l.append(addr)
-        l.append(exponent_to_amount(balance,
-                 cls.deck.number_of_decimals))
-
-        return l
-
-    @classmethod
-    def pack_for_printing(cls):
-
-        assert len(cls.balances) > 0, {"error": "No balances found!"}
-
-        for k in cls.balances:
-            cls.deck_table.append(
-                cls.dtl(k, cls.balances[k])
-            )
+    assert isinstance(deck, pa.Deck)
+    precision = deck.number_of_decimals
+    ## TODO add subscribed column
+    heading = ("address", "balance")
+    data = [[address, exponent_to_amount(balance, precision)]
+            for address, balance in balances]
+    print_table(title=deck_title(deck), heading, data)
 
 
-class ListDecks:
+def deck_summary_line_item(deck):
+    deck = deck.__dict__
+    return [
+            deck["asset_id"][:20],
+            deck["name"],
+            deck["issuer"],
+            deck["issue_mode"] ]
 
-    @classmethod
-    def __init__(cls, decks):
-        cls.decks = list(decks)
+def print_deck_list(decks):
+    '''Show summary of every deck'''
 
-    ## Deck table header
-    deck_table = [
-        ## add subscribed column
-        ("asset ID", "asset name", "issuer", "mode")
-    ]
+    decks = list(decks)
 
-    table = AsciiTable(deck_table, title="Decks")
-
-    @classmethod
-    def dtl(cls, deck):
-        '''deck-to-list deck to table-printable list'''
-
-        l = []
-        l.append(deck["asset_id"][:20])
-        l.append(deck["name"])
-        l.append(deck["issuer"])
-        l.append(deck["issue_mode"])
-
-        return l
-
-    @classmethod
-    def pack_decks_for_printing(cls):
-
-        assert cls.decks, {"error": "No decks found!"}
-
-        for i in cls.decks:
-            cls.deck_table.append(
-                cls.dtl(i.__dict__)
-            )
+    ## TODO add subscribed column
+    heading = ("asset ID", "asset name", "issuer", "mode")
+    data = map(deck_summary_line_item, list(decks))
+    print_table(title="Decks", heading, data)
 
 
-def find_deck(provider, key: str) -> list:
-    '''find deck by <key>'''
+def search_decks(key: str) -> list:
+    '''search decks by <key>'''
 
     decks = list(pa.find_all_valid_decks(provider, deck_version=Settings.deck_version, prod=Settings.production))
     for i in decks:
@@ -163,7 +107,7 @@ def find_deck(provider, key: str) -> list:
     return [d for d in decks if key in d.__dict__.values()]
 
 
-def deck_list(provider):
+def list():
     '''list command'''
 
     decks = pa.find_all_valid_decks(provider=provider, deck_version=Settings.deck_version,
@@ -173,69 +117,67 @@ def deck_list(provider):
     print(d.table.table)
 
 
-def deck_subscribe(provider, deck_id):
-    '''subscribe command, load deck p2th into local node, pass <deck_id>'''
+class SingleDeck:
 
-    try:
-        deck = find_deck(provider, deck_id)[0]
-    except IndexError:
-        print({"error": "Deck not found!"})
-        return
-    pa.load_deck_p2th_into_local_node(provider, deck)
+    def __init__(self, deck_id):
+        self.deck = find_deck(deck_id)
+        try:
+            self.deck = find_deck(key)[0]
+        except IndexError:
+            raise Exception({"error": "Deck not found!"})
 
+    def info(self):
+        '''info commands, show full deck details'''
+        print_deck_info(deck)
 
-def deck_search(provider, key):
-    '''search commands, query decks by <key>'''
+    def balances(self):
+        '''show deck balances'''
+        print_deck_balances(self.deck, get_state(self.deck).balances)
 
-    decks = find_deck(provider, key)
-    d = ListDecks(provider, decks)
-    d.pack_decks_for_printing()
-    print(d.table.table)
+    def subscribe(self):
+        '''subscribe command, load deck p2th into local node>'''
+        pa.load_deck_p2th_into_local_node(provider, self.deck)
 
+    def checksum(self):
+        ''' verify checksum '''
+        if get_state(self.deck).checksum:
+            print("\n", "Deck checksum is correct.")
+        else:
+            print("\n", "Deck checksum is incorrect.")
 
-def deck_info(provider, deck_id):
-    '''info commands, show full deck details'''
-
-    try:
-        deck = find_deck(provider, deck_id)[0]
-    except IndexError:
-        print("\n", {"error": "Deck not found!"})
-        return
-    info = DeckInfo(deck)
-    info.pack_decks_for_printing()
-    print(info.table.table)
-
-
-def deck_balances(provider, deck_id):
-    '''show deck balances'''
-
-    try:
-        deck = find_deck(provider, deck_id)[0]
-    except IndexError:
-        print("\n", {"error": "Deck not found!"})
-        return
-    balances = get_state(provider, deck).balances
-    b = DeckBalances(deck, balances)
-    b.pack_for_printing()
-    print(b.table.table)
+    @classmethod()
+    def options(self, func):
+        for option in ['info', 'balances', 'subscribe', 'checksum']:
+            func = click.option('--' + option, is_flag=True)(func)
+        return func
+            
 
 
-def deck_checksum(provider, deck_id):
-    '''info commands, show full deck details'''
-
-    try:
-        deck = find_deck(provider, deck_id)[0]
-    except IndexError:
-        print("\n", {"error": "Deck not found!"})
-        return
-    deck_state = get_state(provider, deck)
-    if deck_state.checksum:
-        print("\n", "Deck checksum is correct.")
-    else:
-        print("\n", "Deck checksum is incorrect.")
+@click.group(cls=DefaultGroup, default='find', default_if_no_args=True)
+def deck():
+    pass
 
 
-def new_deck(provider, deck, broadcast):
+@deck.command()
+@click.argument('deck_id')
+@SingleDeck.options
+def find(deck_id, **options):
+    deck = SingleDeck(deck_id)
+    for option in options or ['info']:
+        deck[option]()
+
+
+@deck.command()
+@click.argument('deck_id')
+def search(deck_id):
+    '''search commands, query decks by <deck_id>'''
+    print_deck_list(search_decks(deck_id))
+
+
+@deck.command()
+@click.argument('deck')
+@click.option('--broadcast/--no-broadcast', default=False)
+def new_deck(deck, broadcast):
     '''
     Spawn a new PeerAssets deck.
 
@@ -248,7 +190,7 @@ def new_deck(provider, deck, broadcast):
     deck["network"] = Settings.network
     deck["production"] = Settings.production
     #utxo = provider.select_inputs(0.02)  # we need 0.02 PPC
-    utxo = default_account_utxo(provider, 0.02)
+    utxo = default_account_utxo(0.02)
     if utxo:
         change_address = change(utxo)
     else:
@@ -266,7 +208,7 @@ def new_deck(provider, deck, broadcast):
 
         deck["asset_id"] = txid
         d = pa.Deck(**deck)
-        pa.load_deck_p2th_into_local_node(provider, d) # subscribe to deck
+        pa.load_deck_p2th_into_local_node(d) # subscribe to deck
     else:
         print("\nraw transaction:\n", signed["hex"], "\n")
 

@@ -46,10 +46,21 @@ def read_conf(conf_file):
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
 logfile = os.path.join(conf_dir, "pacli.log")
+keyfile = os.path.join(conf_dir, "pacli.gpg")
+
+
+def init_config():
+    '''if first run, setup local configuration directory.'''
+    if not os.path.exists(conf_dir):
+        os.mkdir(conf_dir)
+    if not os.path.exists(conf_file):
+        write_default_config(conf_file)
 
 
 def load_conf():
     '''load user configuration'''
+
+    init_config()
 
     class Settings:
         pass
@@ -58,6 +69,8 @@ def load_conf():
 
     for key in settings:
         setattr(Settings, key, settings[key])
+
+    setattr(Settings, 'keyfile', keyfile)
 
     logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
     logging.basicConfig(level=logging.getLevelName(Settings.loglevel),

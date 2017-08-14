@@ -5,11 +5,12 @@ import pypeerassets as pa
 from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 from pacli.deck import find_deck 
 import json
+from pacli.provider import provider
 
 class ListCards:
 
     @classmethod
-    def __init__(cls, provider, cards):
+    def __init__(cls, cards):
         cls.provider = provider
         cls.cards = list(cards)
 
@@ -50,14 +51,14 @@ class ListCards:
             )
 
 
-def list_cards(provider, args):
+def list_cards(deck_key):
     '''
     List cards of this <deck>.abs
 
     pacli card -list <deck>
     '''
     try:
-        deck = find_deck(provider, args)[0]
+        deck = find_deck(deck_key)[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
@@ -68,12 +69,12 @@ def list_cards(provider, args):
 
     all_cards = pa.find_card_transfers(provider, deck)
     cards = pa.validate_card_issue_modes(deck, all_cards)
-    c = ListCards(provider, cards)
+    c = ListCards(cards)
     c.pack_cards_for_printing()
     print(c.table.table)
 
 
-def export_cards(provider, args):
+def export_cards(args):
     '''
     export cards to csv <filename>
 
@@ -81,7 +82,7 @@ def export_cards(provider, args):
     '''
 
     try:
-        deck = find_deck(provider, args[0])[0]
+        deck = find_deck(args[0])[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
@@ -95,7 +96,7 @@ def export_cards(provider, args):
     export_to_csv(cards, args[1])
 
 
-def card_issue(provider, args, broadcast):
+def card_issue(args, broadcast):
     '''
     Issue new cards of this deck.
 
@@ -107,7 +108,7 @@ def card_issue(provider, args, broadcast):
 
     issue = json.loads(args)
     try:
-        deck = find_deck(provider, issue["deck"])[0]
+        deck = find_deck(issue["deck"])[0]
     except IndexError:
         print("\n", {"error": "Deck not found."})
         return
@@ -143,7 +144,7 @@ def card_issue(provider, args, broadcast):
         print("\nraw transaction:\n", signed["hex"], "\n")
 
 
-def card_burn(provider, args, broadcast):
+def card_burn(args, broadcast):
     '''
     Burn cards of this deck.
 
@@ -152,7 +153,7 @@ def card_burn(provider, args, broadcast):
 
     args = json.loads(args)
     try:
-        deck = find_deck(provider, args["deck"])[0]
+        deck = find_deck(args["deck"])[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
@@ -160,7 +161,7 @@ def card_burn(provider, args, broadcast):
         print("\n", {"error": "You are not even subscribed to this deck, how can you burn cards?"})
         return
     try:
-        my_balance = get_my_balance(provider, deck.asset_id)
+        my_balance = get_my_balance(deck.asset_id)
     except ValueError:
         print("\n", {"error": "You have no cards on this deck."})
         return
@@ -185,7 +186,7 @@ def card_burn(provider, args, broadcast):
         print("\nraw transaction:\n", signed["hex"], "\n")
 
 
-def card_transfer(provider, args, broadcast):
+def card_transfer(args, broadcast):
     '''
     Transfer cards to <receivers>
 
@@ -196,14 +197,14 @@ def card_transfer(provider, args, broadcast):
 
     args = json.loads(args)
     try:
-        deck = find_deck(provider, args["deck"])[0]
+        deck = find_deck(args["deck"])[0]
     except IndexError:
         print({"error": "Deck not found!"})
         return
     if not provider.getaddressesbyaccount(deck.name):
         print("\n", {"error": "You are not even subscribed to this deck, how can you transfer cards?"})
     try:
-        my_balance = get_my_balance(provider, deck.asset_id)
+        my_balance = get_my_balance(deck.asset_id)
     except ValueError:
         print("\n", {"error": "You have no cards on this deck."})
         return

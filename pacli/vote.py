@@ -3,10 +3,11 @@ from binascii import hexlify
 import pypeerassets as pa
 from pacli.deck import find_deck 
 import json
+from pacli.provider import provider
 
 ## Voting #
 
-def new_vote(provider, args, broadcast):
+def new_vote(args, broadcast):
     '''
     Initialize new vote on the <deck>
 
@@ -15,7 +16,7 @@ def new_vote(provider, args, broadcast):
     '''
 
     try:
-        deck = find_deck(provider, args[0])[0]
+        deck = find_deck(args[0])[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
@@ -35,14 +36,14 @@ def new_vote(provider, args, broadcast):
         print("\nraw transaction:\n", signed, "\n")
 
 
-def vote_cast(provider, args, broadcast):
+def vote_cast(args, broadcast):
     '''
     cast a vote
     args = deck, vote_id, choice
     '''
 
     try:
-        deck = find_deck(provider, args[0])[0]
+        deck = find_deck(args[0])[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
@@ -74,7 +75,7 @@ def vote_cast(provider, args, broadcast):
 class ListVotes:
 
     @classmethod
-    def __init__(cls, provider, votes):
+    def __init__(cls, votes):
         cls.provider = provider
         cls.votes = list(votes)
 
@@ -108,26 +109,26 @@ class ListVotes:
             )
 
 
-def list_votes(provider, args):
+def list_votes(args):
     '''list all votes on the <deck>'''
 
     try:
-        deck = find_deck(provider, args)[0]
+        deck = find_deck(args)[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
     vote_inits = list(pa.find_vote_inits(provider, deck))
 
-    c = ListVotes(provider, vote_inits)
+    c = ListVotes(vote_inits)
     c.pack_for_printing()
     print(c.table.table)
 
 
-def vote_info(provider, args):
+def vote_info(args):
     '''show detail information about <vote> on the <deck>'''
 
     try:
-        deck = find_deck(provider, args[0])[0]
+        deck = find_deck(args[0])[0]
     except IndexError:
         print("\n", {"error": "Deck not found!"})
         return
