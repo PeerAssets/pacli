@@ -4,23 +4,9 @@ import pypeerassets as pa
 from pypeerassets.pautils import exponent_to_amount
 from pacli.provider import provider
 
-from pacli.deck import *
-from pacli.card import *
-from pacli.vote import *
-
-def change(utxo):
-    '''decide what will be change address
-    * default - pay back to largest utxo
-    * standard - behave as wallet does - pay to new address
-    '''
-
-    if Settings.change == "default":
-        m = max([i["amount"] for i in utxo["utxos"]])
-        return [i["address"] for i in utxo["utxos"] if i["amount"] == m][0]
-
-    if Settings.change == "standard":
-        return provider.getnewaddress()
-
+from pacli.deck import deck
+from pacli.card import card
+from pacli.vote import vote
 
 def get_my_balance(deck_id):
     '''get balances on the deck owned by me'''
@@ -109,16 +95,6 @@ def cli():
     parser.add_argument("--status", action="store_true", help="show pacli status")
     parser.add_argument("--addressbalance", action="store",
             metavar=('DECK_ID', 'ADDRESS'), nargs=2, help="check card balance of the address")
-
-    deck = subparsers.add_parser('deck', help='Deck manipulation.')
-    deck.add_argument("--list", action="store_true", help="list decks")
-    deck.add_argument("--info", action="store", help="show details of <asset_id>")
-    deck.add_argument("--subscribe", action="store", help="subscribe to <deck id>")
-    deck.add_argument("--search", action="store", help='''search for decks by name, id,
-                       issue mode, issuer or number of decimals''')
-    deck.add_argument("--new", action="store", help="spawn new deck")
-    deck.add_argument("--checksum", action="store", help="verify deck card balance checksum")
-    deck.add_argument("--balances", action="store", help="show balances of this deck")
 
     card = subparsers.add_parser('card', help='Card manipulation.')
     card.add_argument("--list", action="store", help="list all card transactions of this deck")

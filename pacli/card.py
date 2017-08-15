@@ -1,13 +1,12 @@
 import click
 from pacli.export import export_to_csv
-from terminaltables import AsciiTable
 from binascii import hexlify
 import pypeerassets as pa
 from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 from pacli.deck import find_deck 
 import json
 from pacli.provider import provider, change
-from utils import print_table
+from .utils import print_table
 
 def throw(message):
     raise click.ClickException({ "error": message })
@@ -105,10 +104,13 @@ def export(deck_id, filename):
     export_to_csv(cards, filename)
 
 
+def parse_transfer_json(transfer_json: str) -> dict:
+    return json.loads(transfer_json)
+
 @card.command()
-@click.argument('issuence_json')
+@click.argument('issuence', callback=parse_transfer_json)
 @click.option('--broadcast/--no-broadcast', default=False)
-def issue(issuence_json, broadcast):
+def issue(issuence, broadcast):
     '''
     Issue new cards of this deck.
 
@@ -118,8 +120,7 @@ def issue(issuence_json, broadcast):
                         }
     '''
 
-    issue = json.loads(issuence_json)
-    deck = find_deck(issue["deck"])
+    deck = find_deck(issuence["deck"])
 
     if not provider.gettransaction(deck.asset_id)["confirmations"] > 0:
         print("\n", "You are trying to issue cards on a deck which has not been confirmed yet.")
@@ -132,30 +133,30 @@ def issue(issuence_json, broadcast):
     else:
         raise throw("You are not the owner of this deck.")
 
-    issue["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issue["amount"]]
-    _transfer_cards(deck, receivers=issue["receiver"], amounts=issue["amount"], broadcast, utxo)
+    issuence["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issuence["amount"]]
+    _transfer_cards(deck, receivers=issuence["receiver"], amounts=issuence["amount"], broadcast, utxo)
 
 
 @card.command()
 @click.argument('deck_id')
-@click.argument('amounts', nargs=-1)
+@click.argument('burn_order', callback=parse_transfer_json)
 @click.option('--broadcast/--no-broadcast', default=False)
-def burn(deck, amounts, broadcast):
+def burn(burn_order, broadcast):
     '''
     Burn cards of this deck.
 
     pacli card burn <deck_id> amount_one, amount_two...
     '''
 
-    deck = find_deck(deck)
-    amounts = [amount_to_exponent(float(i), deck.number_of_decimals) for i in amounts]
+    deck = find_deck(burn_order['deck'])
+    amounts = [amount_to_exponent(float(i), deck.number_of_decimals) for i in burn_order['amounts']]
     transfer_cards(deck, [deck.issuer], amounts, broadcast)
 
 
 @card.command()
-@click.argument('args')
+@click.argument('transfer_order', callback=parse_transfer_json)
 @click.option('--broadcast/--no-broadcast', default=False)
-def transfer(args, broadcast):
+def transfer(transfer_order, broadcast):
     '''
     Transfer cards to <receivers>
 
@@ -164,10 +165,8 @@ def transfer(args, broadcast):
                         }
     '''
 
-    args = json.loads(args)
-    deck = find_deck(args["deck"])
-    args["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in args["amount"]]
-
-    transfer_cards(deck, args["receiver"], args["amount"], broadcast)
+    deck = find_deck(transfer_order["deck"])
+    transfer_order["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in transfer_order["amount"]]
+    transfer_cards(deck, transfer_order["receiver"], transfer_order["amount"], broadcast)
 
 

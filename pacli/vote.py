@@ -1,137 +1,97 @@
+import click
 from terminaltables import AsciiTable
 from binascii import hexlify
 import pypeerassets as pa
 from pacli.deck import find_deck 
 import json
 from pacli.provider import provider
+from .utils import print_table
 
-## Voting #
+def throw(message):
+    raise click.ClickException({ "error": message })
 
-def new_vote(args, broadcast):
+def handle_transaction(data, broadcast):
+    signed = provider.signrawtransaction(hexlify(data).decode())["hex"]
+
+    if broadcast:
+        txid = provider.sendrawtransaction(signed)  # send the tx
+        print("\n", txid, "\n")
+    else:
+        print("\nraw transaction:\n", signed, "\n")
+
+def vote_line_item(vote):
+    v= vote.__dict__
+    return [v[attr] for attr in
+            ["name", "issuer", "issue_mode", "number_of_decimals", "issue_time"]]
+
+def print_vote_list(votes):
+    ## TODO: add subscribed column
+    heading = ("vote_id", "sender", "description", "start_block", "end_block")
+    data = map(vote_line_item, votes)
+    print_table(title="Votes on this deck:", heading, data)
+
+@click.group(cls=DefaultGroup, default='list', default_if_no_args=True)
+def vote():
+    pass
+
+@vote.command()
+@click.argument('deck_id')
+def list_votes(deck_id):
+    '''list all votes on the <deck>'''
+    votes = list(pa.find_vote_inits(provider, find_deck(deck_id)))
+    print_vote_list(votes)
+
+@vote.command()
+@click.argument('deck_id')
+@click.argument('new_vote')
+@click.option('--broadcast/--no-broadcast', default=False)
+def new(deck_id, vote_json, broadcast):
     '''
     Initialize new vote on the <deck>
 
     pacli vote --new <deck> '{"choices": ["y", "n"], "count_mode": "SIMPLE",
     "description": "test", "start_block": int, "end_block": int}'
     '''
+    deck = find_deck(deck_id)
+    vote_order = json.loads(vote_json)
 
-    try:
-        deck = find_deck(args[0])[0]
-    except IndexError:
-        print("\n", {"error": "Deck not found!"})
-        return
-
-    args = json.loads(args[1])
     inputs = provider.select_inputs(0.02)
     change_address = change(inputs)
-    vote = pa.Vote(version=1, deck=deck, **args)
+    vote = pa.Vote(version=1, deck=deck, **vote_order)
 
-    raw_vote_init = hexlify(pa.vote_init(vote, inputs, change_address)).decode()
-    signed = provider.signrawtransaction(raw_vote_init)["hex"]
-
-    if broadcast:
-        txid = provider.sendrawtransaction(signed)  # send the tx
-        print("\n", txid, "\n")
-    else:
-        print("\nraw transaction:\n", signed, "\n")
+    handle_transaction(pa.vote_init(vote, inputs, change_address), broadcast)
 
 
-def vote_cast(args, broadcast):
+@vote.command()
+@click.argument('deck_id')
+@click.argument('vote_id')
+@click.argument('choice')
+def cast(deck_id, vote_id, choice, broadcast):
     '''
     cast a vote
     args = deck, vote_id, choice
     '''
-
-    try:
-        deck = find_deck(args[0])[0]
-    except IndexError:
-        print("\n", {"error": "Deck not found!"})
-        return
+    deck = find_deck(deck)
 
     for i in pa.find_vote_inits(provider, deck):
-        if i.vote_id == args[1]:
+        if i.vote_id == vote_id:
             vote = i
-
     if not vote:
-        return {"error": "Vote not found."}
-    if isinstance(args[2], int):
-        choice = args[2]
-    else:
-        choice = list(vote.choices).index(args[2])
+        throw("Vote not found.")
+
+    choice = choice if isinstance(choice, int) else list(vote.choices).index(choice)
     inputs = provider.select_inputs(0.02)
     change_address = change(inputs)
     cast = pa.vote_cast(vote, choice, inputs, change_address)
-
-    raw_vote_cast = hexlify(cast).decode()
-    signed = provider.signrawtransaction(raw_vote_cast)["hex"]
-
-    if broadcast:
-        txid = provider.sendrawtransaction(signed)  # send the tx
-        print("\n", txid, "\n")
-    else:
-        print("\nraw transaction:\n", signed, "\n")
+    handle_transaction(cast, broadcast)
 
 
-class ListVotes:
-
-    @classmethod
-    def __init__(cls, votes):
-        cls.provider = provider
-        cls.votes = list(votes)
-
-        ## Vote table header
-        cls.vote_table = [
-            ## add subscribed column
-            ("vote_id", "sender", "description", "start_block", "end_block")
-        ]
-
-        cls.table = AsciiTable(cls.vote_table, title="Votes on this deck:")
-
-    @classmethod
-    def dtl(cls, vote, subscribed=False):
-        '''votes-to-list: votes to table-printable list'''
-
-        l = []
-        l.append(vote["vote_id"])
-        l.append(vote["sender"])
-        l.append(vote["description"])
-        l.append(vote["start_block"])
-        l.append(vote["end_block"])
-
-        return l
-
-    @classmethod
-    def pack_for_printing(cls):
-
-        for i in cls.votes:
-            cls.vote_table.append(
-                cls.dtl(i.__dict__)
-            )
-
-
-def list_votes(args):
-    '''list all votes on the <deck>'''
-
-    try:
-        deck = find_deck(args)[0]
-    except IndexError:
-        print("\n", {"error": "Deck not found!"})
-        return
-    vote_inits = list(pa.find_vote_inits(provider, deck))
-
-    c = ListVotes(vote_inits)
-    c.pack_for_printing()
-    print(c.table.table)
-
-
-def vote_info(args):
+@vote.command()
+@click.argument('deck_id')
+def info(deck_id):
     '''show detail information about <vote> on the <deck>'''
 
-    try:
-        deck = find_deck(args[0])[0]
-    except IndexError:
-        print("\n", {"error": "Deck not found!"})
-        return
+    deck = find_deck(deck_id)
 
     for i in pa.find_vote_inits(provider, deck):
         if i.vote_id == args[1]:
@@ -139,6 +99,5 @@ def vote_info(args):
 
     vote.deck = vote.deck.asset_id
     print("\n", vote.__dict__)
-    return
 
 
