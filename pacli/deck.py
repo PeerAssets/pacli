@@ -6,7 +6,7 @@ import pypeerassets as pa
 import json
 from pacli.config import Settings
 from pacli.provider import provider, change
-from utils import tstamp_to_iso, print_table
+from pacli.utils import tstamp_to_iso, print_table
 
 
 def default_account_utxo(amount):
@@ -45,12 +45,12 @@ def deck_title(deck):
 def print_deck_info(deck):
     assert isinstance(deck, pa.Deck)
     ## TODO add subscribed column
-    heading = ("asset name", "issuer", "issue mode", "decimals", "issue time")
-    data = [[
-        deck[attr] for attr in 
-        ["name", "issuer", "issue_mode", "number_of_decimals", "issue_time"]
-        ]]
-    print_table(title=deck_title(deck), heading, data)
+    print_table(
+            title=deck_title(deck),
+            heading=("asset name", "issuer", "issue mode", "decimals", "issue time"),
+            data=[[
+                deck[attr] for attr in 
+                ["name", "issuer", "issue_mode", "number_of_decimals", "issue_time"] ]])
 
 
 def print_deck_balances(deck, balances={}):
@@ -58,10 +58,10 @@ def print_deck_balances(deck, balances={}):
     assert isinstance(deck, pa.Deck)
     precision = deck.number_of_decimals
     ## TODO add subscribed column
-    heading = ("address", "balance")
-    data = [[address, exponent_to_amount(balance, precision)]
-            for address, balance in balances]
-    print_table(title=deck_title(deck), heading, data)
+    print_table(
+            title=deck_title(deck),
+            heading=("address", "balance"),
+            data=[[address, exponent_to_amount(balance, precision)] for address, balance in balances])
 
 
 def deck_summary_line_item(deck):
@@ -74,13 +74,11 @@ def deck_summary_line_item(deck):
 
 def print_deck_list(decks):
     '''Show summary of every deck'''
-
-    decks = list(decks)
-
     ## TODO add subscribed column
-    heading = ("asset ID", "asset name", "issuer", "mode")
-    data = map(deck_summary_line_item, list(decks))
-    print_table(title="Decks", heading, data)
+    print_table(
+            title="Decks",
+            heading=("asset ID", "asset name", "issuer", "mode"),
+            data=map(deck_summary_line_item, list(decks)))
 
 
 def search_decks(key: str) -> list:
@@ -99,16 +97,6 @@ def find_deck(key: str):
         return search_decks(key)[0]
     except IndexError:
         raise Exception({"error": "Deck not found!"})
-
-
-def list():
-    '''list command'''
-
-    decks = pa.find_all_valid_decks(provider=provider, deck_version=Settings.deck_version,
-                                    prod=Settings.production)
-    d = ListDecks(decks)
-    d.pack_decks_for_printing()
-    print(d.table.table)
 
 
 class SingleDeck:
@@ -135,10 +123,10 @@ class SingleDeck:
         else:
             print("\n", "Deck checksum is incorrect.")
 
-    @classmethod()
-    def options(self, func):
+    @classmethod
+    def options(cls, func):
         for option in ['info', 'balances', 'subscribe', 'checksum']:
-            func = click.option('--' + option, is_flag=True)(func)
+            func = click.option('--' + option, is_flag=True, help=getattr(cls, option).__doc__)(func)
         return func
             
 
@@ -160,20 +148,27 @@ def find(deck_id, **options):
 @deck.command()
 @click.argument('deck_id')
 def search(deck_id):
-    '''search commands, query decks by <deck_id>'''
+    '''search decks by <deck_id>'''
     print_deck_list(search_decks(deck_id))
 
 
 @deck.command()
+def list():
+    '''list decks'''
+
+    decks = pa.find_all_valid_decks(provider=provider, deck_version=Settings.deck_version,
+                                    prod=Settings.production)
+    d = ListDecks(decks)
+    d.pack_decks_for_printing()
+    print(d.table.table)
+
+
+@deck.command()
 @click.argument('deck')
-@click.option('--broadcast/--no-broadcast', default=False)
+@click.option('--broadcast/--no-broadcast', default=False, help='broadcast resulting transactions')
 def new_deck(deck, broadcast):
-    '''
-    Spawn a new PeerAssets deck.
-
-    pacli deck --new '{"name": "test", "number_of_decimals": 1, "issue_mode": "ONCE"}'
-
-    Will return deck span txid.
+    ''' Spawn a new PeerAssets deck. Returns the deck span txid. 
+        [deck] is deck description json. I.E. '{"name": "test", "number_of_decimals": 1, "issue_mode": "ONCE"}'
     '''
 
     deck = json.loads(deck)

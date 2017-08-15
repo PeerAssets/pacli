@@ -1,4 +1,4 @@
-import sys, os, pickle
+import sys, os, pickle, atexit
 from binascii import hexlify, unhexlify
 import gnupg, getpass
 from pypeerassets.kutil import Kutil
@@ -10,14 +10,14 @@ class GpgKeystore:
     Uses pickle because private keys are binary
     """
 
-    def __init__(self, Settings, keyfile):
+    def __init__(self, Settings):
         assert Settings.keystore == "gnupg"
 
-        if not os.path.exists(keyfile):
+        if not os.path.exists(Settings.keyfile):
             open(keyfile, 'a').close()
 
         self._key = Settings.gnupgkey
-        self._keyfile = keyfile
+        self._keyfile = Settings.keyfile
 
         self._init_settings = dict(
             homedir=Settings.gnupgdir,
@@ -73,6 +73,13 @@ def as_local_key_provider(Provider):
                 self.__init__hack__ = Provider.__init__
                 self.__init__hack__(**kwargs)
             self.keystore = keystore
+
+            #TODO only do this and cleanup if needed
+            self.load_privkeys()
+
+            @atexit.register
+            def _cleanup():
+                self.keystore.write(self.dumpprivkeys())
 
         def load_privkeys(self):
             self.privkeys = self.keystore.read()

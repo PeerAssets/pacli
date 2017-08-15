@@ -26,11 +26,12 @@ def vote_line_item(vote):
 
 def print_vote_list(votes):
     ## TODO: add subscribed column
-    heading = ("vote_id", "sender", "description", "start_block", "end_block")
-    data = map(vote_line_item, votes)
-    print_table(title="Votes on this deck:", heading, data)
+    print_table(
+            title="Votes on this deck:",
+            heading=("vote_id", "sender", "description", "start_block", "end_block"),
+            data=map(vote_line_item, votes))
 
-@click.group(cls=DefaultGroup, default='list', default_if_no_args=True)
+@click.group()
 def vote():
     pass
 

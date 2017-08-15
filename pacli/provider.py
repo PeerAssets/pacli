@@ -1,5 +1,6 @@
-from pypeerassets import RpcNode, Holy, Cryptoid
+from pypeerassets import RpcNode, Holy, Cryptoid, pautils
 from pacli.keystore import GpgKeystore, as_local_key_provider
+from pacli.config import Settings
 
 def set_up(provider):
     '''setup'''
@@ -9,12 +10,13 @@ def set_up(provider):
     if Settings.provider == "rpcnode":
         if Settings.production:
             if not provider.listtransactions("PAPROD"):
-                pa.pautils.load_p2th_privkeys_into_local_node(provider)
+                pautils.load_p2th_privkeys_into_local_node(provider)
         if not Settings.production:
             if not provider.listtransactions("PATEST"):
-                pa.pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
+                pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
    #elif Settings.provider != 'holy':
-   #    pa.pautils.load_p2th_privkeys_into_local_node(provider, keyfile)
+   #    pautils.load_p2th_privkeys_into_local_node(provider, keyfile)
+
 
 def configured_provider(Settings):
     " resolve settings into configured provider "

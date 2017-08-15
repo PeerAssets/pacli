@@ -54,24 +54,21 @@ def card_line_item(card):
 
 def print_card_list(cards):
     ## TODO: add subscribed column
-    heading = ("txid", "sender", "receiver", "amount", "type", "confirms")
-    data = map(card_line_item, cards)
-    print_table(title="Card transfers of this deck:", heading, data)
+    print_table(
+            title="Card transfers of this deck:",
+            heading=("txid", "sender", "receiver", "amount", "type", "confirms"),
+            data=map(card_line_item, cards))
 
 
-@click.group(cls=DefaultGroup, default='list', default_if_no_args=True)
+@click.group()
 def card():
     pass
-
 
 
 @card.command()
 @click.argument('deck_id')
 def list(deck_id):
-    '''
-    List cards of this <deck>
-    pacli card list <deck>
-    '''
+    '''List cards of this <deck>'''
     deck = find_deck(deck_id)
 
     if isinstance(provider, pa.RpcNode):
@@ -87,16 +84,12 @@ def list(deck_id):
 @click.argument('deck_id')
 @click.argument('filename')
 def export(deck_id, filename):
-    '''
-    export cards to csv <filename>
-
-    pacli card export <deck> <filename>
-    '''
+    ''' export cards to csv <filename> '''
 
     deck = find_deck(deck_id)
 
     if not provider.getaddressesbyaccount(deck.name):
-        throw("You must subscribe to deck to be able to list transactions.})
+        throw("You must subscribe to deck to be able to list transactions.")
 
     all_cards = pa.find_card_transfers(provider, deck)
     cards = pa.validate_card_issue_modes(deck, all_cards)
@@ -134,7 +127,7 @@ def issue(issuence, broadcast):
         raise throw("You are not the owner of this deck.")
 
     issuence["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issuence["amount"]]
-    _transfer_cards(deck, receivers=issuence["receiver"], amounts=issuence["amount"], broadcast, utxo)
+    _transfer_cards(deck, receivers=issuence["receiver"], amounts=issuence["amount"], broadcast=broadcast, utxo=utxo)
 
 
 @card.command()
