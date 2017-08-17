@@ -22,14 +22,9 @@ def validate_transfer(deck, amounts):
     except ValueError:
         throw("You have no cards on this deck.")
 
-
-def _transfer_cards(deck, receivers, amounts, broadcast, utxo):
-    change_address = change(utxo)
-    ct = pa.CardTransfer(deck=deck, receiver=receivers, amount=amounts)
-    raw_ct = hexlify(pa.card_transfer(deck, ct, utxo, change_address)).decode()
-
-    signed = provider.signrawtransaction(raw_ct)
-
+def handle_transaction(transaction, broadcast):
+    raw_transaction = hexlify(transaction).decode()
+    signed = provider.signrawtransaction(raw_transaction)
     if broadcast:
         txid = provider.sendrawtransaction(signed["hex"])  # send the tx
         print("\n", txid, "\n")
@@ -38,10 +33,13 @@ def _transfer_cards(deck, receivers, amounts, broadcast, utxo):
 
 
 def transfer_cards(deck, receivers, amounts, broadcast):
-
     validate_transfer(deck, amounts)
     utxo = provider.select_inputs(0.02)
-    _transfer_cards(deck, receivers, amounts, broadcast, utxo)
+
+    change_address = change(utxo)
+    ct = pa.CardTransfer(deck=deck, receiver=receivers, amount=amounts)
+    handle_transaction(pa.card_transfer(deck, ct, utxo, change_address), broadcast)
+
 
 def card_line_item(card):
     c = card.__dict__
@@ -50,7 +48,7 @@ def card_line_item(card):
             c["receiver"][0],
             exponent_to_amount(c["amount"][0], c["number_of_decimals"]),
             c["type"],
-            provider.getrawtransaction(card["txid"], 1)["confirmations"] if card["blockhash"] != 0 else 0 ]
+            provider.getrawtransaction(c["txid"], 1)["confirmations"] if c["blockhash"] != 0 else 0 ]
 
 def print_card_list(cards):
     ## TODO: add subscribed column
@@ -76,6 +74,11 @@ def list(deck_id):
             print("\n", {"error": "You must subscribe to deck to be able to list transactions."})
             return
     all_cards = pa.find_card_transfers(provider, deck)
+
+    if not all_cards:
+        print("\n", "No cards have been issued for deck %s" % deck.asset_id)
+        return
+
     cards = pa.validate_card_issue_modes(deck, all_cards)
     print_card_list(cards)
 
@@ -126,8 +129,12 @@ def issue(issuence, broadcast):
     else:
         raise throw("You are not the owner of this deck.")
 
-    issuence["amounts"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issuence["amounts"]]
-    _transfer_cards(deck, receivers=issuence["receivers"], amounts=issuence["amounts"], broadcast=broadcast, utxo=utxo)
+    receivers = issuence["receivers"]
+    amounts = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issuence["amounts"]]
+
+    change_address = change(utxo)
+    ct = pa.CardTransfer(deck=deck, receiver=receivers, amount=amounts)
+    handle_transaction(pa.card_issue(deck, ct, utxo, change_address), broadcast)
 
 
 @card.command()
