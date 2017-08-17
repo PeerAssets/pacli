@@ -27,12 +27,12 @@ def address_balance(deck_id, address):
     print("\n", "Card balance: {balance}".format(balance=b), "\n")
 
 
-def subscribed_decks(provider):
+def subscribed_decks():
     '''find subscribed-to decks'''
 
-    decks = pa.find_all_valid_decks(provider)
+    decks = pa.find_all_valid_decks(provider, deck_version=Settings.deck_version)
     for i in decks:
-        if provider.getaddressesbyaccount(i.name):
+        if provider.getaddressesbyaccount(i.asset_id):
             yield i
 
 
@@ -55,7 +55,7 @@ def status():
     report = {}
     report["network"] = provider.network
     report["subscribed_decks"] = []
-    for i in list(subscribed_decks(provider)):
+    for i in list(subscribed_decks()):
         report["subscribed_decks"].append({
             "deck_name": i.name,
             "deck_id": i.asset_id,
@@ -72,7 +72,7 @@ def status():
             deck.pop("number_of_decimals")  # this should not go into report
             deck["balance"] = 0
 
-    return report
+    print(report)
 
 
 @top_level.command()
@@ -81,4 +81,4 @@ def new_address():
 
     key = pa.Kutil(network=provider.network)
     provider.importprivkey(key.wif, "PACLI")
-    return key.address
+    print(key.address)

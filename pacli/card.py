@@ -13,7 +13,7 @@ def throw(message):
 
 
 def validate_transfer(deck, amounts):
-    if not provider.getaddressesbyaccount(deck.name):
+    if not provider.getaddressesbyaccount(deck.asset_id):
         throw("You are not subscribed to this deck")
     try:
         my_balance = get_my_balance(deck.asset_id)
@@ -72,7 +72,7 @@ def list(deck_id):
     deck = find_deck(deck_id)
 
     if isinstance(provider, pa.RpcNode):
-        if not provider.getaddressesbyaccount(deck.name):
+        if not provider.getaddressesbyaccount(deck.asset_id):
             print("\n", {"error": "You must subscribe to deck to be able to list transactions."})
             return
     all_cards = pa.find_card_transfers(provider, deck)
@@ -88,7 +88,7 @@ def export(deck_id, filename):
 
     deck = find_deck(deck_id)
 
-    if not provider.getaddressesbyaccount(deck.name):
+    if not provider.getaddressesbyaccount(deck.asset_id):
         throw("You must subscribe to deck to be able to list transactions.")
 
     all_cards = pa.find_card_transfers(provider, deck)
@@ -97,7 +97,7 @@ def export(deck_id, filename):
     export_to_csv(cards, filename)
 
 
-def parse_transfer_json(transfer_json: str) -> dict:
+def parse_transfer_json(context, param, transfer_json: str) -> dict:
     return json.loads(transfer_json)
 
 @card.command()
@@ -126,8 +126,8 @@ def issue(issuence, broadcast):
     else:
         raise throw("You are not the owner of this deck.")
 
-    issuence["amount"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issuence["amount"]]
-    _transfer_cards(deck, receivers=issuence["receiver"], amounts=issuence["amount"], broadcast=broadcast, utxo=utxo)
+    issuence["amounts"] = [amount_to_exponent(float(i), deck.number_of_decimals) for i in issuence["amounts"]]
+    _transfer_cards(deck, receivers=issuence["receivers"], amounts=issuence["amounts"], broadcast=broadcast, utxo=utxo)
 
 
 @card.command()

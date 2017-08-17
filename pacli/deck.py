@@ -42,14 +42,13 @@ def deck_title(deck):
     return "Deck id: " + deck.asset_id + " "
 
 
-def print_deck_info(deck):
-    assert isinstance(deck, pa.Deck)
+def print_deck_info(deck: pa.Deck):
     ## TODO add subscribed column
     print_table(
             title=deck_title(deck),
             heading=("asset name", "issuer", "issue mode", "decimals", "issue time"),
             data=[[
-                deck[attr] for attr in 
+                getattr(deck, attr) for attr in 
                 ["name", "issuer", "issue_mode", "number_of_decimals", "issue_time"] ]])
 
 
@@ -78,17 +77,19 @@ def print_deck_list(decks):
     print_table(
             title="Decks",
             heading=("asset ID", "asset name", "issuer", "mode"),
-            data=map(deck_summary_line_item, list(decks)))
+            data=map(deck_summary_line_item, decks))
 
+def add_short_id(deck):
+    deck.short_id = deck.asset_id[:20]
+    return deck
 
 def search_decks(key: str) -> list:
     '''search decks by <key>'''
 
-    decks = list(pa.find_all_valid_decks(provider, deck_version=Settings.deck_version, prod=Settings.production))
-    for i in decks:
-        i.short_id = i.asset_id[:20]
+    decks = pa.find_all_valid_decks(provider, deck_version=Settings.deck_version, prod=Settings.production)
+    decks = map(add_short_id, decks)
 
-    return [d for d in decks if key in d.__dict__.values()]
+    return [d for d in decks if key in d.asset_id or (key in d.__dict__.values())]
 
 
 def find_deck(key: str):
@@ -106,15 +107,17 @@ class SingleDeck:
 
     def info(self):
         '''info commands, show full deck details'''
-        print_deck_info(deck)
+        print_deck_info(self.deck)
 
     def balances(self):
         '''show deck balances'''
         print_deck_balances(self.deck, get_state(self.deck).balances)
 
     def subscribe(self):
-        '''subscribe command, load deck p2th into local node>'''
+        '''subscribe command, load deck p2th into local node'''
+        print('wtf')
         pa.load_deck_p2th_into_local_node(provider, self.deck)
+        print('subsribed to deck %s', self.deck.asset_id)
 
     def checksum(self):
         ''' verify checksum '''
@@ -141,8 +144,8 @@ def deck():
 @SingleDeck.options
 def find(deck_id, **options):
     deck = SingleDeck(deck_id)
-    for option in options or ['info']:
-        deck[option]()
+    for option in [ opt for opt, selected in options.items() if selected ] or ['info']:
+        getattr(deck, option)()
 
 
 @deck.command()
@@ -155,18 +158,15 @@ def search(deck_id):
 @deck.command()
 def list():
     '''list decks'''
-
     decks = pa.find_all_valid_decks(provider=provider, deck_version=Settings.deck_version,
                                     prod=Settings.production)
-    d = ListDecks(decks)
-    d.pack_decks_for_printing()
-    print(d.table.table)
+    print_deck_list(decks)
 
 
 @deck.command()
 @click.argument('deck')
 @click.option('--broadcast/--no-broadcast', default=False, help='broadcast resulting transactions')
-def new_deck(deck, broadcast):
+def new(deck, broadcast):
     ''' Spawn a new PeerAssets deck. Returns the deck span txid. 
         [deck] is deck description json. I.E. '{"name": "test", "number_of_decimals": 1, "issue_mode": "ONCE"}'
     '''
@@ -174,6 +174,7 @@ def new_deck(deck, broadcast):
     deck = json.loads(deck)
     deck["network"] = Settings.network
     deck["production"] = Settings.production
+    deck["version"] = Settings.deck_version
     #utxo = provider.select_inputs(0.02)  # we need 0.02 PPC
     utxo = default_account_utxo(0.02)
     if utxo:
@@ -182,8 +183,7 @@ def new_deck(deck, broadcast):
         return
     raw_deck = pa.deck_spawn(pa.Deck(**deck),
                              inputs=utxo,
-                             change_address=change_address
-                             )
+                             change_address=change_address)
     raw_deck_spawn = hexlify(raw_deck).decode()
     signed = provider.signrawtransaction(raw_deck_spawn)
 
@@ -193,7 +193,7 @@ def new_deck(deck, broadcast):
 
         deck["asset_id"] = txid
         d = pa.Deck(**deck)
-        pa.load_deck_p2th_into_local_node(d) # subscribe to deck
+        pa.load_deck_p2th_into_local_node(provider, d) # subscribe to deck
     else:
         print("\nraw transaction:\n", signed["hex"], "\n")
 

@@ -21,7 +21,7 @@ optional = {
     "gnupgkey": ""
     }
 
-required = { "network", "production", "loglevel", "change"  }
+required = { "network", "deck_version", "production", "loglevel", "change"  }
 
 def read_conf(conf_file):
     config = configparser.ConfigParser()
@@ -71,6 +71,7 @@ def load_conf():
         setattr(Settings, key, settings[key])
 
     setattr(Settings, 'keyfile', keyfile)
+    setattr(Settings, 'deck_version', int(Settings.deck_version))
 
     logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
     logging.basicConfig(level=logging.getLevelName(Settings.loglevel),

@@ -2,6 +2,7 @@ import sys, os, pickle, atexit
 from binascii import hexlify, unhexlify
 import gnupg, getpass
 from pypeerassets.kutil import Kutil
+from pypeerassets import RpcNode
 
 class GpgKeystore:
     """
@@ -94,6 +95,8 @@ def as_local_key_provider(Provider):
             if mykey.privkey not in [key['privkey'] for key in self.privkeys[label]]:
                 self.privkeys[label].append({ "privkey": mykey.privkey,
                     "address": mykey.address })
+            if isinstance(self, RpcNode):
+                super(RpcNode, self).importprivkey(privkey, label)
 
         def getaddressesbyaccount(self, label: str) -> list:
             if label in self.privkeys.keys():
