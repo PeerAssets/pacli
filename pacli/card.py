@@ -6,10 +6,7 @@ from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 from pacli.deck import find_deck 
 import json
 from pacli.provider import provider, change
-from .utils import print_table
-
-def throw(message):
-    raise click.ClickException({ "error": message })
+from .utils import print_table, throw, handle_transaction
 
 
 def validate_transfer(deck, amounts):
@@ -21,16 +18,6 @@ def validate_transfer(deck, amounts):
             throw("You don't have enough cards on this deck.")
     except ValueError:
         throw("You have no cards on this deck.")
-
-def handle_transaction(transaction, broadcast):
-    raw_transaction = hexlify(transaction).decode()
-    signed = provider.signrawtransaction(raw_transaction)
-    if broadcast:
-        txid = provider.sendrawtransaction(signed["hex"])  # send the tx
-        print("\n", txid, "\n")
-    else:
-        print("\nraw transaction:\n", signed["hex"], "\n")
-
 
 def transfer_cards(deck, receivers, amounts, broadcast):
     validate_transfer(deck, amounts)
