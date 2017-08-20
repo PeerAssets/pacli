@@ -4,7 +4,7 @@ Simple CLI PeerAssets client.
 Implemented using `pypeerassets` Python library, this command line program is useful as companion utility during PeerAssets development and testing.
 It is built for headless (CLI) usage via intuitive and easy to learn set of commands.
 All deck id's are shortened by taking only 20 first characters of full sha256 deck id, this is to allow easier user interaction
-and use less screen space. You can always get full deck id by calling `pacli --info` command as shown bellow.
+and use less screen space. You can always get full deck id by calling `pacli deck --info` command as shown bellow.
 When querying for deck you can use short deck id, full deck id and deck name.
 Using short or full deck id is advised as decks can have a same name.
 
@@ -15,23 +15,23 @@ Examples:
 
 show all commands
 
-> pacli --status
+> pacli status
 
 show current network, all subscribed decks and their card balances
 
-> pacli --newaddress
+> pacli new_address
 
 generate a new address and load it into wallet
 
-> pacli --addressbalance <deck> <address>
+> pacli address_balance <deck> <address>
 
 show card balance of the address
 
-> pacli deck --search "My little pony"
+> pacli deck search "My little pony"
 
 search for deck called "My little pony"
 
-> pacli deck --list all
+> pacli deck list all
 
 list all decks on the network
 
@@ -52,11 +52,11 @@ Complex operations take JSON-like sturucture as argument, mimicking peercoind JS
 * amount variable is always a list
 * receiver variable is always a list
 
-> pacli deck --new '{"name": "My own asset", "number_of_decimals": 1, "issue_mode": "ONCE"}'
+> pacli deck new '{"name": "My own asset", "number_of_decimals": 1, "issue_mode": "ONCE"}'
 
 issue a new asset named "My own asset".
 
-> pacli card --list *deck_id*
+> pacli card list *deck_id*
 
 list all card transfers related to this deck
  
@@ -65,25 +65,25 @@ list all card transfers related to this deck
 verify deck checksum, checksum is difference between issued cards and balances of all the addresses.
 If it is not zero, something is wrong with deck balances. This function will return True if all is fine.
 
-> pacli card --burn '{"deck": "d460651e1d9147770ec9d4c254bcc68ff5d203a86b97c09d00955fb3f714cab3", "amounts": [11]}'
+> pacli card burn '{"deck": "d460651e1d9147770ec9d4c254bcc68ff5d203a86b97c09d00955fb3f714cab3", "amounts": [11]}'
 
 burn 11 of card on this deck, this transaction will be denied if you have no cards on this deck.
 
-> pacli card --issue '{"deck": "hopium_v2", "receiver": ["n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x"], "amount": [110]}'
+> pacli card issue '{"deck": "hopium_v2", "receiver": ["n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x"], "amount": [110]}'
 
 issue 110 cards to n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x, this transaction will be declined if you do not own deck issuing address.
 
-> pacli card --transfer '{"deck": "08c1928ce84d9066f120", "receiver": ["n1GqTk2NFvSCX3h78rkEA3DoiJW8QxT3Mm", "mv8J47BV8ahpKq7dNXut3kXPgQQCQea5FR",
+> pacli card transfer '{"deck": "08c1928ce84d9066f120", "receiver": ["n1GqTk2NFvSCX3h78rkEA3DoiJW8QxT3Mm", "mv8J47BV8ahpKq7dNXut3kXPgQQCQea5FR",
                          "myeFFDLXvpGUh8gBPZdCNEsLQ7ZPZkH7d8"], "amount": [1, 9.98, 200.1]}'
 
 transfer cards of "08c1928ce84d9066f120" deck (queried by short id, it is clementines deck) to three different addresses.
 This transaction will be denied if you have no address which holds cards of this deck or if your balance is not sufficient.
 
-> pacli vote --new '{"deck": "hopium_v2", "choices": ["y", "n"], "count_mode": "SIMPLE", "description": "yes or no?", "start_block": 27306, "end_block": 27310}'
+> pacli vote new '{"deck": "hopium_v2", "choices": ["y", "n"], "count_mode": "SIMPLE", "description": "yes or no?", "start_block": 27306, "end_block": 27310}'
 
 create new vote on the "hopium_v2" deck with choices "y" and "no", starting from block 27306 and lasting until block 27310.
 
-> pacli vote --list "hopium_v2"
+> pacli vote list "hopium_v2"
 
 Shows all the votes on this deck.
 
@@ -96,7 +96,7 @@ Shows all the votes on this deck.
 +------------------------------------------------------------------+------------------------------------+------------------+-------------+-----------+
 ```
 
-> pacli vote --cast '{"vote": "7459c9f4738001e3c50653d6066e3d41a9ffb2a1f3d786721bc472bcb04f17fa", choice: "yes"}'
+> pacli vote cast '{"vote": "7459c9f4738001e3c50653d6066e3d41a9ffb2a1f3d786721bc472bcb04f17fa", choice: "yes"}'
 
 cast "yes" vote to vote_id 7459c9f4738001e3c50653d6066e3d41a9ffb2a1f3d786721bc472bcb04f17fa
 
