@@ -1,7 +1,8 @@
-import sys, pickle
+import sys, os, pickle, atexit
 from binascii import hexlify, unhexlify
 import gnupg, getpass
 from pypeerassets.kutil import Kutil
+from pypeerassets import RpcNode
 
 class GpgKeystore:
     """
@@ -10,11 +11,14 @@ class GpgKeystore:
     Uses pickle because private keys are binary
     """
 
-    def __init__(self, Settings, keyfile):
+    def __init__(self, Settings):
         assert Settings.keystore == "gnupg"
 
+        if not os.path.exists(Settings.keyfile):
+            open(keyfile, 'a').close()
+
         self._key = Settings.gnupgkey
-        self._keyfile = keyfile
+        self._keyfile = Settings.keyfile
 
         self._init_settings = dict(
             homedir=Settings.gnupgdir,
@@ -22,6 +26,12 @@ class GpgKeystore:
             keyring='pubring.gpg',
             secring='secring.gpg')
         self.gpg = gnupg.GPG(**self._init_settings)
+
+    def unpickle(self, decrypted: bytes) -> dict:
+        return pickle.loads(unhexlify(str(decrypted).encode()))
+
+    def pickle(self, data: dict) -> str:
+        return hexlify(pickle.dumps(data)).decode()
 
     def read(self) -> dict:
         password = getpass.getpass("Input gpg key password:")
@@ -33,10 +43,10 @@ class GpgKeystore:
         decrypted = self.gpg.decrypt(contents, passphrase=password)
 
         assert decrypted.ok, decrypted.status
-        return pickle.loads(unhexlify(str(decrypted).encode()))
+        return self.unpickle(decrypted)
 
     def write(self, data: dict) -> str:
-        encrypted = self.gpg.encrypt(hexlify(pickle.dumps(data)).decode(), self._key)
+        encrypted = self.gpg.encrypt(self.pickle(data), self._key)
         assert encrypted.ok, encrypted.status
         keyfile = open(self._keyfile, "w")
         keyfile.write(str(encrypted))
@@ -64,7 +74,16 @@ def as_local_key_provider(Provider):
                 self.__init__hack__ = Provider.__init__
                 self.__init__hack__(**kwargs)
             self.keystore = keystore
-            self.privkeys = keystore.read()
+
+            #TODO only do this and cleanup if needed
+            self.load_privkeys()
+
+            @atexit.register
+            def _cleanup():
+                self.keystore.write(self.dumpprivkeys())
+
+        def load_privkeys(self):
+            self.privkeys = self.keystore.read()
 
         def importprivkey(self, privkey: str, label: str) -> int:
             """import <privkey> with <label>"""
@@ -76,6 +95,8 @@ def as_local_key_provider(Provider):
             if mykey.privkey not in [key['privkey'] for key in self.privkeys[label]]:
                 self.privkeys[label].append({ "privkey": mykey.privkey,
                     "address": mykey.address })
+            if isinstance(self, RpcNode):
+                super(RpcNode, self).importprivkey(privkey, label)
 
         def getaddressesbyaccount(self, label: str) -> list:
             if label in self.privkeys.keys():

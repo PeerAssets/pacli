@@ -1,5 +1,7 @@
+from appdirs import user_config_dir
+import logging
 import configparser
-import sys
+import os, sys
 from .default_conf import default_conf
 
 def write_default_config(conf_file=None):
@@ -19,7 +21,7 @@ optional = {
     "gnupgkey": ""
     }
 
-required = { "network", "production", "loglevel", "change"  }
+required = { "network", "deck_version", "production", "loglevel", "change"  }
 
 def read_conf(conf_file):
     config = configparser.ConfigParser()
@@ -39,3 +41,46 @@ def read_conf(conf_file):
         settings["testnet"] = True
 
     return settings
+
+
+conf_dir = user_config_dir("pacli")
+conf_file = os.path.join(conf_dir, "pacli.conf")
+logfile = os.path.join(conf_dir, "pacli.log")
+keyfile = os.path.join(conf_dir, "pacli.gpg")
+
+
+def init_config():
+    '''if first run, setup local configuration directory.'''
+    if not os.path.exists(conf_dir):
+        os.mkdir(conf_dir)
+    if not os.path.exists(conf_file):
+        write_default_config(conf_file)
+
+
+def load_conf():
+    '''load user configuration'''
+
+    init_config()
+
+    class Settings:
+        pass
+
+    settings = read_conf(conf_file)
+
+    for key in settings:
+        setattr(Settings, key, settings[key])
+
+    setattr(Settings, 'keyfile', keyfile)
+    setattr(Settings, 'deck_version', int(Settings.deck_version))
+
+    logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
+    logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
+                        format="%(asctime)s %(levelname)s %(message)s")
+
+    logging.debug("logging initialized")
+
+    return Settings
+
+
+Settings = load_conf()
+
