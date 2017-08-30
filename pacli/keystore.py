@@ -74,19 +74,22 @@ def as_local_key_provider(Provider):
                 self.__init__hack__ = Provider.__init__
                 self.__init__hack__(**kwargs)
             self.keystore = keystore
+            self._loaded = False
 
-            #TODO only do this and cleanup if needed
-            self.load_privkeys()
 
-            @atexit.register
-            def _cleanup():
-                self.keystore.write(self.dumpprivkeys())
+        def load_keystore(self):
+            if (not self._loaded):
+                self.privkeys = self.keystore.read()
+                self._loaded = True
 
-        def load_privkeys(self):
-            self.privkeys = self.keystore.read()
+                @atexit.register
+                def _cleanup():
+                    self.keystore.write(self.dumpprivkeys())
 
         def importprivkey(self, privkey: str, label: str) -> int:
             """import <privkey> with <label>"""
+            self.load_keystore()
+
             mykey = Kutil(network=self.network, wif=privkey)
 
             if label not in self.privkeys.keys():
@@ -99,13 +102,16 @@ def as_local_key_provider(Provider):
                 super(RpcNode, self).importprivkey(privkey, label)
 
         def getaddressesbyaccount(self, label: str) -> list:
+            self.load_keystore()
             if label in self.privkeys.keys():
                 return [key["address"] for key in self.privkeys[label]]
 
         def listaccounts(self) -> dict:
+            self.load_keystore()
             return {key:0 for key in self.privkeys.keys()}
 
         def dumpprivkeys(self) -> dict:
+            self.load_keystore()
             return self.privkeys
 
     return LocalKeyProvider
