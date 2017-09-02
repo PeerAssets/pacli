@@ -9,7 +9,7 @@ setup(name='pacli',
       author_email='peerchemist@protonmail.ch',
       license='GPL',
       packages=['pacli'],
-      install_requires=['pypeerassets', 'terminaltables', 'appdirs', 'click', 'click-default-group'],
+      install_requires=['pypeerassets', 'terminaltables', 'appdirs', 'click', 'click-default-group', 'gnupg'],
       entry_points={
           'console_scripts': [
               'pacli = pacli.__main__:main'
