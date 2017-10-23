@@ -3,7 +3,7 @@ from pacli.export import export_to_csv
 from binascii import hexlify
 import pypeerassets as pa
 from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
-from pacli.deck import find_deck 
+from pacli.deck import find_deck
 import json
 from pacli.provider import provider, change
 from .utils import print_table, throw, handle_transaction
