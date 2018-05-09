@@ -1,15 +1,48 @@
-import click
-from pacli.deck import deck
-from pacli.card import card
-from pacli.vote import vote
-from pacli.top_level_commands import top_level
+import fire
+import pypeerassets as pa
+from pacli.provider import provider
+from pacli.config import Settings
 
-top_level.add_command(deck)
-top_level.add_command(card)
-top_level.add_command(vote)
+
+class Deck:
+
+    @classmethod
+    def list(self):
+        decks = list(pa.find_all_valid_decks(provider, Settings.deck_version,
+                                             Settings.production))
+
+    @classmethod
+    def find(self, key):
+        '''
+        Find specific deck by key, with key being:
+        <id>, <name>, <issuer>, <issue_mode>, <number_of_decimals>
+        '''
+
+        decks = pa.find_all_valid_decks(provider,
+                                        Settings.deck_version,
+                                        Settings.production)
+        return [d for d in decks if key in d.__dict__.values()]
+
+    @classmethod
+    def new(self, name: str, number_of_decimals: int, issue_mode: int,
+            asset_specific_data: bytes=None):
+
+        network = Settings.network
+        production = Settings.production
+        version = Settings.version
+
+        new_deck = pa.Deck(name, number_of_decimals, issue_mode, network,
+                           production, version, asset_specific_data)
+
+        pa.deck_spawn(provider, Settings.key, new_deck, Settings.change)
+
 
 def main():
-    top_level()
 
-if __name__ == "__main__":
+    fire.Fire({
+        'deck': Deck()
+        })
+
+
+if __name__ == '__main__':
     main()

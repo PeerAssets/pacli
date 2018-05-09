@@ -1,10 +1,14 @@
 from appdirs import user_config_dir
 import logging
 import configparser
-import os, sys
-from .default_conf import default_conf
+import os
+from .keystore import load_key
+from pacli.default_conf import default_conf
+
 
 def write_default_config(conf_file=None):
+    '''if config file is not found, write a new one'''
+
     print("writing default config")
     config = configparser.ConfigParser()
     config["settings"] = default_conf
@@ -14,27 +18,21 @@ def write_default_config(conf_file=None):
         with open(conf_file, 'w') as configfile:
             config.write(configfile)
 
-optional = {
-    "keystore": "none",
-    "gnupgdir": "",
-    "gnupgagent": "", 
-    "gnupgkey": ""
-    }
 
-required = { "network", "deck_version", "production", "loglevel", "change"  }
+required = {"network", "deck_version", "production", "loglevel", "change", "provider"}
+
 
 def read_conf(conf_file):
+
     config = configparser.ConfigParser()
     config.read(conf_file)
     try:
         settings = dict(config["settings"])
         assert set(settings.keys()).issuperset(required)
-        for k, v in optional.items():
-            settings[k] = settings.get(k, v)
 
     except:
-        print("config is outdated, saving current default config to",conf_file+".sample")
-        write_default_config(conf_file+".sample")
+        print("config is outdated, saving current default config to", conf_file + ".sample")
+        write_default_config(conf_file + ".sample")
         raise
 
     if settings["network"].startswith("t"):
@@ -46,11 +44,11 @@ def read_conf(conf_file):
 conf_dir = user_config_dir("pacli")
 conf_file = os.path.join(conf_dir, "pacli.conf")
 logfile = os.path.join(conf_dir, "pacli.log")
-keyfile = os.path.join(conf_dir, "pacli.gpg")
 
 
 def init_config():
     '''if first run, setup local configuration directory.'''
+
     if not os.path.exists(conf_dir):
         os.mkdir(conf_dir)
     if not os.path.exists(conf_file):
@@ -70,8 +68,8 @@ def load_conf():
     for key in settings:
         setattr(Settings, key, settings[key])
 
-    setattr(Settings, 'keyfile', keyfile)
     setattr(Settings, 'deck_version', int(Settings.deck_version))
+    setattr(Settings, 'key', load_key())
 
     logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
     logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
@@ -83,4 +81,3 @@ def load_conf():
 
 
 Settings = load_conf()
-

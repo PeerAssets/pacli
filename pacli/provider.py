@@ -1,6 +1,6 @@
-from pypeerassets import RpcNode, Holy, Cryptoid, pautils
-from pacli.keystore import GpgKeystore, as_local_key_provider
+from pypeerassets import RpcNode, Holy, Cryptoid, Explorer, pautils
 from pacli.config import Settings
+
 
 def set_up(provider):
     '''setup'''
@@ -14,31 +14,27 @@ def set_up(provider):
         if not Settings.production:
             if not provider.listtransactions("PATEST"):
                 pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
-   #elif Settings.provider != 'holy':
-   #    pautils.load_p2th_privkeys_into_local_node(provider, keyfile)
 
 
 def configured_provider(Settings):
     " resolve settings into configured provider "
 
+    kwargs = dict(network=Settings.network)
+
     if Settings.provider.lower() == "rpcnode":
         Provider = RpcNode
-        kwargs = dict(testnet=Settings.testnet)
 
     elif Settings.provider.lower() == "holy":
         Provider = Holy
-        kwargs = dict(network=Settings.network)
 
     elif Settings.provider.lower() == "cryptoid":
         Provider = Cryptoid
-        kwargs = dict(network=Settings.network)
+
+    elif Settings.provider.lower() == "explorer":
+        Provider = Explorer
 
     else:
-        raise Exception('invalid provider')
-
-    if Settings.keystore.lower() == "gnupg":
-        Provider = as_local_key_provider(Provider)
-        kwargs['keystore'] = keystore = GpgKeystore(Settings)
+        raise Exception('invalid provider.')
 
     provider = Provider(**kwargs)
     set_up(provider)
@@ -61,5 +57,3 @@ def change(utxo):
 
     if Settings.change == "standard":
         return provider.getnewaddress()
-
-
