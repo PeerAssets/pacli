@@ -3,7 +3,7 @@ from os import urandom
 from btcpy.structs.crypto import PrivateKey
 
 
-def generate_key():
+def generate_key() -> PrivateKey:
     '''generate new random key'''
 
     return PrivateKey(bytearray(urandom(32))).hexlify()
