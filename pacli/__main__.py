@@ -8,8 +8,12 @@ class Deck:
 
     @classmethod
     def list(self):
+        '''find all valid decks and list them.'''
+
         decks = list(pa.find_all_valid_decks(provider, Settings.deck_version,
                                              Settings.production))
+
+        return decks
 
     @classmethod
     def find(self, key):
@@ -26,6 +30,7 @@ class Deck:
     @classmethod
     def new(self, name: str, number_of_decimals: int, issue_mode: int,
             asset_specific_data: bytes=None):
+        '''create a new deck.'''
 
         network = Settings.network
         production = Settings.production
