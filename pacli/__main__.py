@@ -29,17 +29,20 @@ class Deck:
 
     @classmethod
     def new(self, name: str, number_of_decimals: int, issue_mode: int,
-            asset_specific_data: bytes=None):
-        '''create a new deck.'''
+            asset_specific_data: bytes=None, json: bool=False):
+        '''create a new deck, print out a protobuf'''
 
         network = Settings.network
         production = Settings.production
-        version = Settings.version
+        version = Settings.deck_version
 
         new_deck = pa.Deck(name, number_of_decimals, issue_mode, network,
                            production, version, asset_specific_data)
 
-        pa.deck_spawn(provider, Settings.key, new_deck, Settings.change)
+        if json:
+            return new_deck.metainfo_to_dict
+
+        return new_deck.metainfo_to_protobuf
 
 
 def main():
