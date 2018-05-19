@@ -1,5 +1,4 @@
 import fire
-import binascii
 import pypeerassets as pa
 from pacli.provider import provider
 from pacli.config import Settings
