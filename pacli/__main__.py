@@ -1,4 +1,5 @@
 import fire
+import binascii
 import pypeerassets as pa
 from pacli.provider import provider
 from pacli.config import Settings
@@ -43,6 +44,12 @@ class Deck:
             return new_deck.metainfo_to_dict
 
         return new_deck.metainfo_to_protobuf
+
+    @classmethod
+    def decode(self, protobuf: str) -> dict:
+        '''decode deck protobuf'''
+
+        return pa.parse_deckspawn_metainfo(bytes.fromhex(protobuf), Settings.deck_version)
 
 
 def main():
