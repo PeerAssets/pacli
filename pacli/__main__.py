@@ -43,7 +43,7 @@ class Deck:
         if json:
             return new_deck.metainfo_to_dict
 
-        return new_deck.metainfo_to_protobuf
+        return new_deck.metainfo_to_protobuf.hex()
 
     @classmethod
     def decode(self, protobuf: str) -> dict:
