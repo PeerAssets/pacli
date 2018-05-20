@@ -3,6 +3,7 @@ import logging
 import configparser
 import os
 from .keystore import load_key
+from pypeerassets.pa_constants import param_query
 from pacli.default_conf import default_conf
 
 
@@ -37,6 +38,8 @@ def read_conf(conf_file):
 
     if settings["network"].startswith("t"):
         settings["testnet"] = True
+
+    settings['p2th_address'] = param_query(Settings.network).P2TH_addr
 
     return settings
 
