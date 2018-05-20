@@ -39,7 +39,7 @@ def read_conf(conf_file):
     if settings["network"].startswith("t"):
         settings["testnet"] = True
 
-    settings['p2th_address'] = param_query(Settings.network).P2TH_addr
+    settings['p2th_address'] = param_query(settings['network']).P2TH_addr
 
     return settings
 
