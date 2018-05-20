@@ -73,7 +73,8 @@ class Card:
 def main():
 
     fire.Fire({
-        'deck': Deck()
+        'deck': Deck(),
+        'card': Card()
         })
 
 
