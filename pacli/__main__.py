@@ -51,6 +51,25 @@ class Deck:
         return pa.parse_deckspawn_metainfo(bytes.fromhex(protobuf), Settings.deck_version)
 
 
+class Card:
+
+    '''card information and manipulation'''
+
+    @classmethod
+    def list(self, deck_id: str):
+        '''list the valid cards on this deck'''
+
+        deck = pa.find_deck(provider, deck_id,
+                            Settings.deck_version,
+                            Settings.production)
+
+        try:
+            cards = list(pa.find_card_transfers(provider, deck))
+            return [i.__dict__ for i in cards]
+        except pa.exceptions.EmptyP2THDirectory as err:
+            return err
+
+
 def main():
 
     fire.Fire({
