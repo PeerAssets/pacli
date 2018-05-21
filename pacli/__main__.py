@@ -51,7 +51,7 @@ class Deck:
 
     @classmethod
     def new(self, name: str, number_of_decimals: int, issue_mode: int,
-            asset_specific_data: bytes=None, json: bool=False):
+            asset_specific_data: bytes=None):
         '''create a new deck, print out a protobuf'''
 
         network = Settings.network
@@ -61,10 +61,18 @@ class Deck:
         new_deck = pa.Deck(name, number_of_decimals, issue_mode, network,
                            production, version, asset_specific_data)
 
-        if json:
-            return new_deck.metainfo_to_dict
+        return new_deck
 
-        return new_deck.metainfo_to_protobuf.hex()
+
+    @classmethod
+    def compose(self, json: bool=False, **kwargs) -> str:
+        '''compose a new deck and print out the protobuf which
+           is to be manually inserted in the OP_RETURN of the transaction.'''
+
+        if json:
+            return self.new(**kwargs).metainfo_to_dict
+
+        return self.new(**kwargs).metainfo_to_protobuf.hex()
 
     @classmethod
     def decode(self, protobuf: str) -> dict:
