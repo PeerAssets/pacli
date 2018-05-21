@@ -5,6 +5,7 @@ import os
 from .keystore import load_key
 from pypeerassets.pa_constants import param_query
 from pacli.default_conf import default_conf
+from pypeerassets import Kutil
 
 
 def write_default_config(conf_file=None):
@@ -72,7 +73,10 @@ def load_conf():
         setattr(Settings, key, settings[key])
 
     setattr(Settings, 'deck_version', int(Settings.deck_version))
-    setattr(Settings, 'key', load_key())
+    setattr(Settings, 'key', Kutil(network=settings['network'],
+                                   privkey=bytearray.fromhex(load_key())
+                                   )
+            )
 
     logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
     logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
