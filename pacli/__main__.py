@@ -48,7 +48,7 @@ class Deck:
     @classmethod
     def new(self, name: str, number_of_decimals: int, issue_mode: int,
             asset_specific_data: bytes=None):
-        '''create a new deck, print out a protobuf'''
+        '''create a new deck.'''
 
         network = Settings.network
         production = Settings.production
