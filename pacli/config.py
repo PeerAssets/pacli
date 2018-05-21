@@ -78,6 +78,9 @@ def load_conf():
                                    )
             )
 
+    if settings['change'] == "default":
+        Settings.change = Settings.key.address
+
     logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
     logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
                         format="%(asctime)s %(levelname)s %(message)s")
