@@ -6,7 +6,7 @@ from btcpy.structs.crypto import PrivateKey
 def generate_key() -> PrivateKey:
     '''generate new random key'''
 
-    return PrivateKey(bytearray(urandom(32))).hexlify()
+    return urandom(32).hex()
 
 
 def init_keystore() -> None:
@@ -23,4 +23,4 @@ def load_key() -> PrivateKey:
 
     key = keyring.get_password('pacli', 'key')
 
-    return PrivateKey.unhexlify(key)
+    return key
