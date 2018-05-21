@@ -65,7 +65,7 @@ class Deck:
 
 
     @classmethod
-    def compose(self, json: bool=False, **kwargs) -> str:
+    def encode(self, json: bool=False, **kwargs) -> str:
         '''compose a new deck and print out the protobuf which
            is to be manually inserted in the OP_RETURN of the transaction.'''
 
