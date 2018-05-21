@@ -59,6 +59,19 @@ class Deck:
 
         return new_deck
 
+    @classmethod
+    def spawn(self, **kwargs):
+        '''prepare deck spawn transaction'''
+
+        deck = self.new(**kwargs)
+
+        spawn = pa.deck_spawn(provider=provider, key=Settings.key,
+                              inputs=provider.select_inputs(Settings.key.address, 0.02),
+                              deck=deck,
+                              change_address=Settings.change
+                              )
+
+        return spawn
 
     @classmethod
     def encode(self, json: bool=False, **kwargs) -> str:
