@@ -2,7 +2,7 @@ import fire
 import pypeerassets as pa
 from pacli.provider import provider
 from pacli.config import Settings
-from pacli.keystore import init_keystore, load_key
+from pacli.keystore import init_keystore
 
 
 class Address:
@@ -17,13 +17,13 @@ class Address:
                        )
 
         if pubkey:
-            return key.pubkey
+            return Settings.key.pubkey
         if privkey:
-            return key.privkey
+            return Settings.key.privkey
         if wif:
-            return key.wif
+            return Settings.key.wif
 
-        return key.address
+        return Settings.key.address
 
 
 class Deck:
