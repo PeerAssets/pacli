@@ -108,6 +108,18 @@ class Card:
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
 
+    def balances(self, deck_id):
+        '''list card balances on this deck'''
+        raise NotImplementedError
+
+    def new(self, deck_id: str, receivers: list=None, amount: list=None):
+        '''fabricate a new card transaction
+        * deck_id - deck in question
+        * receiver - list of receivers
+        * amount - list of amounts to be sent, must be float
+        '''
+        raise NotImplementedError
+
 
 def main():
 
