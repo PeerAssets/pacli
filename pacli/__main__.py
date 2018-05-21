@@ -12,10 +12,6 @@ class Address:
     def show(self, pubkey: bool=False, privkey: bool=False, wif: bool=False):
         '''print address, pubkey or privkey'''
 
-        key = pa.Kutil(network=Settings.network,
-                       privkey=bytearray.fromhex(load_key())
-                       )
-
         if pubkey:
             return Settings.key.pubkey
         if privkey:
