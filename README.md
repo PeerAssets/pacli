@@ -1,4 +1,9 @@
+
 # pacli
+
+> Licence: GPL3
+
+> Language: Python (>= 3.5)
 
 Simple CLI PeerAssets client.
 
