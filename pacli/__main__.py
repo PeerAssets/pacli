@@ -2,6 +2,28 @@ import fire
 import pypeerassets as pa
 from pacli.provider import provider
 from pacli.config import Settings
+from pacli.keystore import init_keystore, load_key
+
+
+class Address:
+
+    '''my personal address'''
+
+    def show(self, pubkey: bool=False, privkey: bool=False, wif: bool=False):
+        '''print address, pubkey or privkey'''
+
+        key = pa.Kutil(network=Settings.network,
+                       privkey=bytearray.fromhex(load_key())
+                       )
+
+        if pubkey:
+            return key.pubkey
+        if privkey:
+            return key.privkey
+        if wif:
+            return key.wif
+
+        return key.address
 
 
 class Deck:
@@ -72,9 +94,12 @@ class Card:
 
 def main():
 
+    init_keystore()
+
     fire.Fire({
         'deck': Deck(),
-        'card': Card()
+        'card': Card(),
+        'address': Address()
         })
 
 
