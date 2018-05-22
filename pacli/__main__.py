@@ -5,6 +5,18 @@ from pacli.config import Settings
 from pacli.keystore import init_keystore
 
 
+def cointoolkit_verify(hex: str) -> str:
+    '''tailor cointoolkit verify URL'''
+
+    base_url = 'https://indiciumfund.github.io/cointoolkit/'
+    if provider.network == "peercoin-testnet":
+        mode = "mode=peercoin_testnet"
+    if provider.network == "peercoin":
+        mode = "mode=peercoin"
+
+    return base_url + "?" + mode + "&" + "verify=" + hex
+
+
 class Address:
 
     '''my personal address'''
@@ -60,7 +72,7 @@ class Deck:
         return new_deck
 
     @classmethod
-    def spawn(self, **kwargs):
+    def spawn(self, verify=False, **kwargs):
         '''prepare deck spawn transaction'''
 
         deck = self.new(**kwargs)
@@ -70,6 +82,9 @@ class Deck:
                               deck=deck,
                               change_address=Settings.change
                               )
+
+        if verify:
+            return cointoolkit_verify(spawn)  # link to cointoolkit - verify
 
         return spawn
 
