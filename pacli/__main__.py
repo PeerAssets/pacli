@@ -109,6 +109,11 @@ class Deck:
 
         return pa.parse_deckspawn_metainfo(bytes.fromhex(protobuf), Settings.deck_version)
 
+    def issue_mode(self, list=True):
+
+        if list:  # lists all the supported issue modes and their values
+            return tuple(dict(pa.IssueMode.__members__).values())
+
 
 class Card:
 
