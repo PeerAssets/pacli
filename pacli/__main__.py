@@ -33,6 +33,11 @@ class Address:
 
         return Settings.key.address
 
+    @classmethod
+    def balance(self):
+
+        return float(provider.getbalance(Settings.key.address))
+
 
 class Deck:
 
