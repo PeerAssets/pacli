@@ -137,6 +137,7 @@ class Card:
         '''list card balances on this deck'''
         raise NotImplementedError
 
+    @classmethod
     def new(self, deckid: str, receiver: list=None,
             amount: list=None, asset_specific_data: str=None) -> pa.CardTransfer:
         '''fabricate a new card transaction
@@ -147,12 +148,29 @@ class Card:
 
         production = Settings.production
         version = Settings.deck_version
-
         deck = pa.find_deck(provider, deckid, version, production)
 
         card = pa.CardTransfer(deck, receiver, amount, version, asset_specific_data)
 
         return card
+
+    @classmethod
+    def transfer(self, deckid: str, receiver: list=None, amount: list=None,
+                 asset_specific_data: str=None, verify=False) -> str:
+        '''prepare CardTransfer transaction'''
+
+        card = self.new(deckid, receiver, amount, asset_specific_data)
+
+        issue = pa.card_transfer(provider=provider,
+                                 inputs=provider.select_inputs(Settings.key.address, 0.02),
+                                 card=card,
+                                 change_address=Settings.change
+                                )
+
+        if verify:
+            return cointoolkit_verify(issue.hexlify())  # link to cointoolkit - verify
+
+        return issue.hexlify()
 
 
 def main():
