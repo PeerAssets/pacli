@@ -89,9 +89,9 @@ class Deck:
                               )
 
         if verify:
-            return cointoolkit_verify(spawn)  # link to cointoolkit - verify
+            return cointoolkit_verify(spawn.hexlify())  # link to cointoolkit - verify
 
-        return spawn
+        return spawn.hexlify()
 
     @classmethod
     def encode(self, json: bool=False, **kwargs) -> str:
