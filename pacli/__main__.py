@@ -137,13 +137,22 @@ class Card:
         '''list card balances on this deck'''
         raise NotImplementedError
 
-    def new(self, deck_id: str, receivers: list=None, amount: list=None):
+    def new(self, deckid: str, receiver: list=None,
+            amount: list=None, asset_specific_data: str=None) -> pa.CardTransfer:
         '''fabricate a new card transaction
         * deck_id - deck in question
         * receiver - list of receivers
         * amount - list of amounts to be sent, must be float
         '''
-        raise NotImplementedError
+
+        production = Settings.production
+        version = Settings.deck_version
+
+        deck = pa.find_deck(provider, deckid, version, production)
+
+        card = pa.CardTransfer(deck, receiver, amount, version, asset_specific_data)
+
+        return card
 
 
 def main():

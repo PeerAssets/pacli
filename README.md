@@ -65,6 +65,10 @@ list all card transfers related to this deck
 verify deck checksum, checksum is difference between issued cards and balances of all the addresses.
 If it is not zero, something is wrong with deck balances. This function will return True if all is fine.
 
+> pacli card new --deckid $DECKID --receiver [address, address2] --amount [200]
+
+fabricate a new CardTransfer object.
+
 > pacli card burn '{"deck": "d460651e1d9147770ec9d4c254bcc68ff5d203a86b97c09d00955fb3f714cab3", "amounts": [11]}'
 
 burn 11 of card on this deck, this transaction will be denied if you have no cards on this deck.
