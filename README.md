@@ -69,6 +69,10 @@ If it is not zero, something is wrong with deck balances. This function will ret
 
 fabricate a new CardTransfer object.
 
+> pacli card transfer --deckid 078f41c257642a89ade91e52fd484c141b11eda068435c0e34569a5dfcce7915 --receiver [n12h8P5LrVXozfhEQEqg8SFUmVKtphBetj] --amount [200] --verify
+
+farbricate a new CardTransfer, and link to external tool `cointoolkit` to verify the transaction.
+
 > pacli card burn '{"deck": "d460651e1d9147770ec9d4c254bcc68ff5d203a86b97c09d00955fb3f714cab3", "amounts": [11]}'
 
 burn 11 of card on this deck, this transaction will be denied if you have no cards on this deck.
