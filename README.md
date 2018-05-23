@@ -1,4 +1,3 @@
-
 # pacli
 
 > Licence: GPL3
@@ -10,29 +9,24 @@ Simple CLI PeerAssets client.
 Implemented using `pypeerassets` Python library, this command line program is useful as companion utility during PeerAssets development and testing.
 It is built for headless (CLI) usage via intuitive and easy to learn set of commands.
 
-All deck id's are shortened by taking only 20 first characters of full sha256 deck id, this is to allow easier user interaction
-and use less screen space. You can always get full deck id by calling `pacli deck --info` command as shown bellow.
-When querying for deck you can use short deck id, full deck id and deck name.
-Using short or full deck id is advised as decks can have a same name.
+It stores the privkey in OS's native keystore, which is automatically unlocked upon logging into active user session.
+It handles only one key for now, until HD key support is not implemented.
 
+Main config file is located in `$HOME/.config/pacli`.
 
 Examples:
 
-> pacli --h
+> pacli -- --help
 
 show all commands
 
-> pacli status
+> pacli address show [--privkey, --pubkey, --wif]
 
-show current network, all subscribed decks and their card balances
+show current address, or it's privkey, pubkey or wif
 
-> pacli new_address
+> pacli address balance
 
-generate a new address and load it into wallet
-
-> pacli address_balance <deck> <address>
-
-show card balance of the address
+show balance of the current address
 
 > pacli deck search "My little pony"
 
@@ -42,31 +36,26 @@ search for deck called "My little pony"
 
 list all decks on the network
 
-> pacli deck --info *deck_id*
+> pacli deck spawn --name "My own asset" --number_of_decimals 1 issue_mode 4
 
-show detail deck information,
-use this command if you need full deck ID hash and not shortened id.
+issue a new asset named "My own asset", it will return a hexlified raw transaction.
 
-> pacli deck --subscribe *deck_id*
+> pacli deck decode $HEX
 
-subscribe to this deck to enable balances and card listing for this deck
+decode protobuf message and display it as json, usable when debbuging decks
 
-> pacli deck --balance *deck_id*
+> pacli deck encode --name "My own asset" --number_of_decimals 1 issue_mode 4
 
-show balances of all addresses involved with this deck
+encode the deck information into hex to be inserted in OP_RETURN, usable when creating decks using something like cointoolkit
 
-Complex operations take JSON-like sturucture as argument, mimicking peercoind JSON-RPC interface.
-* amount variable is always a list
-* receiver variable is always a list
+> pacli deck spawn --name "My own asset" --number_of_decimals 1 issue_mode 4 --verify
 
-> pacli deck new '{"name": "My own asset", "number_of_decimals": 1, "issue_mode": "ONCE"}'
-
-issue a new asset named "My own asset".
+--verify flag presents a link to external tool `cointoolkit` which can be used to preview or debug the deck spawn transaction.
 
 > pacli card list *deck_id*
 
 list all card transfers related to this deck
- 
+
 > pacli deck --checksum *deck_id*
 
 verify deck checksum, checksum is difference between issued cards and balances of all the addresses.
