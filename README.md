@@ -52,6 +52,10 @@ encode the deck information into hex to be inserted in OP_RETURN, usable when cr
 
 --verify flag presents a link to external tool `cointoolkit` which can be used to preview or debug the deck spawn transaction.
 
+> pacli deck issue_mode --list
+
+list all supported issue modes and their values
+
 > pacli card list *deck_id*
 
 list all card transfers related to this deck
