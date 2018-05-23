@@ -1,4 +1,4 @@
-from pypeerassets import RpcNode, Holy, Cryptoid, Explorer, pautils
+from pypeerassets import RpcNode, Cryptoid, Explorer, pautils
 from pacli.config import Settings
 
 
@@ -23,9 +23,6 @@ def configured_provider(Settings):
 
     if Settings.provider.lower() == "rpcnode":
         Provider = RpcNode
-
-    elif Settings.provider.lower() == "holy":
-        Provider = Holy
 
     elif Settings.provider.lower() == "cryptoid":
         Provider = Cryptoid
