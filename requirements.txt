@@ -2,3 +2,4 @@ pypeerassets>=0.2.1
 terminaltables>=3.1.0
 appdirs
 keyring
+fire
