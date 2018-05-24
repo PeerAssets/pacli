@@ -74,8 +74,8 @@ class Deck:
         print_deck_info(deck)
 
     @classmethod
-    def new(self, name: str, number_of_decimals: int, issue_mode: int,
-            asset_specific_data: bytes=None):
+    def __new(self, name: str, number_of_decimals: int, issue_mode: int,
+              asset_specific_data: bytes=None):
         '''create a new deck.'''
 
         network = Settings.network
@@ -91,7 +91,7 @@ class Deck:
     def spawn(self, verify=False, **kwargs):
         '''prepare deck spawn transaction'''
 
-        deck = self.new(**kwargs)
+        deck = self.__new(**kwargs)
 
         spawn = pa.deck_spawn(provider=provider,
                               inputs=provider.select_inputs(Settings.key.address, 0.02),
@@ -110,9 +110,9 @@ class Deck:
            is to be manually inserted in the OP_RETURN of the transaction.'''
 
         if json:
-            return self.new(**kwargs).metainfo_to_dict
+            return self.__new(**kwargs).metainfo_to_dict
 
-        return self.new(**kwargs).metainfo_to_protobuf.hex()
+        return self.__new(**kwargs).metainfo_to_protobuf.hex()
 
     @classmethod
     def decode(self, protobuf: str) -> dict:
@@ -161,8 +161,8 @@ class Card:
         return pa.amount_to_exponent(amount, number_of_decimals)
 
     @classmethod
-    def new(self, deckid: str, receiver: list=None,
-            amount: list=None, asset_specific_data: str=None) -> pa.CardTransfer:
+    def __new(self, deckid: str, receiver: list=None,
+              amount: list=None, asset_specific_data: str=None) -> pa.CardTransfer:
         '''fabricate a new card transaction
         * deck_id - deck in question
         * receiver - list of receivers
@@ -184,7 +184,7 @@ class Card:
                  asset_specific_data: str=None, verify=False) -> str:
         '''prepare CardTransfer transaction'''
 
-        card = self.new(deckid, receiver, amount, asset_specific_data)
+        card = self.__new(deckid, receiver, amount, asset_specific_data)
 
         issue = pa.card_transfer(provider=provider,
                                  inputs=provider.select_inputs(Settings.key.address, 0.02),
@@ -217,7 +217,7 @@ class Card:
         '''compose a new card and print out the protobuf which
            is to be manually inserted in the OP_RETURN of the transaction.'''
 
-        card = self.new(deckid, receiver, amount, asset_specific_data)
+        card = self.__new(deckid, receiver, amount, asset_specific_data)
 
         if json:
             return card.metainfo_to_dict
