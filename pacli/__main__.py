@@ -82,7 +82,7 @@ class Deck:
 
         deck = self.new(**kwargs)
 
-        spawn = pa.deck_spawn(provider=provider, key=Settings.key,
+        spawn = pa.deck_spawn(provider=provider,
                               inputs=provider.select_inputs(Settings.key.address, 0.02),
                               deck=deck,
                               change_address=Settings.change
