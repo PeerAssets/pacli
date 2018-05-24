@@ -55,6 +55,7 @@ def card_line_item(card: pa.CardTransfer):
 
     c = card[0].__dict__
     return [c["txid"],
+            c['cardseq'],
             c["sender"],
             c["receiver"][0],
             pa.exponent_to_amount(c["amount"][0], c["number_of_decimals"]),
@@ -66,6 +67,5 @@ def print_card_list(cards):
 
     print_table(
             title="Card transfers of this deck:",
-            heading=("txid", "sender", "receiver", "amount", "type"),
+            heading=("txid", "seq", "sender", "receiver", "amount", "type"),
             data=map(card_line_item, cards))
-
