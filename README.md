@@ -14,6 +14,19 @@ It handles only one key for now, until HD key support is not implemented.
 
 Main config file is located in `$HOME/.config/pacli`.
 
+## installation
+
+### linux
+
+`python3 setup.py install --user`
+
+To access it from the command line, place the following in $HOME/.bashrc:
+
+`export PATH=$PATH:$HOME/.local/bin`
+
+`source ~/.bashrc`
+
+
 Examples:
 
 > pacli -- --help
