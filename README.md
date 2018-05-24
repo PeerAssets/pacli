@@ -103,6 +103,6 @@ decode protobuf message and display it as json, usable when debbuging cards
 
 burn 11 of card on this deck.
 
-> pacli card burn --deckid 078f41c257642a89ade91e52fd484c141b11eda068435c0e34569a5dfcce7915 --receiver [n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x] --amount [110] --verify
+> pacli card issue --deckid 078f41c257642a89ade91e52fd484c141b11eda068435c0e34569a5dfcce7915 --receiver [n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x] --amount [110] --verify
 
 issue 110 cards to n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x.
