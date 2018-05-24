@@ -75,7 +75,7 @@ class Deck:
 
     @classmethod
     def __new(self, name: str, number_of_decimals: int, issue_mode: int,
-              asset_specific_data: bytes=None):
+              asset_specific_data: str=None):
         '''create a new deck.'''
 
         network = Settings.network
