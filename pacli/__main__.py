@@ -4,6 +4,7 @@ from pacli.provider import provider
 from pacli.config import Settings
 from pacli.keystore import init_keystore
 from pacli.tui import print_deck_info, print_deck_list
+from pacli.tui import print_card_list
 
 
 def cointoolkit_verify(hex: str) -> str:
@@ -137,8 +138,8 @@ class Card:
                             Settings.production)
 
         try:
-            cards = list(pa.find_card_transfers(provider, deck))
-            return [i.__dict__ for i in cards]
+            cards = pa.find_card_transfers(provider, deck)
+            print_card_list(cards)
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
 
