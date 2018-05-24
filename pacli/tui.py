@@ -53,7 +53,7 @@ def print_deck_info(deck: pa.Deck):
 
 def card_line_item(card: pa.CardTransfer):
 
-    c = card.__dict__
+    c = card[0].__dict__
     return [c["txid"],
             c["sender"],
             c["receiver"][0],
