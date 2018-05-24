@@ -232,6 +232,16 @@ class Card:
                                                Settings.deck_version)
 
 
+class Transaction:
+
+    def raw(self, txid):
+        '''fetch raw tx and display it'''
+
+        tx = provider.getrawtransaction(txid, 1)
+
+        print(json.dumps(tx, indent=2))
+
+
 def main():
 
     init_keystore()
@@ -239,7 +249,8 @@ def main():
     fire.Fire({
         'deck': Deck(),
         'card': Card(),
-        'address': Address()
+        'address': Address(),
+        'transaction': Transaction()
         })
 
 
