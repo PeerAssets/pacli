@@ -32,6 +32,10 @@ show balance of the current address
 
 search for deck called "My little pony"
 
+> pacli deck info $DECK_ID
+
+show full deck details
+
 > pacli deck list all
 
 list all decks on the network
