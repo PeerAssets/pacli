@@ -5,6 +5,7 @@ from pacli.config import Settings
 from pacli.keystore import init_keystore
 from pacli.tui import print_deck_info, print_deck_list
 from pacli.tui import print_card_list
+import json
 
 
 def cointoolkit_verify(hex: str) -> str:
@@ -119,10 +120,11 @@ class Deck:
 
         return pa.parse_deckspawn_metainfo(bytes.fromhex(protobuf), Settings.deck_version)
 
-    def issue_mode(self, list=True):
+    def issue_modes(self):
 
-        if list:  # lists all the supported issue modes and their values
-            return tuple(dict(pa.IssueMode.__members__).values())
+        im = tuple({mode.name: mode.value} for mode_name, mode in pa.IssueMode.__members__.items())
+
+        print(json.dumps(im, indent=1, sort_keys=True))
 
 
 class Card:
