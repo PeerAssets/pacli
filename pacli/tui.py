@@ -49,3 +49,23 @@ def print_deck_info(deck: pa.Deck):
             data=[[
                 getattr(deck, attr) for attr in
                         ["name", "issuer", "issue_mode", "number_of_decimals", "issue_time"]]])
+
+
+def card_line_item(card: pa.CardTransfer):
+
+    c = card.__dict__
+    return [c["txid"],
+            c["sender"],
+            c["receiver"][0],
+            pa.exponent_to_amount(c["amount"][0], c["number_of_decimals"]),
+            c["type"]
+            ]
+
+
+def print_card_list(cards):
+
+    print_table(
+            title="Card transfers of this deck:",
+            heading=("txid", "sender", "receiver", "amount", "type"),
+            data=map(card_line_item, cards))
+
