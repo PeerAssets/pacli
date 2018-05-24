@@ -3,6 +3,7 @@ import pypeerassets as pa
 from pacli.provider import provider
 from pacli.config import Settings
 from pacli.keystore import init_keystore
+from pacli.tui import print_deck_info, print_deck_list
 
 
 def cointoolkit_verify(hex: str) -> str:
@@ -61,6 +62,14 @@ class Deck:
                                         Settings.deck_version,
                                         Settings.production)
         return [d for d in decks if key in d.__dict__.values()]
+
+    @classmethod
+    def info(self, deck_id):
+        '''display deck info'''
+
+        deck = pa.find_deck(provider, deck_id, Settings.deck_version,
+                            Settings.production)
+        print_deck_info(deck)
 
     @classmethod
     def new(self, name: str, number_of_decimals: int, issue_mode: int,
