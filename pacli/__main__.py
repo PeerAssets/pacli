@@ -126,6 +126,11 @@ class Deck:
 
         print(json.dumps(im, indent=1, sort_keys=True))
 
+    def checksum(self, deck_id: str) -> bool:
+        '''check if deck balances are in order'''
+
+        raise NotImplementedError
+
 
 class Card:
 
