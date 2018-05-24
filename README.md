@@ -81,41 +81,10 @@ encode the deck information into hex to be inserted in OP_RETURN, usable when cr
 
 decode protobuf message and display it as json, usable when debbuging cards
 
-> pacli card burn '{"deck": "d460651e1d9147770ec9d4c254bcc68ff5d203a86b97c09d00955fb3f714cab3", "amounts": [11]}'
+> pacli card burn --deckid 078f41c257642a89ade91e52fd484c141b11eda068435c0e34569a5dfcce7915 --receiver [$DECK_ISSUE_ADDRESS] --amount [11] --verify
 
-burn 11 of card on this deck, this transaction will be denied if you have no cards on this deck.
+burn 11 of card on this deck.
 
-> pacli card issue '{"deck": "hopium_v2", "receiver": ["n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x"], "amount": [110]}'
+> pacli card burn --deckid 078f41c257642a89ade91e52fd484c141b11eda068435c0e34569a5dfcce7915 --receiver [n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x] --amount [110] --verify
 
-issue 110 cards to n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x, this transaction will be declined if you do not own deck issuing address.
-
-> pacli card transfer '{"deck": "08c1928ce84d9066f120", "receiver": ["n1GqTk2NFvSCX3h78rkEA3DoiJW8QxT3Mm", "mv8J47BV8ahpKq7dNXut3kXPgQQCQea5FR",
-                         "myeFFDLXvpGUh8gBPZdCNEsLQ7ZPZkH7d8"], "amount": [1, 9.98, 200.1]}'
-
-transfer cards of "08c1928ce84d9066f120" deck (queried by short id, it is clementines deck) to three different addresses.
-This transaction will be denied if you have no address which holds cards of this deck or if your balance is not sufficient.
-
-> pacli vote new '{"deck": "hopium_v2", "choices": ["y", "n"], "count_mode": "SIMPLE", "description": "yes or no?", "start_block": 27306, "end_block": 27310}'
-
-create new vote on the "hopium_v2" deck with choices "y" and "no", starting from block 27306 and lasting until block 27310.
-
-> pacli vote list "hopium_v2"
-
-Shows all the votes on this deck.
-
-```
-+Votes on this deck:-----------------------------------------------+------------------------------------+------------------+-------------+-----------+
-| vote_id                                                          | sender                             | description      | start_block | end_block |
-+------------------------------------------------------------------+------------------------------------+------------------+-------------+-----------+
-| 7459c9f4738001e3c50653d6066e3d41a9ffb2a1f3d786721bc472bcb04f17fa | msYThv5bf7KjhHT1Cj5D7Y1tofyhq9vhWM | PPC to the moon? | 268400      | 290000    |
-| 79e940296f26feb3e5ebaaea0d9aced153e796926e8db926050977ae02c00fa6 | msYThv5bf7KjhHT1Cj5D7Y1tofyhq9vhWM | test1            | 27306       | 275000    |
-+------------------------------------------------------------------+------------------------------------+------------------+-------------+-----------+
-```
-
-> pacli vote cast '{"vote": "7459c9f4738001e3c50653d6066e3d41a9ffb2a1f3d786721bc472bcb04f17fa", choice: "yes"}'
-
-cast "yes" vote to vote_id 7459c9f4738001e3c50653d6066e3d41a9ffb2a1f3d786721bc472bcb04f17fa
-
-_____________________________________
-
-This is a early release based on unfinished pypeerassets library.
+issue 110 cards to n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x.
