@@ -26,8 +26,9 @@ To access it from the command line, place the following in $HOME/.bashrc:
 
 `source ~/.bashrc`
 
+__________________________________________________
 
-Examples:
+## examples:
 
 > pacli -- --help
 
