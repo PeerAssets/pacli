@@ -137,7 +137,7 @@ class Card:
     '''card information and manipulation'''
 
     @classmethod
-    def list(self, deck_id: str):
+    def list(self, deckid: str):
         '''list the valid cards on this deck'''
 
         deck = pa.find_deck(provider, deck_id,
@@ -150,7 +150,7 @@ class Card:
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
 
-    def balances(self, deck_id):
+    def balances(self, deckid):
         '''list card balances on this deck'''
         raise NotImplementedError
 
