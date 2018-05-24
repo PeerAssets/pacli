@@ -154,6 +154,12 @@ class Card:
         '''list card balances on this deck'''
         raise NotImplementedError
 
+    @staticmethod
+    def to_exponent(number_of_decimals, amount):
+        '''convert float to exponent'''
+
+        return pa.amount_to_exponent(amount, number_of_decimals)
+
     @classmethod
     def new(self, deckid: str, receiver: list=None,
             amount: list=None, asset_specific_data: str=None) -> pa.CardTransfer:
@@ -167,7 +173,9 @@ class Card:
         version = Settings.deck_version
         deck = pa.find_deck(provider, deckid, version, production)
 
-        card = pa.CardTransfer(deck, receiver, amount, version, asset_specific_data)
+        card = pa.CardTransfer(deck, receiver,
+                               [self.to_exponent(deck.number_of_decimals, i) for i in amount],
+                               version, asset_specific_data)
 
         return card
 
