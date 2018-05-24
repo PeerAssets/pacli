@@ -46,10 +46,10 @@ class Deck:
     def list(self):
         '''find all valid decks and list them.'''
 
-        decks = list(pa.find_all_valid_decks(provider, Settings.deck_version,
-                                             Settings.production))
+        decks = pa.find_all_valid_decks(provider, Settings.deck_version,
+                                        Settings.production)
 
-        return decks
+        print_deck_list(decks)
 
     @classmethod
     def find(self, key):
