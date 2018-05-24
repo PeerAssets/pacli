@@ -1,6 +1,6 @@
 from terminaltables import AsciiTable
 from datetime import datetime
-from pypeerassets import Deck
+import pypeerassets as pa
 
 
 def tstamp_to_iso(tstamp):
@@ -22,7 +22,7 @@ def deck_title(deck):
     return "Deck id: " + deck.id + " "
 
 
-def deck_summary_line_item(deck):
+def deck_summary_line_item(deck: pa.Deck):
 
     d = deck.__dict__
     return [d["id"],
@@ -32,7 +32,7 @@ def deck_summary_line_item(deck):
             ]
 
 
-def print_deck_list(decks):
+def print_deck_list(decks: list):
     '''Show summary of every deck'''
 
     print_table(
@@ -41,7 +41,7 @@ def print_deck_list(decks):
             data=map(deck_summary_line_item, decks))
 
 
-def print_deck_info(deck: Deck):
+def print_deck_info(deck: pa.Deck):
 
     print_table(
             title=deck_title(deck),
