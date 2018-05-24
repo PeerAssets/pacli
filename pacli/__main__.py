@@ -165,12 +165,32 @@ class Card:
                                  inputs=provider.select_inputs(Settings.key.address, 0.02),
                                  card=card,
                                  change_address=Settings.change
-                                )
+                                 )
 
         if verify:
             return cointoolkit_verify(issue.hexlify())  # link to cointoolkit - verify
 
         return issue.hexlify()
+
+    @classmethod
+    def encode(self, deckid: str, receiver: list=None, amount: list=None,
+               asset_specific_data: str=None, json: bool=False) -> str:
+        '''compose a new card and print out the protobuf which
+           is to be manually inserted in the OP_RETURN of the transaction.'''
+
+        card = self.new(deckid, receiver, amount, asset_specific_data)
+
+        if json:
+            return card.metainfo_to_dict
+
+        return card.metainfo_to_protobuf.hex()
+
+    @classmethod
+    def decode(self, protobuf: str) -> dict:
+        '''decode card protobuf'''
+
+        return pa.parse_card_transfer_metainfo(bytes.fromhex(protobuf),
+                                               Settings.deck_version)
 
 
 def main():
