@@ -140,7 +140,7 @@ class Card:
     def list(self, deckid: str):
         '''list the valid cards on this deck'''
 
-        deck = pa.find_deck(provider, deck_id,
+        deck = pa.find_deck(provider, deckid,
                             Settings.deck_version,
                             Settings.production)
 
