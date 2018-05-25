@@ -5,6 +5,7 @@ from pacli.config import Settings
 from pacli.keystore import init_keystore
 from pacli.tui import print_deck_info, print_deck_list
 from pacli.tui import print_card_list
+from btcpy.structs.script import NulldataScript
 import json
 
 
@@ -120,10 +121,12 @@ class Deck:
         return self.__new(**kwargs).metainfo_to_protobuf.hex()
 
     @classmethod
-    def decode(self, protobuf: str) -> dict:
+    def decode(self, hex: str) -> dict:
         '''decode deck protobuf'''
 
-        return pa.parse_deckspawn_metainfo(bytes.fromhex(protobuf), Settings.deck_version)
+        script = NulldataScript.unhexlify(hex).decompile().split(' ')[1]
+
+        return pa.parse_deckspawn_metainfo(bytes.fromhex(script), Settings.deck_version)
 
     def issue_modes(self):
 
@@ -230,10 +233,12 @@ class Card:
         return card.metainfo_to_protobuf.hex()
 
     @classmethod
-    def decode(self, protobuf: str) -> dict:
+    def decode(self, hex: str) -> dict:
         '''decode card protobuf'''
 
-        return pa.parse_card_transfer_metainfo(bytes.fromhex(protobuf),
+        script = NulldataScript.unhexlify(hex).decompile().split(' ')[1]
+
+        return pa.parse_card_transfer_metainfo(bytes.fromhex(script),
                                                Settings.deck_version)
 
 
