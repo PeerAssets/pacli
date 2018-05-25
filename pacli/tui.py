@@ -58,6 +58,7 @@ def card_line_item(card: pa.CardTransfer):
 
     c = card[0].__dict__
     return [c["txid"],
+            c["confirms"],
             c['cardseq'],
             c["sender"],
             c["receiver"][0],
@@ -70,5 +71,5 @@ def print_card_list(cards):
 
     print_table(
             title="Card transfers of this deck:",
-            heading=("txid", "seq", "sender", "receiver", "amount", "type"),
+            heading=("txid", "confirms", "seq", "sender", "receiver", "amount", "type"),
             data=map(card_line_item, cards))
