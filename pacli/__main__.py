@@ -47,6 +47,14 @@ class Address:
 
         return pa.Kutil(Settings.network, from_string=key).address
 
+    def get_unspent(self, amount: int) -> str:
+        '''quick find UTXO for this address'''
+
+        try:
+            return provider.select_inputs(Settings.key.address, 0.02)['utxos'][0].__dict__['txid']
+        except KeyError:
+            print({'error': 'No UTXOs ;('})
+
 
 class Deck:
 
