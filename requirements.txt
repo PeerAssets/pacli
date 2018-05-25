@@ -1,4 +1,4 @@
--e git://github.com/PeerAssets/pypeerassets@master#egg=pypeerassets
+git+git://github.com/PeerAssets/pypeerassets@master#egg=pypeerassets
 terminaltables>=3.1.0
 appdirs
 keyring
