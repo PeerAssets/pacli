@@ -28,7 +28,8 @@ def deck_summary_line_item(deck: pa.Deck):
     return [d["id"],
             d["name"],
             d["issuer"],
-            d["issue_mode"]
+            d["issue_mode"],
+            d["confirms"]
             ]
 
 
@@ -37,7 +38,7 @@ def print_deck_list(decks: list):
 
     print_table(
             title="Decks",
-            heading=("ID", "asset name", "issuer", "mode"),
+            heading=("ID", "asset name", "issuer", "mode", "confirms"),
             data=map(deck_summary_line_item, decks))
 
 
@@ -47,10 +48,10 @@ def print_deck_info(deck: pa.Deck):
 
     print_table(
             title=deck_title(deck),
-            heading=("asset name", "issuer", "issue mode", "decimals", "timestamp"),
+            heading=("asset name", "issuer", "issue mode", "decimals", "confirms", "timestamp"),
             data=[[
                 getattr(deck, attr) for attr in
-                        ["name", "issuer", "issue_mode", "number_of_decimals", "issue_time"]]])
+                        ["name", "issuer", "issue_mode", "number_of_decimals", "confirms", "issue_time"]]])
 
 
 def card_line_item(card: pa.CardTransfer):
