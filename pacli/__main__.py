@@ -24,7 +24,7 @@ class Address:
 
     '''my personal address'''
 
-    def show(self, pubkey: bool=False, privkey: bool=False, wif: bool=False):
+    def show(self, pubkey: bool=False, privkey: bool=False, wif: bool=False) -> str:
         '''print address, pubkey or privkey'''
 
         if pubkey:
@@ -37,11 +37,11 @@ class Address:
         return Settings.key.address
 
     @classmethod
-    def balance(self):
+    def balance(self) -> float:
 
         return float(provider.getbalance(Settings.key.address))
 
-    def derive(self, key: str):
+    def derive(self, key: str) -> str:
         '''derive a new address from <key>'''
 
         return pa.Kutil(Settings.network, from_string=key).address
