@@ -19,7 +19,7 @@ def print_table(title, heading, data):
 
 
 def deck_title(deck):
-    return "Deck id: " + deck.id + " "
+    return "Deck ID: " + deck.id + " "
 
 
 def deck_summary_line_item(deck: pa.Deck):
@@ -45,7 +45,7 @@ def print_deck_info(deck: pa.Deck):
 
     print_table(
             title=deck_title(deck),
-            heading=("asset name", "issuer", "issue mode", "decimals", "issue time"),
+            heading=("asset name", "issuer", "issue mode", "decimals", "timestamp"),
             data=[[
                 getattr(deck, attr) for attr in
                         ["name", "issuer", "issue_mode", "number_of_decimals", "issue_time"]]])
