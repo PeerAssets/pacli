@@ -41,6 +41,11 @@ class Address:
 
         return float(provider.getbalance(Settings.key.address))
 
+    def derive(self, key: str):
+        '''derive a new address from <key>'''
+
+        return pa.Kutil(Settings.network, from_string=key).address
+
 
 class Deck:
 

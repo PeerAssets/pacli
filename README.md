@@ -42,6 +42,10 @@ show current address, or it's privkey, pubkey or wif
 
 show balance of the current address
 
+> pacli address derive STRING
+
+derive a new address from STRING, useful for P2TH experimentations
+
 > pacli deck search "My little pony"
 
 search for deck called "My little pony"
