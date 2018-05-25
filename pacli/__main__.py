@@ -47,6 +47,11 @@ class Address:
 
         return pa.Kutil(Settings.network, from_string=key).address
 
+    def random(self, n: int=1) -> list:
+        '''generate <n> of random addresses, useful when testing'''
+
+        return [pa.Kutil(network=Settings.network).address for i in range(n)]
+
     def get_unspent(self, amount: int) -> str:
         '''quick find UTXO for this address'''
 
