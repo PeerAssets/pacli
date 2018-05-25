@@ -43,6 +43,8 @@ def print_deck_list(decks: list):
 
 def print_deck_info(deck: pa.Deck):
 
+    deck.issue_time = tstamp_to_iso(deck.issue_time)
+
     print_table(
             title=deck_title(deck),
             heading=("asset name", "issuer", "issue mode", "decimals", "timestamp"),
