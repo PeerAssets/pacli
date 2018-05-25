@@ -239,7 +239,7 @@ class Transaction:
 
         tx = provider.getrawtransaction(txid, 1)
 
-        print(json.dumps(tx, indent=2))
+        print(json.dumps(tx, indent=4))
 
 
 def main():
