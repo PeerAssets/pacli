@@ -46,9 +46,9 @@ show balance of the current address
 
 derive a new address from STRING, useful for P2TH experimentations
 
-> pacli deck search "My little pony"
+> pacli deck search $DECK_ID
 
-search for deck called "My little pony"
+search for deck by it's ID
 
 > pacli deck info $DECK_ID
 
