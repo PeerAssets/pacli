@@ -1,4 +1,5 @@
 import fire
+import random
 import pypeerassets as pa
 from pacli.provider import provider
 from pacli.config import Settings
@@ -230,7 +231,12 @@ class Card:
               asset_specific_data: str=None, verify=False) -> str:
         '''Wrapper around self.tranfer'''
 
-        return self.transfer(deckid, receiver, amount, asset_specific_data, verify)
+        issue = self.transfer(deckid, receiver, amount, asset_specific_data, verify)
+
+        if verify:
+            return cointoolkit_verify(issue.hexlify())  # link to cointoolkit - verify
+
+        return issue.hexlify()
 
     @classmethod
     def encode(self, deckid: str, receiver: list=None, amount: list=None,
@@ -253,6 +259,14 @@ class Card:
 
         return pa.parse_card_transfer_metainfo(bytes.fromhex(script),
                                                Settings.deck_version)
+
+    def simulate_issue(self, deckid: str=None, ncards: int=10, verify=False) -> str:
+        '''create a batch of simulated CardIssues on this deck'''
+
+        receiver = [pa.Kutil(network='tppc').address for i in range(ncards)]
+        amount = [random.randint(1, 100) for i in range(ncards)]
+
+        return self.issue(deckid, receiver, amount, verify)
 
 
 class Transaction:
