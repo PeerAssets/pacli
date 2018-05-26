@@ -56,7 +56,7 @@ def print_deck_info(deck: pa.Deck):
 
 def card_line_item(card: pa.CardTransfer):
 
-    c = card[0].__dict__
+    c = card.__dict__
     return [c["txid"],
             c["confirms"],
             c['cardseq'],
@@ -70,6 +70,6 @@ def card_line_item(card: pa.CardTransfer):
 def print_card_list(cards):
 
     print_table(
-            title="Card transfers of deck {deck}:".format(deck=cards[0][0].deck_id),
+            title="Card transfers of deck {deck}:".format(deck=cards[0].deck_id),
             heading=("txid", "confirms", "seq", "sender", "receiver", "amount", "type"),
             data=map(card_line_item, cards))
