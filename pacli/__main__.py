@@ -166,7 +166,7 @@ class Card:
                             Settings.production)
 
         try:
-            cards = pa.find_card_transfers(provider, deck)
+            cards = pa.find_all_valid_cards(provider, deck)
             print_card_list(cards)
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
