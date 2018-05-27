@@ -238,12 +238,8 @@ class Card:
               asset_specific_data: str=None, verify=False) -> str:
         '''Wrapper around self.tranfer'''
 
-        issue = self.transfer(deckid, receiver, amount, asset_specific_data, verify)
+        return self.transfer(deckid, receiver, amount, asset_specific_data, verify)
 
-        if verify:
-            return cointoolkit_verify(issue.hexlify())  # link to cointoolkit - verify
-
-        return issue.hexlify()
 
     @classmethod
     def encode(self, deckid: str, receiver: list=None, amount: list=None,
