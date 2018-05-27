@@ -83,7 +83,9 @@ class Deck:
         decks = pa.find_all_valid_decks(provider,
                                         Settings.deck_version,
                                         Settings.production)
-        print_deck_list((d for d in decks if key in d.__dict__.values()))
+        print_deck_list(
+            (d for d in decks if key in d.id or (key in d.__dict__.values()))
+            )
 
     @classmethod
     def info(self, deck_id):
