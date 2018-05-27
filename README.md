@@ -46,9 +46,9 @@ show balance of the current address
 
 derive a new address from STRING, useful for P2TH experimentations
 
-> pacli deck search $DECK_ID
+> pacli deck search $KEY
 
-search for deck by it's ID
+search for deck by key, can be deck_id, name, issuer, issue_mode or else
 
 > pacli deck info $DECK_ID
 
@@ -57,6 +57,10 @@ show full deck details
 > pacli deck list all
 
 list all decks on the network
+
+> pacli deck my
+
+show decks issued by the address I control
 
 > pacli deck spawn --name "My own asset" --number_of_decimals 1 issue_mode 4
 
