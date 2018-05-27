@@ -155,6 +155,11 @@ class Deck:
 
         raise NotImplementedError
 
+    def my(self):
+        '''list decks spawned from address I control'''
+
+        return self.find(Settings.key.address)
+
 
 class Card:
 
