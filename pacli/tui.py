@@ -45,13 +45,14 @@ def print_deck_list(decks: list):
 def print_deck_info(deck: pa.Deck):
 
     deck.issue_time = tstamp_to_iso(deck.issue_time)
+    deck.data = str(deck.asset_specific_data)
 
     print_table(
             title=deck_title(deck),
-            heading=("asset name", "issuer", "issue mode", "decimals", "confirms", "timestamp"),
+            heading=("asset name", "issuer", "issue mode", "decimals", "confirms", "timestamp", "data"),
             data=[[
                 getattr(deck, attr) for attr in
-                        ["name", "issuer", "issue_mode", "number_of_decimals", "confirms", "issue_time"]]])
+                        ["name", "issuer", "issue_mode", "number_of_decimals", "confirms", "issue_time", "data"]]])
 
 
 def card_line_item(card: pa.CardTransfer):
