@@ -18,6 +18,8 @@ Main config file is located in `$HOME/.config/pacli`.
 
 ### linux
 
+*pacli is meant for desktop environment (Gnome/KDE), if you want to run it headless see this: https://github.com/jaraco/keyring#using-keyring-on-headless-linux-systems*
+
 `python3 setup.py install --user`
 
 To access it from the command line, place the following in $HOME/.bashrc:
