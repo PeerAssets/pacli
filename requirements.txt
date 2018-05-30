@@ -1,4 +1,4 @@
-git+git://github.com/PeerAssets/pypeerassets@master#egg=pypeerassets
+peerassets-btcpy
 terminaltables>=3.1.0
 appdirs
 keyring
