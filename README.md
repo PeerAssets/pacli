@@ -143,7 +143,7 @@ Create directory: `mkdir ~/.bash_completion.d`
 
 Export completion file:
 
-`dodo -- --completion >> .bash_completion.d/dodo`
+`pacli -- --completion >> .bash_completion.d/pacli`
 
 Activate:
 
