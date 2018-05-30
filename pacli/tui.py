@@ -1,6 +1,7 @@
 from terminaltables import AsciiTable
 from datetime import datetime
-import pypeerassets as pa
+from pypeerassets import Deck, CardTransfer
+from pypeerassets.pautils import exponent_to_amount
 
 
 def tstamp_to_iso(tstamp):
@@ -22,7 +23,7 @@ def deck_title(deck):
     return "Deck ID: " + deck.id + " "
 
 
-def deck_summary_line_item(deck: pa.Deck):
+def deck_summary_line_item(deck: Deck):
 
     d = deck.__dict__
     return [d["id"],
@@ -42,7 +43,7 @@ def print_deck_list(decks: list):
             data=map(deck_summary_line_item, decks))
 
 
-def print_deck_info(deck: pa.Deck):
+def print_deck_info(deck: Deck):
 
     deck.issue_time = tstamp_to_iso(deck.issue_time)
     deck.data = str(deck.asset_specific_data)
@@ -55,7 +56,7 @@ def print_deck_info(deck: pa.Deck):
                         ["name", "issuer", "issue_mode", "number_of_decimals", "confirms", "issue_time", "data"]]])
 
 
-def card_line_item(card: pa.CardTransfer):
+def card_line_item(card: CardTransfer):
 
     c = card.__dict__
     return [c["txid"],
@@ -63,7 +64,7 @@ def card_line_item(card: pa.CardTransfer):
             c['cardseq'],
             c["sender"],
             c["receiver"][0],
-            pa.exponent_to_amount(c["amount"][0], c["number_of_decimals"]),
+            exponent_to_amount(c["amount"][0], c["number_of_decimals"]),
             c["type"]
             ]
 
