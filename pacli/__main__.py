@@ -179,9 +179,24 @@ class Card:
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
 
-    def balances(self, deckid):
+    def balances(self, deckid: str):
         '''list card balances on this deck'''
-        raise NotImplementedError
+
+        deck = pa.find_deck(provider, deckid, Settings.deck_version,
+                            Settings.production)
+
+        try:
+            cards = pa.find_all_valid_cards(provider, deck)
+        except pa.exceptions.EmptyP2THDirectory as err:
+            return err
+
+        state = pa.protocol.DeckState(cards)
+
+        balances = [pa.exponent_to_amount(i, deck.number_of_decimals)
+                    for i in state.balances.values()]
+
+        print(json.dumps(dict(zip(state.balances.keys(), balances)
+                              ), indent=4))
 
     @staticmethod
     def to_exponent(number_of_decimals, amount):
