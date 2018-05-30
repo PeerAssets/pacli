@@ -70,6 +70,8 @@ def card_line_item(card: pa.CardTransfer):
 
 def print_card_list(cards):
 
+    cards = list(cards)  # generator -> list
+
     print_table(
             title="Card transfers of deck {deck}:".format(deck=cards[0].deck_id),
             heading=("txid", "confirms", "seq", "sender", "receiver", "amount", "type"),
