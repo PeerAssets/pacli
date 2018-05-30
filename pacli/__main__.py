@@ -165,7 +165,7 @@ class Card:
 
     '''card information and manipulation'''
 
-    def __list(deckid: str):
+    def __list(self, deckid: str):
 
         deck = pa.find_deck(provider, deckid,
                             Settings.deck_version,
