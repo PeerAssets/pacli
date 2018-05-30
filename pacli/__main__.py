@@ -1,6 +1,7 @@
 import fire
 import random
 import pypeerassets as pa
+from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
 from pacli.provider import provider
 from pacli.config import Settings
 from pacli.keystore import init_keystore
@@ -194,7 +195,7 @@ class Card:
 
         state = pa.protocol.DeckState(cards)
 
-        balances = [pa.exponent_to_amount(i, deck.number_of_decimals)
+        balances = [exponent_to_amount(i, deck.number_of_decimals)
                     for i in state.balances.values()]
 
         print(json.dumps(dict(zip(state.balances.keys(), balances)
@@ -213,7 +214,7 @@ class Card:
     def to_exponent(number_of_decimals, amount):
         '''convert float to exponent'''
 
-        return pa.amount_to_exponent(amount, number_of_decimals)
+        return amount_to_exponent(amount, number_of_decimals)
 
     @classmethod
     def __new(self, deckid: str, receiver: list=None,
