@@ -179,6 +179,7 @@ class Card:
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
 
+    @classmethod
     def list(self, deckid: str):
         '''list the valid cards on this deck'''
 
