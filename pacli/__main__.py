@@ -177,6 +177,7 @@ class Card:
         if deck:
             return deck
 
+    @classmethod
     def __list(self, deckid: str):
 
         deck = self.__find_deck(deckid)
@@ -238,8 +239,9 @@ class Card:
         if deck:
 
             card = pa.CardTransfer(deck, receiver,
-                               [self.to_exponent(deck.number_of_decimals, i) for i in amount],
-                               version, asset_specific_data)
+                                   [self.to_exponent(deck.number_of_decimals, i)
+                                    for i in amount],
+                                   deck.version, asset_specific_data)
 
             return card
 
