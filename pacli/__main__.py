@@ -165,25 +165,30 @@ class Card:
 
     '''card information and manipulation'''
 
-    @classmethod
-    def list(self, deckid: str):
-        '''list the valid cards on this deck'''
+    def __list(deckid: str):
 
         deck = pa.find_deck(provider, deckid,
                             Settings.deck_version,
                             Settings.production)
 
         try:
-            cards = list(pa.find_all_valid_cards(provider, deck))
-            print_card_list(cards)
+            cards = pa.find_all_valid_cards(provider, deck)
+            return {'cards': cards,
+                    'deck': deck}
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
+
+    def list(self, deckid: str):
+        '''list the valid cards on this deck'''
+
+        cards = self.__list(deckid)['cards']
+
+        print_card_list(cards)
 
     def balances(self, deckid: str):
         '''list card balances on this deck'''
 
-        deck = pa.find_deck(provider, deckid, Settings.deck_version,
-                            Settings.production)
+        cards, deck = self.__list(deckid).values()
 
         try:
             cards = pa.find_all_valid_cards(provider, deck)
