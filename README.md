@@ -1,5 +1,9 @@
 # pacli
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![PyPI](https://img.shields.io/pypi/v/pacli.svg?style=flat-square)](https://pypi.python.org/pypi/pacli/)
+[![](https://img.shields.io/badge/python-3.5+-blue.svg)](https://www.python.org/download/releases/3.5.0/) 
+
 > Licence: GPL3
 
 > Language: Python (>= 3.5)
