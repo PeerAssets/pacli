@@ -144,7 +144,7 @@ class Deck:
 
         script = NulldataScript.unhexlify(hex).decompile().split(' ')[1]
 
-        return pa.parse_deckspawn_metainfo(bytes.fromhex(script), Settings.deck_version)
+        return pa.pautils.parse_deckspawn_metainfo(bytes.fromhex(script), Settings.deck_version)
 
     def issue_modes(self):
 
