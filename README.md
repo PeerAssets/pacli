@@ -88,6 +88,10 @@ list all supported issue modes and their values
 
 list all card transfers related to this deck
 
+> pacli card balance *deck_id*
+
+show balances of addresses on this deck
+
 > pacli deck --checksum *deck_id*
 
 verify deck checksum, checksum is difference between issued cards and balances of all the addresses.
@@ -116,3 +120,7 @@ burn 11 of card on this deck.
 > pacli card issue --deckid 078f41c257642a89ade91e52fd484c141b11eda068435c0e34569a5dfcce7915 --receiver [n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x] --amount [110] --verify
 
 issue 110 cards to n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x.
+
+> pacli card export *filename*
+
+export the card transactions to .csv file
