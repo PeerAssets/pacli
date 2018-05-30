@@ -48,6 +48,8 @@ show current address, or it's privkey, pubkey or wif
 
 show balance of the current address
 
+[![asciicast](https://asciinema.org/a/J1NLGEgdRcSE7ppLp48Lu2bD7.png)](https://asciinema.org/a/J1NLGEgdRcSE7ppLp48Lu2bD7)
+
 > pacli address derive STRING
 
 derive a new address from STRING, useful for P2TH experimentations
