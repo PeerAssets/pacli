@@ -199,6 +199,15 @@ class Card:
         print(json.dumps(dict(zip(state.balances.keys(), balances)
                               ), indent=4))
 
+    def checksum(self, deckid: str) -> bool:
+        '''show deck card checksum'''
+
+        cards, deck = self.__list(deckid).values()
+
+        state = pa.protocol.DeckState(cards)
+
+        return state.checksum
+
     @staticmethod
     def to_exponent(number_of_decimals, amount):
         '''convert float to exponent'''
