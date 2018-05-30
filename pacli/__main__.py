@@ -267,7 +267,6 @@ class Card:
 
         return self.transfer(deckid, receiver, amount, asset_specific_data, verify)
 
-
     @classmethod
     def encode(self, deckid: str, receiver: list=None, amount: list=None,
                asset_specific_data: str=None, json: bool=False) -> str:
@@ -290,13 +289,15 @@ class Card:
         return pa.parse_card_transfer_metainfo(bytes.fromhex(script),
                                                Settings.deck_version)
 
+    @classmethod
     def simulate_issue(self, deckid: str=None, ncards: int=10, verify=False) -> str:
         '''create a batch of simulated CardIssues on this deck'''
 
         receiver = [pa.Kutil(network='tppc').address for i in range(ncards)]
         amount = [random.randint(1, 100) for i in range(ncards)]
 
-        return self.issue(deckid, receiver, amount, verify)
+        return self.transfer(deckid=deckid, receiver=receiver, amount=amount,
+                             verify=verify)
 
     def export(self, deckid: str, filename: str):
         '''export cards to csv'''
