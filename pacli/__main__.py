@@ -167,11 +167,19 @@ class Card:
 
     '''card information and manipulation'''
 
-    def __list(self, deckid: str):
+    @classmethod
+    def __find_deck(self, deckid) -> Deck:
 
         deck = pa.find_deck(provider, deckid,
                             Settings.deck_version,
                             Settings.production)
+
+        if deck:
+            return deck
+
+    def __list(self, deckid: str):
+
+        deck = self.__find_deck(deckid)
 
         try:
             cards = pa.find_all_valid_cards(provider, deck)
@@ -225,15 +233,18 @@ class Card:
         * amount - list of amounts to be sent, must be float
         '''
 
-        production = Settings.production
-        version = Settings.deck_version
-        deck = pa.find_deck(provider, deckid, version, production)
+        deck = self.__find_deck(deckid)
 
-        card = pa.CardTransfer(deck, receiver,
+        if deck:
+
+            card = pa.CardTransfer(deck, receiver,
                                [self.to_exponent(deck.number_of_decimals, i) for i in amount],
                                version, asset_specific_data)
 
-        return card
+            return card
+
+        else:
+            return {'error:' 'Deck not found.'}
 
     @classmethod
     def transfer(self, deckid: str, receiver: list=None, amount: list=None,
