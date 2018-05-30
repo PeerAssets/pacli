@@ -190,11 +190,6 @@ class Card:
 
         cards, deck = self.__list(deckid).values()
 
-        try:
-            cards = pa.find_all_valid_cards(provider, deck)
-        except pa.exceptions.EmptyP2THDirectory as err:
-            return err
-
         state = pa.protocol.DeckState(cards)
 
         balances = [pa.exponent_to_amount(i, deck.number_of_decimals)
