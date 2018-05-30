@@ -214,6 +214,7 @@ class Card:
 
         return pa.amount_to_exponent(amount, number_of_decimals)
 
+    @classmethod
     def __new(self, deckid: str, receiver: list=None,
               amount: list=None, asset_specific_data: str=None) -> pa.CardTransfer:
         '''fabricate a new card transaction
@@ -232,6 +233,7 @@ class Card:
 
         return card
 
+    @classmethod
     def transfer(self, deckid: str, receiver: list=None, amount: list=None,
                  asset_specific_data: str=None, verify=False) -> str:
         '''prepare CardTransfer transaction'''
@@ -249,6 +251,7 @@ class Card:
 
         return issue.hexlify()
 
+    @classmethod
     def burn(self, deckid: str, receiver: list=None, amount: list=None,
              asset_specific_data: str=None, verify=False) -> str:
         '''wrapper around self.transfer'''
@@ -262,6 +265,8 @@ class Card:
 
         return self.transfer(deckid, receiver, amount, asset_specific_data, verify)
 
+
+    @classmethod
     def encode(self, deckid: str, receiver: list=None, amount: list=None,
                asset_specific_data: str=None, json: bool=False) -> str:
         '''compose a new card and print out the protobuf which
@@ -274,6 +279,7 @@ class Card:
 
         return card.metainfo_to_protobuf.hex()
 
+    @classmethod
     def decode(self, hex: str) -> dict:
         '''decode card protobuf'''
 
