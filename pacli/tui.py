@@ -39,7 +39,7 @@ def print_deck_list(decks: list):
 
     print_table(
             title="Decks",
-            heading=("ID", "asset name", "issuer", "mode", "confirms"),
+            heading=("ID", "name", "issuer", "mode", "confirms"),
             data=map(deck_summary_line_item, decks))
 
 
@@ -50,7 +50,7 @@ def print_deck_info(deck: Deck):
 
     print_table(
             title=deck_title(deck),
-            heading=("asset name", "issuer", "issue mode", "decimals", "confirms", "timestamp", "data"),
+            heading=("name", "issuer", "issue mode", "decimals", "confirms", "timestamp", "data"),
             data=[[
                 getattr(deck, attr) for attr in
                         ["name", "issuer", "issue_mode", "number_of_decimals", "confirms", "issue_time", "data"]]])
