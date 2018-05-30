@@ -6,6 +6,7 @@ from pacli.config import Settings
 from pacli.keystore import init_keystore
 from pacli.tui import print_deck_info, print_deck_list
 from pacli.tui import print_card_list
+from pacli.export import export_to_csv
 from btcpy.structs.script import NulldataScript
 import json
 
@@ -285,6 +286,12 @@ class Card:
         amount = [random.randint(1, 100) for i in range(ncards)]
 
         return self.issue(deckid, receiver, amount, verify)
+
+    def export(self, deckid: str, filename: str):
+        '''export cards to csv'''
+
+        cards = self.__list(deckid)['cards']
+        export_to_csv(cards=list(cards), filename=filename)
 
 
 class Transaction:
