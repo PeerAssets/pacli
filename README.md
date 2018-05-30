@@ -124,3 +124,25 @@ issue 110 cards to n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x.
 > pacli card export *filename*
 
 export the card transactions to .csv file
+
+## bash completion (on *nix platforms)
+
+Create file `.bash_completion` with content:
+
+```
+for bcfile in ~/.bash_completion.d/* ; do
+    . $bcfile
+done
+```
+
+Create directory: `mkdir ~/.bash_completion.d`
+
+Export completion file:
+
+`dodo -- --completion >> .bash_completion.d/dodo`
+
+Activate:
+
+`. ~/.bash_completion`
+
+Tab away.
