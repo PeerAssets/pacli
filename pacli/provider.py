@@ -2,7 +2,7 @@ from pypeerassets import RpcNode, Cryptoid, Explorer, pautils
 from pacli.config import Settings
 
 
-def set_up(provider):
+def set_up():
     '''setup'''
 
     # if provider is local node, check if PA P2TH is loaded in local node
@@ -19,22 +19,20 @@ def set_up(provider):
 def configured_provider(Settings):
     " resolve settings into configured provider "
 
-    kwargs = dict(network=Settings.network)
-
     if Settings.provider.lower() == "rpcnode":
-        Provider = RpcNode
+        _provider = RpcNode
 
     elif Settings.provider.lower() == "cryptoid":
-        Provider = Cryptoid
+        _provider = Cryptoid
 
     elif Settings.provider.lower() == "explorer":
-        Provider = Explorer
+        _provider = Explorer
 
     else:
         raise Exception('invalid provider.')
 
-    provider = Provider(**kwargs)
-    set_up(provider)
+    provider = _provider(network=Settings.network)
+    set_up()
 
     return provider
 
@@ -51,6 +49,3 @@ def change(utxo):
     if Settings.change == "default":
         m = max([i["amount"] for i in utxo["utxos"]])
         return [i["address"] for i in utxo["utxos"] if i["amount"] == m][0]
-
-    if Settings.change == "standard":
-        return provider.getnewaddress()
