@@ -66,6 +66,8 @@ show full deck details
 
 list all decks on the network
 
+[![asciicast](https://asciinema.org/a/tIHxrZIGIvEalC1PzkyenikUh.png)](https://asciinema.org/a/tIHxrZIGIvEalC1PzkyenikUh)
+
 > pacli deck my
 
 show decks issued by the address I control
@@ -73,6 +75,8 @@ show decks issued by the address I control
 > pacli deck spawn --name "My own asset" --number_of_decimals 1 issue_mode 4
 
 issue a new asset named "My own asset", it will return a hexlified raw transaction.
+
+[![asciicast](https://asciinema.org/a/l4MAPXBbXc5ufn5UdS2r0QEHj.png)](https://asciinema.org/a/l4MAPXBbXc5ufn5UdS2r0QEHj)
 
 > pacli deck decode $HEX
 

@@ -69,7 +69,9 @@ def card_line_item(card: CardTransfer):
             ]
 
 
-def print_card_list(cards: list):
+def print_card_list(cards):
+
+    cards = list(cards)  # generator -> list
 
     print_table(
             title="Card transfers of deck {deck}:".format(deck=cards[0].deck_id),
