@@ -1,5 +1,5 @@
 from appdirs import user_config_dir
-import logging
+#import logging
 import configparser
 import os
 from .keystore import load_key
@@ -21,7 +21,7 @@ def write_default_config(conf_file=None):
             config.write(configfile)
 
 
-required = {"network", "deck_version", "production", "loglevel", "change", "provider"}
+required = {"network", "deck_version", "production", "change", "provider"}
 
 
 def read_conf(conf_file):
@@ -81,11 +81,11 @@ def load_conf():
     if settings['change'] == "default":
         Settings.change = Settings.key.address
 
-    logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
-    logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
-                        format="%(asctime)s %(levelname)s %(message)s")
+    #logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
+    #logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
+    #                    format="%(asctime)s %(levelname)s %(message)s")
 
-    logging.debug("logging initialized")
+    #logging.debug("logging initialized")
 
     return Settings
 
