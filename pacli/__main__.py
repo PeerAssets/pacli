@@ -184,10 +184,11 @@ class Card:
 
         try:
             cards = pa.find_all_valid_cards(provider, deck)
-            return {'cards': cards,
-                    'deck': deck}
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
+
+        return {'cards': list(cards),
+                'deck': deck}
 
     @classmethod
     def list(self, deckid: str):
