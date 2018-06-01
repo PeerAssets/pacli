@@ -302,7 +302,7 @@ class Card:
     def simulate_issue(self, deckid: str=None, ncards: int=10, verify=False) -> str:
         '''create a batch of simulated CardIssues on this deck'''
 
-        receiver = [pa.Kutil(network='tppc').address for i in range(ncards)]
+        receiver = [pa.Kutil(network=Settings.network).address for i in range(ncards)]
         amount = [random.randint(1, 100) for i in range(ncards)]
 
         return self.transfer(deckid=deckid, receiver=receiver, amount=amount,
