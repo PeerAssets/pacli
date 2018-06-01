@@ -233,11 +233,13 @@ class Card:
         deck = self.__find_deck(deckid)
 
         if deck:
-
-            card = pa.CardTransfer(deck, receiver,
-                                   [self.to_exponent(deck.number_of_decimals, i)
-                                    for i in amount],
-                                   deck.version, asset_specific_data)
+            card = pa.CardTransfer(deck=deck,
+                                   receiver=receiver,
+                                   amount=[self.to_exponent(deck.number_of_decimals, i)
+                                           for i in amount],
+                                   version=deck.version,
+                                   asset_specific_data=asset_specific_data
+                                   )
 
             return card
 
