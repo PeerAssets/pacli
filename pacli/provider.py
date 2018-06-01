@@ -38,14 +38,3 @@ def configured_provider(Settings):
 
 
 provider = configured_provider(Settings)
-
-
-def change(utxo):
-    '''decide what will be change address
-    * default - pay back to largest utxo
-    * standard - behave as wallet does - pay to new address
-    '''
-
-    if Settings.change == "default":
-        m = max([i["amount"] for i in utxo["utxos"]])
-        return [i["address"] for i in utxo["utxos"] if i["amount"] == m][0]
