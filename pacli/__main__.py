@@ -152,11 +152,6 @@ class Deck:
 
         print(json.dumps(im, indent=1, sort_keys=True))
 
-    def checksum(self, deck_id: str) -> bool:
-        '''check if deck balances are in order'''
-
-        raise NotImplementedError
-
     def my(self):
         '''list decks spawned from address I control'''
 
