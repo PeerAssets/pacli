@@ -232,7 +232,7 @@ class Card:
 
         deck = self.__find_deck(deckid)
 
-        if deck:
+        if isinstance(deck, pa.Deck):
             card = pa.CardTransfer(deck=deck,
                                    receiver=receiver,
                                    amount=[self.to_exponent(deck.number_of_decimals, i)
@@ -243,8 +243,7 @@ class Card:
 
             return card
 
-        else:
-            return {'error:' 'Deck not found.'}
+        raise Exception({"error": "Deck {deckid} not found.".format(deckid=deckid)})
 
     @classmethod
     def transfer(self, deckid: str, receiver: list=None, amount: list=None,
