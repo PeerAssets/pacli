@@ -4,17 +4,11 @@
 [![PyPI](https://img.shields.io/pypi/v/pacli.svg?style=flat-square)](https://pypi.python.org/pypi/pacli/)
 [![](https://img.shields.io/badge/python-3.5+-blue.svg)](https://www.python.org/download/releases/3.5.0/) 
 
-> Licence: GPL3
 
-> Language: Python (>= 3.5)
-
-Simple CLI PeerAssets client.
-
-Implemented using `pypeerassets` Python library, this command line program is useful as companion utility during PeerAssets development and testing.
-It is built for headless (CLI) usage via intuitive and easy to learn set of commands.
-
+This simple PeerAssets client is implemented using the [pypeerassets](https://github.com/PeerAssets/pypeerassets) Python library.
+This command line program is useful as companion utility during PeerAssets development and testing. It is built for console usage via intuitive and easy to learn set of commands.
 It stores the privkey in OS's native keystore, which is automatically unlocked upon logging into active user session.
-It handles only one key for now, until HD key support is not implemented.
+It handles only one key for now, until HD key support is implemented.
 
 Main config file is located in `$HOME/.config/pacli`.
 
