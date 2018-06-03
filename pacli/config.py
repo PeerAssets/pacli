@@ -53,8 +53,8 @@ logfile = os.path.join(conf_dir, "pacli.log")
 def init_config():
     '''if first run, setup local configuration directory.'''
 
-    if not os.path.exists(conf_dir):
-        os.mkdir(conf_dir)
+    if not os.path.isdir(conf_dir):
+        os.makedirs(conf_dir)
     if not os.path.exists(conf_file):
         write_default_config(conf_file)
 
