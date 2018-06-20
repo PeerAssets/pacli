@@ -112,7 +112,7 @@ class Deck:
         return new_deck
 
     @classmethod
-    def spawn(self, verify=False, **kwargs):
+    def spawn(self, verify: bool=False, locktime: int=0, **kwargs):
         '''prepare deck spawn transaction'''
 
         deck = self.__new(**kwargs)
@@ -120,7 +120,8 @@ class Deck:
         spawn = pa.deck_spawn(provider=provider,
                               inputs=provider.select_inputs(Settings.key.address, 0.02),
                               deck=deck,
-                              change_address=Settings.change
+                              change_address=Settings.change,
+                              locktime=locktime
                               )
 
         if verify:
@@ -247,7 +248,8 @@ class Card:
 
     @classmethod
     def transfer(self, deckid: str, receiver: list=None, amount: list=None,
-                 asset_specific_data: str=None, verify=False) -> str:
+                 asset_specific_data: str=None,
+                 locktime: int=0, verify=False) -> str:
         '''prepare CardTransfer transaction'''
 
         card = self.__new(deckid, receiver, amount, asset_specific_data)
@@ -255,7 +257,8 @@ class Card:
         issue = pa.card_transfer(provider=provider,
                                  inputs=provider.select_inputs(Settings.key.address, 0.02),
                                  card=card,
-                                 change_address=Settings.change
+                                 change_address=Settings.change,
+                                 locktime=locktime
                                  )
 
         if verify:
@@ -265,17 +268,21 @@ class Card:
 
     @classmethod
     def burn(self, deckid: str, receiver: list=None, amount: list=None,
-             asset_specific_data: str=None, verify=False) -> str:
+             asset_specific_data: str=None,
+             locktime: int=0, verify=False) -> str:
         '''wrapper around self.transfer'''
 
-        return self.transfer(deckid, receiver, amount, asset_specific_data, verify)
+        return self.transfer(deckid, receiver, amount, asset_specific_data,
+                             locktime, verify)
 
     @classmethod
     def issue(self, deckid: str, receiver: list=None, amount: list=None,
-              asset_specific_data: str=None, verify=False) -> str:
+              asset_specific_data: str=None,
+              locktime: int=0, verify=False) -> str:
         '''Wrapper around self.tranfer'''
 
-        return self.transfer(deckid, receiver, amount, asset_specific_data, verify)
+        return self.transfer(deckid, receiver, amount, asset_specific_data,
+                             locktime, verify)
 
     @classmethod
     def encode(self, deckid: str, receiver: list=None, amount: list=None,
