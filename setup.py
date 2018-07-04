@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pacli',
-      version='0.4.1',
+      version='0.4.2',
       description='Simple CLI PeerAssets client.',
       keywords=['peerassets', 'blockchain', 'assets', 'client'],
       url='https://github.com/peerassets/pacli',
