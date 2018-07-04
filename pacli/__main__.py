@@ -99,7 +99,7 @@ class Deck:
 
     @classmethod
     def __new(self, name: str, number_of_decimals: int, issue_mode: int,
-              asset_specific_data: str=None):
+              asset_specific_data: str=None, locktime=None):
         '''create a new deck.'''
 
         network = Settings.network
