@@ -2,6 +2,7 @@ import fire
 import random
 import pypeerassets as pa
 from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
+from pypeerassets.transactions import sign_transaction
 from pacli.provider import provider
 from pacli.config import Settings
 from pacli.keystore import init_keystore
@@ -9,6 +10,7 @@ from pacli.tui import print_deck_info, print_deck_list
 from pacli.tui import print_card_list
 from pacli.export import export_to_csv
 from btcpy.structs.script import NulldataScript
+from btcpy.structs.transaction import MutableTransaction
 import json
 
 
@@ -22,6 +24,12 @@ def cointoolkit_verify(hex: str) -> str:
         mode = "mode=peercoin"
 
     return base_url + "?" + mode + "&" + "verify=" + hex
+
+
+def signtx(rawtx: MutableTransaction) -> str:
+    '''sign the transaction'''
+
+    return sign_transaction(provider, rawtx, Settings.key).hexlify()
 
 
 class Address:
@@ -112,7 +120,8 @@ class Deck:
         return new_deck
 
     @classmethod
-    def spawn(self, verify: bool=False, locktime: int=0, **kwargs):
+    def spawn(self, verify: bool=False, sign: bool=False,
+              locktime: int=0, **kwargs):
         '''prepare deck spawn transaction'''
 
         deck = self.__new(**kwargs)
@@ -126,6 +135,9 @@ class Deck:
 
         if verify:
             return cointoolkit_verify(spawn.hexlify())  # link to cointoolkit - verify
+
+        if sign:
+            return signtx(spawn)
 
         return spawn.hexlify()
 
@@ -249,7 +261,7 @@ class Card:
     @classmethod
     def transfer(self, deckid: str, receiver: list=None, amount: list=None,
                  asset_specific_data: str=None,
-                 locktime: int=0, verify=False) -> str:
+                 locktime: int=0, verify: bool=False, sign: bool=False) -> str:
         '''prepare CardTransfer transaction'''
 
         card = self.__new(deckid, receiver, amount, asset_specific_data)
@@ -264,25 +276,28 @@ class Card:
         if verify:
             return cointoolkit_verify(issue.hexlify())  # link to cointoolkit - verify
 
+        if sign:
+            return signtx(issue)
+
         return issue.hexlify()
 
     @classmethod
     def burn(self, deckid: str, receiver: list=None, amount: list=None,
              asset_specific_data: str=None,
-             locktime: int=0, verify=False) -> str:
+             locktime: int=0, verify: bool=False, sign: bool=False) -> str:
         '''wrapper around self.transfer'''
 
         return self.transfer(deckid, receiver, amount, asset_specific_data,
-                             locktime, verify)
+                             locktime, verify, sign)
 
     @classmethod
     def issue(self, deckid: str, receiver: list=None, amount: list=None,
               asset_specific_data: str=None,
-              locktime: int=0, verify=False) -> str:
+              locktime: int=0, verify: bool=False, sign: bool=False) -> str:
         '''Wrapper around self.tranfer'''
 
         return self.transfer(deckid, receiver, amount, asset_specific_data,
-                             locktime, verify)
+                             locktime, verify, sign)
 
     @classmethod
     def encode(self, deckid: str, receiver: list=None, amount: list=None,
@@ -307,14 +322,15 @@ class Card:
                                                Settings.deck_version)
 
     @classmethod
-    def simulate_issue(self, deckid: str=None, ncards: int=10, verify=False) -> str:
+    def simulate_issue(self, deckid: str=None, ncards: int=10,
+                       verify: bool=False, sign: str=False) -> str:
         '''create a batch of simulated CardIssues on this deck'''
 
         receiver = [pa.Kutil(network=Settings.network).address for i in range(ncards)]
         amount = [random.randint(1, 100) for i in range(ncards)]
 
         return self.transfer(deckid=deckid, receiver=receiver, amount=amount,
-                             verify=verify)
+                             verify=verify, sign=sign)
 
     def export(self, deckid: str, filename: str):
         '''export cards to csv'''
