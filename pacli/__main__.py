@@ -1,7 +1,10 @@
 import fire
 import random
 import pypeerassets as pa
-from pypeerassets.pautils import amount_to_exponent, exponent_to_amount
+from pypeerassets.pautils import (amount_to_exponent,
+                                  exponent_to_amount,
+                                  parse_card_transfer_metainfo
+                                  )
 from pypeerassets.transactions import sign_transaction
 from pacli.provider import provider
 from pacli.config import Settings
@@ -318,8 +321,8 @@ class Card:
 
         script = NulldataScript.unhexlify(hex).decompile().split(' ')[1]
 
-        return pa.parse_card_transfer_metainfo(bytes.fromhex(script),
-                                               Settings.deck_version)
+        return parse_card_transfer_metainfo(bytes.fromhex(script),
+                                            Settings.deck_version)
 
     @classmethod
     def simulate_issue(self, deckid: str=None, ncards: int=10,
