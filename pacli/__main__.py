@@ -33,7 +33,15 @@ def cointoolkit_verify(hex: str) -> str:
 def signtx(rawtx: MutableTransaction) -> str:
     '''sign the transaction'''
 
-    return sign_transaction(provider, rawtx, Settings.key).hexlify()
+    return sign_transaction(provider, rawtx, Settings.key)
+
+
+def sendtx(signed_tx: str) -> bool:
+    '''send raw transaction'''
+
+    provider.sendrawtransaction(signed_tx.hexlify())
+
+    return signed_tx.txid
 
 
 class Address:
@@ -125,7 +133,7 @@ class Deck:
 
     @classmethod
     def spawn(self, verify: bool=False, sign: bool=False,
-              locktime: int=0, **kwargs):
+              send: bool=False, locktime: int=0, **kwargs):
         '''prepare deck spawn transaction'''
 
         deck = self.__new(**kwargs)
@@ -141,7 +149,13 @@ class Deck:
             return cointoolkit_verify(spawn.hexlify())  # link to cointoolkit - verify
 
         if sign:
-            return signtx(spawn)
+
+            tx = signtx(spawn)
+
+            if send:
+                return sendtx(tx)
+
+            return tx.hexlify()
 
         return spawn.hexlify()
 
@@ -266,7 +280,8 @@ class Card:
     @classmethod
     def transfer(self, deckid: str, receiver: list=None, amount: list=None,
                  asset_specific_data: str=None,
-                 locktime: int=0, verify: bool=False, sign: bool=False) -> str:
+                 locktime: int=0, verify: bool=False,
+                 sign: bool=False, send: bool=False) -> str:
         '''prepare CardTransfer transaction'''
 
         card = self.__new(deckid, receiver, amount, asset_specific_data)
@@ -282,7 +297,13 @@ class Card:
             return cointoolkit_verify(issue.hexlify())  # link to cointoolkit - verify
 
         if sign:
-            return signtx(issue)
+
+            tx = signtx(issue)
+
+            if send:
+                return sendtx(tx)
+
+            return tx.hexlify()
 
         return issue.hexlify()
 
@@ -328,14 +349,15 @@ class Card:
 
     @classmethod
     def simulate_issue(self, deckid: str=None, ncards: int=10,
-                       verify: bool=False, sign: str=False) -> str:
+                       verify: bool=False,
+                       sign: str=False, send: bool=False) -> str:
         '''create a batch of simulated CardIssues on this deck'''
 
         receiver = [pa.Kutil(network=Settings.network).address for i in range(ncards)]
         amount = [random.randint(1, 100) for i in range(ncards)]
 
         return self.transfer(deckid=deckid, receiver=receiver, amount=amount,
-                             verify=verify, sign=sign)
+                             verify=verify, sign=sign, send=send)
 
     def export(self, deckid: str, filename: str):
         '''export cards to csv'''
