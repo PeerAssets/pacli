@@ -3,7 +3,8 @@ import random
 import pypeerassets as pa
 from pypeerassets.pautils import (amount_to_exponent,
                                   exponent_to_amount,
-                                  parse_card_transfer_metainfo
+                                  parse_card_transfer_metainfo,
+                                  parse_deckspawn_metainfo
                                   )
 from pypeerassets.transactions import sign_transaction
 from pacli.provider import provider
@@ -160,7 +161,8 @@ class Deck:
 
         script = NulldataScript.unhexlify(hex).decompile().split(' ')[1]
 
-        return pa.pautils.parse_deckspawn_metainfo(bytes.fromhex(script), Settings.deck_version)
+        return parse_deckspawn_metainfo(bytes.fromhex(script),
+                                        Settings.deck_version)
 
     def issue_modes(self):
 
