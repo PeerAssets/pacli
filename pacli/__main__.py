@@ -118,6 +118,13 @@ class Deck:
         print_deck_info(deck)
 
     @classmethod
+    def p2th(self, deck_id: str) -> str:
+        '''print out deck p2th'''
+
+        return pa.Kutil(network=Settings.network,
+                        privkey=bytearray.fromhex(deck_id)).address
+
+    @classmethod
     def __new(self, name: str, number_of_decimals: int, issue_mode: int,
               asset_specific_data: str=None, locktime=None):
         '''create a new deck.'''
