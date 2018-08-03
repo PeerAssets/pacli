@@ -106,7 +106,7 @@ class Deck:
                                         Settings.deck_version,
                                         Settings.production)
         print_deck_list(
-            (d for d in decks if key in d.id or (key in d.__dict__.values()))
+            (d for d in decks if key in d.id or (key in d.to_json().values()))
             )
 
     @classmethod
