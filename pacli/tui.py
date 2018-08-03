@@ -30,7 +30,7 @@ def deck_summary_line_item(deck: Deck):
             d["name"],
             d["issuer"],
             d["issue_mode"],
-            d["confirms"]
+            d["tx_confirmations"]
             ]
 
 
@@ -53,14 +53,17 @@ def print_deck_info(deck: Deck):
             heading=("name", "issuer", "issue mode", "decimals", "confirms", "timestamp", "data"),
             data=[[
                 getattr(deck, attr) for attr in
-                        ["name", "issuer", "issue_mode", "number_of_decimals", "confirms", "issue_time", "data"]]])
+                        ["name", "issuer", "issue_mode",
+                         "number_of_decimals", "tx_confirmations",
+                         "issue_time", "data"]]]
+                         )
 
 
 def card_line_item(card: CardTransfer):
 
     c = card.__dict__
     return [c["txid"],
-            c["confirms"],
+            c["tx_confirmations"],
             c['cardseq'],
             c["sender"],
             c["receiver"][0],
