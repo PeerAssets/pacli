@@ -1,21 +1,23 @@
+from typing import Union
 import fire
 import random
 import pypeerassets as pa
+import json
 from pypeerassets.pautils import (amount_to_exponent,
                                   exponent_to_amount,
                                   parse_card_transfer_metainfo,
                                   parse_deckspawn_metainfo
                                   )
-from pypeerassets.transactions import sign_transaction
+from pypeerassets.transactions import (MutableTransaction,
+                                       NulldataScript,
+                                       sign_transaction
+                                       )
 from pacli.provider import provider
 from pacli.config import Settings
 from pacli.keystore import init_keystore
 from pacli.tui import print_deck_info, print_deck_list
 from pacli.tui import print_card_list
 from pacli.export import export_to_csv
-from btcpy.structs.script import NulldataScript
-from btcpy.structs.transaction import MutableTransaction
-import json
 
 
 def cointoolkit_verify(hex: str) -> str:
