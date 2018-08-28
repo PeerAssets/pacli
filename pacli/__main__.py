@@ -377,7 +377,7 @@ class Card:
 
 class Transaction:
 
-    def raw(self, txid):
+    def raw(self, txid: str) -> None:
         '''fetch raw tx and display it'''
 
         tx = provider.getrawtransaction(txid, 1)
