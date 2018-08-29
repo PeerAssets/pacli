@@ -1,5 +1,4 @@
-peerassets-btcpy
-pypeerassets>=0.4.0
+pypeerassets>=0.4.4
 terminaltables>=3.1.0
 appdirs
 keyring
