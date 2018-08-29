@@ -24,7 +24,7 @@ def signtx(rawtx: MutableTransaction) -> str:
     return sign_transaction(provider, rawtx, Settings.key)
 
 
-def sendtx(signed_tx: MutableTransaction) -> bool:
+def sendtx(signed_tx: MutableTransaction) -> str:
     '''send raw transaction'''
 
     provider.sendrawtransaction(signed_tx.hexlify())
