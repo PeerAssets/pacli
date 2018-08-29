@@ -28,7 +28,7 @@ setup(name='pacli',
       packages=['pacli'],
       install_requires=['pypeerassets', 'terminaltables',
                         'appdirs', 'fire', 'keyring',
-                        'peerassets-btcpy'],
+                        ],
       entry_points={
           'console_scripts': [
               'pacli = pacli.__main__:main'
