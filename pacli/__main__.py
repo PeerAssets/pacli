@@ -9,7 +9,7 @@ from pypeerassets.pautils import (amount_to_exponent,
                                   parse_card_transfer_metainfo,
                                   parse_deckspawn_metainfo
                                   )
-from pypeerassets.transaction import NulldataScript
+from pypeerassets.transactions import NulldataScript
 
 from pacli.provider import provider
 from pacli.config import Settings
