@@ -1,49 +1,25 @@
-from typing import Union
+from typing import Optional
 import fire
 import random
 import pypeerassets as pa
 import json
+
 from pypeerassets.pautils import (amount_to_exponent,
                                   exponent_to_amount,
                                   parse_card_transfer_metainfo,
                                   parse_deckspawn_metainfo
                                   )
-from pypeerassets.transactions import (MutableTransaction,
-                                       NulldataScript,
-                                       sign_transaction
-                                       )
+
 from pacli.provider import provider
 from pacli.config import Settings
 from pacli.keystore import init_keystore
 from pacli.tui import print_deck_info, print_deck_list
 from pacli.tui import print_card_list
 from pacli.export import export_to_csv
-
-
-def cointoolkit_verify(hex: str) -> str:
-    '''tailor cointoolkit verify URL'''
-
-    base_url = 'https://indiciumfund.github.io/cointoolkit/'
-    if provider.network == "peercoin-testnet":
-        mode = "mode=peercoin_testnet"
-    if provider.network == "peercoin":
-        mode = "mode=peercoin"
-
-    return base_url + "?" + mode + "&" + "verify=" + hex
-
-
-def signtx(rawtx: MutableTransaction) -> str:
-    '''sign the transaction'''
-
-    return sign_transaction(provider, rawtx, Settings.key)
-
-
-def sendtx(signed_tx: str) -> bool:
-    '''send raw transaction'''
-
-    provider.sendrawtransaction(signed_tx.hexlify())
-
-    return signed_tx.txid
+from pacli.utils import (cointoolkit_verify,
+                         signtx,
+                         sendtx
+                         )
 
 
 class Address:
@@ -77,7 +53,7 @@ class Address:
 
         return [pa.Kutil(network=Settings.network).address for i in range(n)]
 
-    def get_unspent(self, amount: int) -> str:
+    def get_unspent(self, amount: int) -> Optional[dict]:
         '''quick find UTXO for this address'''
 
         try:
