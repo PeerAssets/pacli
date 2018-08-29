@@ -21,6 +21,7 @@ from pacli.utils import (cointoolkit_verify,
                          signtx,
                          sendtx
                          )
+from pacli.coin import Coin
 
 
 class Address:
@@ -370,7 +371,8 @@ def main():
         'deck': Deck(),
         'card': Card(),
         'address': Address(),
-        'transaction': Transaction()
+        'transaction': Transaction(),
+        'coin': Coin()
         })
 
 
