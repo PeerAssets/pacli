@@ -1,4 +1,5 @@
-from pypeerassets import RpcNode, Cryptoid, Explorer, pautils
+from pypeerassets.provider import RpcNode, Cryptoid, Explorer
+from pypeerassets import pautils
 from pacli.config import Settings
 
 
