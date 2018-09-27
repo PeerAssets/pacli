@@ -10,11 +10,9 @@ This command line program is useful as companion utility during PeerAssets devel
 It stores the privkey in OS's native keystore, which is automatically unlocked upon logging into active user session.
 It handles only one key for now, until HD key support is implemented.
 
-Main config file is located in `$HOME/.config/pacli`.
+## Installation
 
-## installation
-
-### linux
+### Gnu/Linux
 
 *pacli is meant for desktop environment (Gnome/KDE), if you want to run it headless see this: https://github.com/jaraco/keyring#using-keyring-on-headless-linux-systems*
 
@@ -25,6 +23,16 @@ To access it from the command line, place the following in $HOME/.bashrc:
 `export PATH=$PATH:$HOME/.local/bin`
 
 `source ~/.bashrc`
+
+Main config file is located in `$HOME/.config/pacli`.
+
+### Windows
+
+Python 3.5 or greater is needed. Refer to this [guide](https://matthewhorne.me/how-to-install-python-and-pip-on-windows-10/) for step by step introduction.
+
+`python -m pip install pacli`
+
+Next you can add `pacli` to environment to have it accessible as a CLI command.
 
 __________________________________________________
 
