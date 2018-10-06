@@ -34,6 +34,8 @@ Python 3.5 or greater is needed. Refer to this [guide](https://matthewhorne.me/h
 
 Next you can add `pacli` to environment to have it accessible as a CLI command.
 
+Main config file is located in `C:\Users\USERNAME\AppData\Local/pacli`.
+
 __________________________________________________
 
 ## examples:
