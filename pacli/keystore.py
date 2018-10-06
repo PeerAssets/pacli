@@ -1,12 +1,16 @@
+import os
 import keyring
-from os import urandom
 from btcpy.structs.crypto import PrivateKey
+
+if os.name == 'nt':
+    from keyring.backends import Windows
+    keyring.set_keyring(Windows.WinVaultKeyring())
 
 
 def generate_key() -> PrivateKey:
     '''generate new random key'''
 
-    return urandom(32).hex()
+    return os.urandom(32).hex()
 
 
 def init_keystore() -> None:
