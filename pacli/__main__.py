@@ -306,11 +306,13 @@ class Card:
     @classmethod
     def issue(self, deckid: str, receiver: list=None, amount: list=None,
               asset_specific_data: str=None,
-              locktime: int=0, verify: bool=False, sign: bool=False) -> str:
+              locktime: int=0, verify: bool=False,
+              sign: bool=False,
+              send: bool=False) -> str:
         '''Wrapper around self.tranfer'''
 
         return self.transfer(deckid, receiver, amount, asset_specific_data,
-                             locktime, verify, sign)
+                             locktime, verify, sign, send)
 
     @classmethod
     def encode(self, deckid: str, receiver: list=None, amount: list=None,
