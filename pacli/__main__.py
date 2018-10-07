@@ -362,6 +362,13 @@ class Transaction:
 
         print(json.dumps(tx, indent=4))
 
+    def sendraw(self, rawtx: str) -> str:
+        '''sendrawtransaction, returns the txid'''
+
+        txid = provider.sendrawtransaction(rawtx)
+
+        print(txid)
+
 
 def main():
 
