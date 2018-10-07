@@ -288,7 +288,7 @@ class Card:
             tx = signtx(issue)
 
             if send:
-                return sendtx(tx)
+                return {'txid': sendtx(tx)}
 
             return tx.hexlify()
 
