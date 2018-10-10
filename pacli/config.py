@@ -1,11 +1,17 @@
+from typing import Union
 from appdirs import user_config_dir
 #import logging
 import configparser
 import os
-from .keystore import load_key
+from pacli.keystore import load_key
 from pypeerassets.pa_constants import param_query
 from pacli.default_conf import default_conf
 from pypeerassets import Kutil
+
+
+conf_dir = user_config_dir("pacli")
+conf_file = os.path.join(conf_dir, "pacli.conf")
+logfile = os.path.join(conf_dir, "pacli.log")
 
 
 def write_default_config(conf_file=None):
@@ -32,10 +38,8 @@ def read_conf(conf_file):
     settings = dict(config["settings"])
     if not set(settings.keys()).issuperset(required):
 
-    except:
-        print("config is outdated, saving current default config to", conf_file + ".sample")
+        print("config is outdated, saving current default config to", conf_file)
         write_default_config(conf_file + ".sample")
-        raise
 
     if settings["network"].startswith("t"):
         settings["testnet"] = True
@@ -43,11 +47,6 @@ def read_conf(conf_file):
     settings['p2th_address'] = param_query(settings['network']).P2TH_addr
 
     return settings
-
-
-conf_dir = user_config_dir("pacli")
-conf_file = os.path.join(conf_dir, "pacli.conf")
-logfile = os.path.join(conf_dir, "pacli.log")
 
 
 def init_config():
@@ -88,6 +87,18 @@ def load_conf():
     #logging.debug("logging initialized")
 
     return Settings
+
+
+def write_settings(key: str, value: Union[str, bool]) -> None:
+    '''write new conf file'''
+
+    config = configparser.ConfigParser()
+    config.read(conf_file)
+
+    config['settings'][key] = value
+
+    with open(conf_file, 'w') as configfile:
+        config.write(configfile)
 
 
 Settings = load_conf()

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 import fire
 import random
 import pypeerassets as pa
@@ -22,6 +22,28 @@ from pacli.utils import (cointoolkit_verify,
                          sendtx
                          )
 from pacli.coin import Coin
+from pacli.config import (write_default_config,
+                          conf_file,
+                          default_conf,
+                          write_settings)
+
+
+class Config:
+
+    '''dealing with configuration'''
+
+    def default(self) -> None:
+        '''revert to default config'''
+
+        write_default_config(conf_file)
+
+    def set(self, key: str, value: Union[str, bool]) -> None:
+        '''change settings'''
+
+        if key not in default_conf.keys():
+            raise({'error': 'Invalid setting key.'})
+
+        write_settings(key, value)
 
 
 class Address:
@@ -377,6 +399,7 @@ def main():
     init_keystore()
 
     fire.Fire({
+        'config': Config(),
         'deck': Deck(),
         'card': Card(),
         'address': Address(),
