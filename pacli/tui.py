@@ -50,10 +50,10 @@ def print_deck_info(deck: Deck):
 
     print_table(
             title=deck_title(deck),
-            heading=("name", "issuer", "issue mode", "decimals", "confirms", "timestamp", "data"),
+            heading=("name", "issuer", "issue mode", "p2th", "decimals", "confirms", "timestamp", "data"),
             data=[[
                 getattr(deck, attr) for attr in
-                        ["name", "issuer", "issue_mode",
+                        ["name", "issuer", "issue_mode", "p2th_address",
                          "number_of_decimals", "tx_confirmations",
                          "issue_time", "data"]]]
                          )
