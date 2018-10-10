@@ -44,6 +44,18 @@ __________________________________________________
 
 show all commands
 
+> pacli config default
+
+revert the settings to default
+
+> pacli config set $OPTION
+
+for example:
+
+`pacli config set network ppc`
+
+set the network to "ppc" (Peercoin).
+
 > pacli address show [--privkey, --pubkey, --wif]
 
 show current address, or it's privkey, pubkey or wif
