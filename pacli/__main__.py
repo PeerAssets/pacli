@@ -189,7 +189,7 @@ class Deck:
 
     def issue_modes(self):
 
-        im = tuple({mode.name: mode.value} for mode_name, mode in pa.IssueMode.__members__.items())
+        im = tuple({mode.name: mode.value} for mode_name, mode in pa.protocol.IssueMode.__members__.items())
 
         print(json.dumps(im, indent=1, sort_keys=True))
 
