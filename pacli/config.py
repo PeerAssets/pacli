@@ -28,9 +28,9 @@ def read_conf(conf_file):
 
     config = configparser.ConfigParser()
     config.read(conf_file)
-    try:
-        settings = dict(config["settings"])
-        assert set(settings.keys()).issuperset(required)
+
+    settings = dict(config["settings"])
+    if not set(settings.keys()).issuperset(required):
 
     except:
         print("config is outdated, saving current default config to", conf_file + ".sample")
