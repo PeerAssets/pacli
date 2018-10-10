@@ -27,7 +27,7 @@ setup(name='pacli',
       license='GPL',
       packages=['pacli'],
       install_requires=['pypeerassets', 'terminaltables',
-                        'appdirs', 'fire', 'keyring',
+                        'appdirs', 'fire', 'keyring', 'prettyprinter'
                         ],
       entry_points={
           'console_scripts': [

@@ -3,6 +3,7 @@ import fire
 import random
 import pypeerassets as pa
 import json
+from prettyprinter import cpprint as pprint
 
 from pypeerassets.pautils import (amount_to_exponent,
                                   exponent_to_amount,
@@ -65,25 +66,31 @@ class Address:
     @classmethod
     def balance(self) -> float:
 
-        return float(provider.getbalance(Settings.key.address))
+        pprint(
+            {'balance': float(provider.getbalance(Settings.key.address))}
+            )
 
     def derive(self, key: str) -> str:
         '''derive a new address from <key>'''
 
-        return pa.Kutil(Settings.network, from_string=key).address
+        pprint(pa.Kutil(Settings.network, from_string=key).address)
 
     def random(self, n: int=1) -> list:
         '''generate <n> of random addresses, useful when testing'''
 
-        return [pa.Kutil(network=Settings.network).address for i in range(n)]
+        rand_addr = [pa.Kutil(network=Settings.network).address for i in range(n)]
+
+        pprint(rand_addr)
 
     def get_unspent(self, amount: int) -> Optional[dict]:
         '''quick find UTXO for this address'''
 
         try:
-            return provider.select_inputs(Settings.key.address, 0.02)['utxos'][0].__dict__['txid']
+            pprint(
+                {'UTXOs': provider.select_inputs(Settings.key.address, 0.02)['utxos'][0].__dict__['txid']}
+                )
         except KeyError:
-            print({'error': 'No UTXOs ;('})
+            pprint({'error': 'No UTXOs ;('})
 
 
 class Deck:
@@ -162,9 +169,9 @@ class Deck:
             tx = signtx(spawn)
 
             if send:
-                return sendtx(tx)
+                pprint({'txid': sendtx(tx)})
 
-            return tx.hexlify()
+            pprint({'hex': tx.hexlify()})
 
         return spawn.hexlify()
 
@@ -174,9 +181,9 @@ class Deck:
            is to be manually inserted in the OP_RETURN of the transaction.'''
 
         if json:
-            return self.__new(**kwargs).metainfo_to_dict
+            pprint(self.__new(**kwargs).metainfo_to_dict)
 
-        return self.__new(**kwargs).metainfo_to_protobuf.hex()
+        pprint({'hex': self.__new(**kwargs).metainfo_to_protobuf.hex()})
 
     @classmethod
     def decode(self, hex: str) -> dict:
@@ -184,19 +191,19 @@ class Deck:
 
         script = NulldataScript.unhexlify(hex).decompile().split(' ')[1]
 
-        return parse_deckspawn_metainfo(bytes.fromhex(script),
-                                        Settings.deck_version)
+        pprint(parse_deckspawn_metainfo(bytes.fromhex(script),
+                                        Settings.deck_version))
 
     def issue_modes(self):
 
         im = tuple({mode.name: mode.value} for mode_name, mode in pa.protocol.IssueMode.__members__.items())
 
-        print(json.dumps(im, indent=1, sort_keys=True))
+        pprint(im)
 
     def my(self):
         '''list decks spawned from address I control'''
 
-        return self.find(Settings.key.address)
+        self.find(Settings.key.address)
 
 
 class Card:
@@ -223,8 +230,8 @@ class Card:
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
 
-        return {'cards': list(cards),
-                'deck': deck}
+        pprint({'cards': list(cards),
+                'deck': deck})
 
     @classmethod
     def list(self, deckid: str):
@@ -244,8 +251,7 @@ class Card:
         balances = [exponent_to_amount(i, deck.number_of_decimals)
                     for i in state.balances.values()]
 
-        print(json.dumps(dict(zip(state.balances.keys(), balances)
-                              ), indent=4))
+        pprint(dict(zip(state.balances.keys(), balances)))
 
     def checksum(self, deckid: str) -> bool:
         '''show deck card checksum'''
@@ -254,7 +260,7 @@ class Card:
 
         state = pa.protocol.DeckState(cards)
 
-        return state.checksum
+        pprint({'checksum': state.checksum})
 
     @staticmethod
     def to_exponent(number_of_decimals, amount):
@@ -290,7 +296,7 @@ class Card:
     def transfer(self, deckid: str, receiver: list=None, amount: list=None,
                  asset_specific_data: str=None,
                  locktime: int=0, verify: bool=False,
-                 sign: bool=False, send: bool=False) -> str:
+                 sign: bool=False, send: bool=False) -> dict:
         '''prepare CardTransfer transaction'''
 
         card = self.__new(deckid, receiver, amount, asset_specific_data)
@@ -310,9 +316,9 @@ class Card:
             tx = signtx(issue)
 
             if send:
-                return {'txid': sendtx(tx)}
+                pprint({'txid': sendtx(tx)})
 
-            return tx.hexlify()
+            pprint({'hex': tx.hexlify()})
 
         return issue.hexlify()
 
@@ -345,9 +351,9 @@ class Card:
         card = self.__new(deckid, receiver, amount, asset_specific_data)
 
         if json:
-            return card.metainfo_to_dict
+            pprint(card.metainfo_to_dict)
 
-        return card.metainfo_to_protobuf.hex()
+        pprint({'hex': card.metainfo_to_protobuf.hex()})
 
     @classmethod
     def decode(self, hex: str) -> dict:
@@ -355,8 +361,9 @@ class Card:
 
         script = NulldataScript.unhexlify(hex).decompile().split(' ')[1]
 
-        return parse_card_transfer_metainfo(bytes.fromhex(script),
+        pprint(parse_card_transfer_metainfo(bytes.fromhex(script),
                                             Settings.deck_version)
+               )
 
     @classmethod
     def simulate_issue(self, deckid: str=None, ncards: int=10,
@@ -384,14 +391,14 @@ class Transaction:
 
         tx = provider.getrawtransaction(txid, 1)
 
-        print(json.dumps(tx, indent=4))
+        pprint(json.dumps(tx, indent=4))
 
-    def sendraw(self, rawtx: str) -> str:
+    def sendraw(self, rawtx: str) -> None:
         '''sendrawtransaction, returns the txid'''
 
         txid = provider.sendrawtransaction(rawtx)
 
-        print(txid)
+        pprint({'txid': txid})
 
 
 def main():

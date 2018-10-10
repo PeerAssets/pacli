@@ -3,3 +3,4 @@ terminaltables>=3.1.0
 appdirs
 keyring
 fire
+prettyprinter
