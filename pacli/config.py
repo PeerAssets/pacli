@@ -1,6 +1,5 @@
 from typing import Union
 from appdirs import user_config_dir
-#import logging
 import configparser
 import os
 from pacli.keystore import load_key
@@ -79,12 +78,6 @@ def load_conf():
 
     if settings['change'] == "default":
         Settings.change = Settings.key.address
-
-    #logging.basicConfig(filename=logfile, level=logging.getLevelName(Settings.loglevel))
-    #logging.basicConfig(level=logging.getLevelName(Settings.loglevel),
-    #                    format="%(asctime)s %(levelname)s %(message)s")
-
-    #logging.debug("logging initialized")
 
     return Settings
 
