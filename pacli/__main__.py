@@ -397,8 +397,8 @@ class Card:
     def parse(self, deckid: str, cardid: str) -> None:
         '''parse card from txid and print data'''
 
-        deck = self.__find_deck(deck_id)
-        cards = list(get_card_transfer(provider, deck, card_id))
+        deck = self.__find_deck(deckid)
+        cards = list(get_card_transfer(provider, deck, cardid))
 
         for i in cards:
             pprint(i.to_json())
