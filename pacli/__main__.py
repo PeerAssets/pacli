@@ -1,5 +1,6 @@
 from typing import Optional, Union
-import operator, functools
+import operator
+import functools
 import fire
 import random
 import pypeerassets as pa
@@ -12,6 +13,7 @@ from pypeerassets.pautils import (amount_to_exponent,
                                   parse_deckspawn_metainfo
                                   )
 from pypeerassets.transactions import NulldataScript
+from pypeerassets.__main__ import get_card_transfer
 
 from pacli.provider import provider
 from pacli.config import Settings
@@ -392,10 +394,14 @@ class Card:
         cards = self.__list(deckid)['cards']
         export_to_csv(cards=list(cards), filename=filename)
 
-    def parse(self, card_id: str):
+    def parse(self, deck_id: str, card_id: str) -> None:
         '''parse card from txid and print data'''
 
-        raw = provider.getrawtransaction(card_id, 1)
+        deck = self.__find_deck(deck_id)
+        cards = list(get_card_transfer(provider, deck, card_id))
+
+        for i in cards:
+            pprint(i.to_json())
 
 
 class Transaction:
