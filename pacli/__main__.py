@@ -235,7 +235,7 @@ class Card:
     def __list(self, deckid: str):
 
         deck = self.__find_deck(deckid)
-98694bb54fafe315051d2a8f1f5ea4c0050947741ced184a5f33bf4a0081a0bb
+
         try:
             cards = pa.find_all_valid_cards(provider, deck)
         except pa.exceptions.EmptyP2THDirectory as err:
