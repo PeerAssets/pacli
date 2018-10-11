@@ -305,7 +305,7 @@ class Card:
     def transfer(self, deckid: str, receiver: list=None, amount: list=None,
                  asset_specific_data: str=None,
                  locktime: int=0, verify: bool=False,
-                 sign: bool=False, send: bool=False) -> dict:
+                 sign: bool=False, send: bool=False) -> Optional[dict]:
         '''prepare CardTransfer transaction'''
 
         card = self.__new(deckid, receiver, amount, asset_specific_data)
