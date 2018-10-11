@@ -127,11 +127,11 @@ class Deck:
         print_deck_info(deck)
 
     @classmethod
-    def p2th(self, deck_id: str) -> str:
+    def p2th(self, deck_id: str) -> None:
         '''print out deck p2th'''
 
-        return pa.Kutil(network=Settings.network,
-                        privkey=bytearray.fromhex(deck_id)).address
+        pprint(pa.Kutil(network=Settings.network,
+                        privkey=bytearray.fromhex(deck_id)).address)
 
     @classmethod
     def __new(self, name: str, number_of_decimals: int, issue_mode: int,
@@ -149,7 +149,7 @@ class Deck:
 
     @classmethod
     def spawn(self, verify: bool=False, sign: bool=False,
-              send: bool=False, locktime: int=0, **kwargs):
+              send: bool=False, locktime: int=0, **kwargs) -> None:
         '''prepare deck spawn transaction'''
 
         deck = self.__new(**kwargs)
@@ -162,7 +162,9 @@ class Deck:
                               )
 
         if verify:
-            return cointoolkit_verify(spawn.hexlify())  # link to cointoolkit - verify
+            pprint(
+                {'url': cointoolkit_verify(spawn.hexlify())
+                 })  # link to cointoolkit - verify
 
         if sign:
 
@@ -176,7 +178,7 @@ class Deck:
         return spawn.hexlify()
 
     @classmethod
-    def encode(self, json: bool=False, **kwargs) -> str:
+    def encode(self, json: bool=False, **kwargs) -> None:
         '''compose a new deck and print out the protobuf which
            is to be manually inserted in the OP_RETURN of the transaction.'''
 
@@ -186,7 +188,7 @@ class Deck:
         pprint({'hex': self.__new(**kwargs).metainfo_to_protobuf.hex()})
 
     @classmethod
-    def decode(self, hex: str) -> dict:
+    def decode(self, hex: str) -> None:
         '''decode deck protobuf'''
 
         script = NulldataScript.unhexlify(hex).decompile().split(' ')[1]
@@ -382,6 +384,11 @@ class Card:
 
         cards = self.__list(deckid)['cards']
         export_to_csv(cards=list(cards), filename=filename)
+
+    def parse(self, card_id: str):
+        '''parse card from txid and print data'''
+
+        raw = provider.getrawtransaction(card_id, 1)
 
 
 class Transaction:
