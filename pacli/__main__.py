@@ -235,7 +235,7 @@ class Card:
     def __list(self, deckid: str):
 
         deck = self.__find_deck(deckid)
-
+98694bb54fafe315051d2a8f1f5ea4c0050947741ced184a5f33bf4a0081a0bb
         try:
             cards = pa.find_all_valid_cards(provider, deck)
         except pa.exceptions.EmptyP2THDirectory as err:
@@ -394,7 +394,7 @@ class Card:
         cards = self.__list(deckid)['cards']
         export_to_csv(cards=list(cards), filename=filename)
 
-    def parse(self, deck_id: str, card_id: str) -> None:
+    def parse(self, deckid: str, cardid: str) -> None:
         '''parse card from txid and print data'''
 
         deck = self.__find_deck(deck_id)
