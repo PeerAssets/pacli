@@ -239,8 +239,8 @@ class Card:
         except pa.exceptions.EmptyP2THDirectory as err:
             return err
 
-        pprint({'cards': list(cards),
-                'deck': deck})
+        return {'cards': list(cards),
+                'deck': deck}
 
     @classmethod
     def list(self, deckid: str):
