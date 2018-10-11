@@ -123,6 +123,10 @@ show balances of addresses on this deck
 verify deck checksum, checksum is difference between issued cards and balances of all the addresses.
 If it is not zero, something is wrong with deck balances. This function will return True if all is fine.
 
+> pacli deck --issue-mode-combo 1,4,8
+
+calculate issue mode combo, returns integer
+
 > pacli card new --deckid $DECKID --receiver [address, address2] --amount [200]
 
 fabricate a new CardTransfer object.
@@ -150,6 +154,10 @@ issue 110 cards to n29g3XjvxqWLKgEkyg4Z1BmgrJLccqiH3x.
 > pacli card export *filename*
 
 export the card transactions to .csv file
+
+> pacli card parse --deckid 98694bb54fafe315051d2a8f1f5ea4c0050947741ced184a5f33bf4a0081a0bb --cardid e04fb602bd9d9c33d1d1af8bb680108057c2ae37ea987cc15295cc6fc4fd8d97
+
+decode and display a single card.
 
 ## bash completion (on *nix platforms)
 
