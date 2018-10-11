@@ -1,4 +1,5 @@
 from typing import Optional, Union
+import operator, functools
 import fire
 import random
 import pypeerassets as pa
@@ -206,6 +207,12 @@ class Deck:
         '''list decks spawned from address I control'''
 
         self.find(Settings.key.address)
+
+    def issue_mode_combo(self, *args: list) -> None:
+
+        pprint(
+            {'combo': functools.reduce(operator.or_, *args)
+             })
 
 
 class Card:
