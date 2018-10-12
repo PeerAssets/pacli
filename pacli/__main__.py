@@ -165,9 +165,9 @@ class Deck:
                               )
 
         if verify:
-            pprint(
-                {'url': cointoolkit_verify(spawn.hexlify())
-                 })  # link to cointoolkit - verify
+            print(
+                cointoolkit_verify(spawn.hexlify())
+                 )  # link to cointoolkit - verify
 
         if sign:
 
@@ -176,7 +176,7 @@ class Deck:
             if send:
                 pprint({'txid': sendtx(tx)})
 
-            pprint({'hex': tx.hexlify()})
+            return {'hex': tx.hexlify()}
 
         return spawn.hexlify()
 
