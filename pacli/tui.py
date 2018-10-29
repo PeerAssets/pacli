@@ -102,7 +102,7 @@ def print_vote_list(inits: list):
             title="VoteInits of deck {deck}:".format(
                                                      deck=inits[0].deck.id
                                                      ),
-            heading=("ID", "descript", "sender", "choices", "mode", "start",
+            heading=("ID", "description", "sender", "choices", "mode", "start",
                      "end", "confirms"),
             data=map(vote_line_item, inits)
             )
