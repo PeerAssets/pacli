@@ -1,6 +1,7 @@
 from terminaltables import AsciiTable
 from datetime import datetime
 from pypeerassets import Deck, CardTransfer
+from pypeerassets.voting import VoteInit
 from pypeerassets.pautils import exponent_to_amount
 
 
@@ -78,3 +79,30 @@ def print_card_list(cards: list):
             title="Card transfers of deck {deck}:".format(deck=cards[0].deck_id),
             heading=("txid", "confirms", "seq", "sender", "receiver", "amount", "type"),
             data=map(card_line_item, cards))
+
+
+def vote_line_item(vote_init: VoteInit) -> list:
+
+    d = vote_init.__dict__
+    return [d["id"],
+            d["description"],
+            d["sender"],
+            tuple(d["choices"]),
+            d["count_mode"],
+            d["start_block"],
+            d["end_block"],
+            d["tx_confirmations"]
+            ]
+
+
+def print_vote_list(inits: list):
+    '''Show summary of every found VoteInit'''
+
+    print_table(
+            title="VoteInits of deck {deck}:".format(
+                                                     deck=inits[0].deck.id
+                                                     ),
+            heading=("ID", "descript", "sender", "choices", "mode", "start",
+                     "end", "confirms"),
+            data=map(vote_line_item, inits)
+            )

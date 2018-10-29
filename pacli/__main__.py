@@ -18,14 +18,22 @@ from pypeerassets.__main__ import get_card_transfer
 from pacli.provider import provider
 from pacli.config import Settings
 from pacli.keystore import init_keystore
-from pacli.tui import print_deck_info, print_deck_list
-from pacli.tui import print_card_list
+
+from pacli.tui import (print_deck_info,
+                       print_deck_list,
+                       print_card_list)
+
 from pacli.export import export_to_csv
+
 from pacli.utils import (cointoolkit_verify,
                          signtx,
                          sendtx
                          )
+
+from pacli.voting import Vote
+
 from pacli.coin import Coin
+
 from pacli.config import (write_default_config,
                           conf_file,
                           default_conf,
@@ -431,7 +439,8 @@ def main():
         'card': Card(),
         'address': Address(),
         'transaction': Transaction(),
-        'coin': Coin()
+        'coin': Coin(),
+        'vote': Vote()
         })
 
 
