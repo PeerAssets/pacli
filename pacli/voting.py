@@ -55,16 +55,16 @@ class Vote:
 
         vote_init = voting.VoteInit(
             deck=deck,
-            count_mode=count_mode,
-            description=description,
-            choices=(choices),
-            start_block=start,
-            end_block=end,
-            vote_metainfo=metainfo,
-            version=version
+            count_mode=int(count_mode),
+            description=str(description),
+            choices=list(choices),
+            start_block=int(start),
+            end_block=int(end),
+            vote_metainfo=str(metainfo),
+            version=int(version)
         )
 
-        vi = voting.vote_init(vote=vote_init,
+        vi = voting.vote_init(vote_init=vote_init,
                               inputs=provider.select_inputs(Settings.key.address, 0.02),
                               change_address=Settings.change,
                               locktime=0
