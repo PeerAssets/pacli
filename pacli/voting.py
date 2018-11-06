@@ -14,6 +14,8 @@ from pacli.utils import (cointoolkit_verify,
                          sendtx
                          )
 
+from pacli.exceptions import DeckNotFound
+
 
 class Vote:
 
@@ -26,6 +28,8 @@ class Vote:
 
         if deck:
             return deck
+        else:
+            raise DeckNotFound
 
     def list(self, deckid: str):
         '''find all votes for the deck'''
