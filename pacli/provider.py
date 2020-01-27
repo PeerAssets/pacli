@@ -11,10 +11,10 @@ def set_up():
     if Settings.provider == "rpcnode":
         if Settings.production:
             if not provider.listtransactions("PAPROD"):
-                pautils.load_p2th_privkeys_into_local_node(provider)
+                pautils.load_p2th_privkey_into_local_node(provider)
         if not Settings.production:
             if not provider.listtransactions("PATEST"):
-                pautils.load_p2th_privkeys_into_local_node(provider, prod=False)
+                pautils.load_p2th_privkey_into_local_node(provider, prod=False)
 
 
 def configured_provider(Settings):
