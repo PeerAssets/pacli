@@ -3,7 +3,7 @@ from pypeerassets import pautils
 from pacli.config import Settings
 
 
-def set_up():
+def set_up(provider):
     '''setup'''
 
     # if provider is local node, check if PA P2TH is loaded in local node
@@ -33,7 +33,7 @@ def configured_provider(Settings):
         raise Exception('invalid provider.')
 
     provider = _provider(network=Settings.network)
-    set_up()
+    set_up(provider)
 
     return provider
 
